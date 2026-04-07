@@ -29,16 +29,19 @@ export default function BookingsDashboard() {
     const fetchBookings = async () => {
       try {
         const res = await fetch("/api/bookings");
-        const data = await res.json();
+const data = await res.json();
 
-        const normalized = data.map((b) => ({
-          ...b,
-          customerName: b.customer?.name || "Unknown",
-          customerEmail: b.customer?.email || "",
-          serviceTitle: b.service?.title || "Service",
-        }));
+// ✅ FIX: ensure it's always an array
+const safeData = Array.isArray(data) ? data : [];
 
-        setBookings(normalized);
+const normalized = safeData.map((b) => ({
+  ...b,
+  customerName: b.customer?.name || "Unknown",
+  customerEmail: b.customer?.email || "",
+  serviceTitle: b.service?.title || "Service",
+}));
+
+setBookings(normalized);
       } catch (err) {
         console.error(err);
       } finally {

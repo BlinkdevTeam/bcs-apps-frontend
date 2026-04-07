@@ -276,7 +276,7 @@ export default function BookingForm({
                     type="button"
                     disabled={isBooked || isBlocked}
                     onClick={() => setSelectedTime(slot)}
-                    className={`border border-[#A30A24] rounded px-2 py-1 text-sm ${isSelected ? "bg-[#A30A24] text-white" : "text-[#A30A24]"} ${isBooked || isBlocked ? "opacity-30 cursor-not-allowed" : ""}`}
+                    className={`border-[2px] border-[#A30A24] rounded px-2 py-1 text-sm cursor-pointer ${isSelected ? "bg-[#A30A24] text-white" : "text-[#A30A24]"} ${isBooked || isBlocked ? "opacity-30 cursor-not-allowed" : ""}`}
                   >
                     {slot}
                   </button>
@@ -291,7 +291,7 @@ export default function BookingForm({
           {/* Left: Name, Email, Phone */}
           <div className="flex flex-col gap-4">
             <div className="flex flex-col">
-              <label className="text-[16px] md:text-[18px] font-medium mb-1">
+              <label className="text-[16px] md:text-[18px] font-medium mb-1 text-[#191919]">
                 Full Name
               </label>
               <input
@@ -299,13 +299,13 @@ export default function BookingForm({
                 placeholder="Your Full Name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#A30A24]"
+                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#191919] text-[#191919]"
                 required
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[16px] md:text-[18px] font-medium mb-1">
+              <label className="text-[16px] md:text-[18px] font-medium mb-1 text-[#191919]">
                 Contact Number
               </label>
               <input
@@ -317,13 +317,13 @@ export default function BookingForm({
                 onChange={(e) =>
                   setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })
                 }
-                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#A30A24]"
+                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#191919] text-[#191919]"
                 required
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[16px] md:text-[18px] font-medium mb-1">
+              <label className="text-[16px] md:text-[18px] font-medium mb-1 text-[#191919]">
                 Email Address
               </label>
               <input
@@ -331,7 +331,7 @@ export default function BookingForm({
                 placeholder="you@example.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#A30A24]"
+                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#191919] text-[#191919]"
                 required
               />
             </div>
@@ -339,7 +339,7 @@ export default function BookingForm({
 
           {/* Right: Description */}
           <div className="flex flex-col">
-            <label className="text-[16px] md:text-[18px] font-medium mb-1">
+            <label className="text-[16px] md:text-[18px] font-medium mb-1 text-[#191919]">
               Additional Details
             </label>
             <textarea
@@ -349,13 +349,13 @@ export default function BookingForm({
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
-              className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#A30A24] resize-none"
+              className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#191919] text-[#191919] resize-none"
             />
           </div>
 
           {/* Bottom Button */}
           <div className="mt-auto pt-6 col-span-2">
-            <p className="text-[18px] mb-4 font-extralight">
+            <p className="text-[18px] mb-4 font-bold">
               Selected: {date ? format(date, "PPPP") : "None"}{" "}
               {selectedTime && `@ ${selectedTime}`}
             </p>

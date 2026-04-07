@@ -14,12 +14,13 @@ const FILTERS = [
 
 export default function WorksSection() {
   const [activeFilter, setActiveFilter] = useState<"all" | WorkCategory>("all");
-  const [shuffledWorks, setShuffledWorks] = useState<Work[]>([]);
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeftFade, setShowLeftFade] = useState(false);
   const [showRightFade, setShowRightFade] = useState(false);
 
+  // ── Scroll fade effect ──
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -39,19 +40,17 @@ export default function WorksSection() {
     };
   }, []);
 
-  // Shuffle only on client after mount
-  useEffect(() => {
-    // Only run in browser
+  // ── Shuffle works (FIXED: no useEffect) ──
+  const [shuffledWorks] = useState<Work[]>(() => {
     const shuffled = [...WORKS];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setShuffledWorks(shuffled);
-  }, []);
+    return shuffled;
+  });
 
-  // Filter works based on active filter
+  // ── Filter works ──
   const displayedWorks = useMemo(() => {
     return activeFilter === "all"
       ? shuffledWorks
@@ -72,25 +71,16 @@ export default function WorksSection() {
 
       {/* Filters */}
       <div className="relative mb-12">
-        {/* Left gradient */}
         {showLeftFade && (
           <div className="pointer-events-none absolute left-0 top-0 h-full w-12 bg-gradient-to-r from-white to-transparent z-10" />
         )}
-
-        {/* Right gradient */}
         {showRightFade && (
           <div className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-white to-transparent z-10" />
         )}
 
-        {/* Scrollable filters */}
         <div
           ref={scrollRef}
-          className="
-      flex gap-4 whitespace-nowrap
-      overflow-x-auto no-scrollbar
-      px-6
-      md:flex-wrap md:justify-center md:overflow-visible
-    "
+          className="flex gap-4 whitespace-nowrap overflow-x-auto no-scrollbar px-6 md:flex-wrap md:justify-center md:overflow-visible"
         >
           {FILTERS.map((filter) => (
             <SkewButton
@@ -104,7 +94,7 @@ export default function WorksSection() {
         </div>
       </div>
 
-      {/* Works Masonry Layout */}
+      {/* Works */}
       {shuffledWorks.length === 0 ? (
         <p className="text-center text-[#6E6E6E] mt-12">Loading works...</p>
       ) : (
@@ -117,10 +107,16 @@ export default function WorksSection() {
               {work.image.endsWith(".mp4") ? (
                 <video
                   src={work.image}
-                  autoPlay
                   muted
                   loop
-                  className="w-full object-cover rounded-xl shadow-lg"
+                  playsInline
+                  className="w-full object-cover rounded-xl shadow-lg cursor-pointer"
+                  onMouseEnter={(e) => e.currentTarget.play()}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.pause();
+                    e.currentTarget.currentTime = 0;
+                  }}
+                  onClick={() => setActiveVideo(work.image)}
                 />
               ) : (
                 <img
@@ -129,6 +125,7 @@ export default function WorksSection() {
                   className="w-full object-cover rounded-xl"
                 />
               )}
+
               <div className="p-2 md:p-4 text-black">
                 <h3 className="text-[18px] md:text-[24px] font-bold">
                   {work.title}
@@ -144,11 +141,34 @@ export default function WorksSection() {
         </div>
       )}
 
-      {/* Empty State */}
+      {/* Empty */}
       {displayedWorks.length === 0 && shuffledWorks.length > 0 && (
         <p className="text-center text-[#6E6E6E] mt-12">
           No works available for this category.
         </p>
+      )}
+
+      {/* FULLSCREEN VIDEO MODAL */}
+      {activeVideo && (
+        <div
+          className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center"
+          onClick={() => setActiveVideo(null)}
+        >
+          <video
+            src={activeVideo}
+            controls
+            autoPlay
+            className="max-w-[90%] max-h-[90%] rounded-xl shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          <button
+            onClick={() => setActiveVideo(null)}
+            className="absolute top-6 right-6 text-white text-3xl font-bold hover:scale-110 transition"
+          >
+            ✕
+          </button>
+        </div>
       )}
     </section>
   );

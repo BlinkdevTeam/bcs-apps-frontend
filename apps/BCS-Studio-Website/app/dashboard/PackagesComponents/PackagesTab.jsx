@@ -146,10 +146,13 @@ const handleSave = (savedPkg) => {
                   <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
                 </svg>
               </div>
-              <input className="pl-8 pr-3 py-2 rounded-xl text-xs border outline-none w-52 transition-all focus:border-[#A30A24] focus:ring-1 focus:ring-[#A30A24]/20"
+              <input
+                className="pl-8 pr-3 py-2 rounded-xl text-xs border outline-none w-52 transition-all focus:border-[#A30A24] focus:ring-1 focus:ring-[#A30A24]/20 placeholder:text-[#9a6a72]"
                 style={{ borderColor: "#e5d5d8", background: "#fdfafa" }}
                 placeholder="Search packages…"
-                value={search} onChange={e => setSearch(e.target.value)} />
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
             </div>
 
             {/* Filter pills */}
