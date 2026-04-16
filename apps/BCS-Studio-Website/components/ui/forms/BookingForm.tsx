@@ -194,13 +194,22 @@ export default function BookingForm({
     );
   };
 
+  const getMinBookingDate = () => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 2);
+    return d;
+  };
+
   // -------------------- Disable Logic --------------------
   const isDayDisabled = (day: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Past dates
-    if (day < today) return true;
+    const minDate = getMinBookingDate();
+
+    // ❌ block anything before 2 days ahead
+    if (day < minDate) return true;
 
     // Weekends
     const isWeekend = getDay(day) === 0 || getDay(day) === 6;
@@ -215,20 +224,25 @@ export default function BookingForm({
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-6 border-2 border-[#A30A24] bg-white text-[#A30A24]">
-      <div className="flex flex-col gap-4">
-        {/* Top: Calendar & Time Slots */}
-        <div className="grid grid-cols-2 gap-4">
+    <div className="w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 bg-white">
+      <div className="flex flex-col gap-6 md:gap-8">
+        {/* Top Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-4">
           {/* Calendar */}
-          <div className="space-y-4">
+          <div className="md:bg-gray-50 md:border rounded-xl p-1 md:p-4">
+            <h3 className="text-base font-semibold mb-3 text-[#191919]">
+              Select Date
+            </h3>
+
             <DayPicker
+              className="text-[#A30A24]"
               mode="single"
               selected={date}
               onSelect={(d) => setDate(d || undefined)}
-              disabled={isDayDisabled}
+              disabled={[{ before: getMinBookingDate() }]}
               modifiersClassNames={{
                 selected: "bg-[#A30A24] text-white rounded",
-                today: "text-[#161616] rounded",
+                today: "text-[#000000]/50 rounded",
               }}
               components={{
                 Button: (
@@ -256,27 +270,45 @@ export default function BookingForm({
                   return <button {...props} />;
                 },
               }}
-              classNames={{ caption: "flex items-center justify-between mb-2" }}
+              classNames={{
+                caption: "flex items-center justify-between mb-2",
+              }}
             />
           </div>
 
           {/* Time Slots */}
-          <div>
-            <h3 className="text-sm font-bold mb-4 uppercase">
+          <div className="bg-gray-50 border rounded-xl p-4">
+            <h3 className="text-base font-semibold mb-4 text-[#191919]">
               Available Time Slots
             </h3>
-            <div className="grid grid-cols-3 gap-2">
+
+            {/* responsive grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {TIME_SLOTS.map((slot) => {
                 const isBooked = bookedSlots.includes(slot);
                 const isBlocked = isTimeBlocked(slot);
                 const isSelected = selectedTime === slot;
+
                 return (
                   <button
                     key={slot}
                     type="button"
                     disabled={isBooked || isBlocked}
                     onClick={() => setSelectedTime(slot)}
-                    className={`border-[2px] border-[#A30A24] rounded px-2 py-1 text-sm cursor-pointer ${isSelected ? "bg-[#A30A24] text-white" : "text-[#A30A24]"} ${isBooked || isBlocked ? "opacity-30 cursor-not-allowed" : ""}`}
+                    className={`
+                    rounded-lg px-3 py-2 text-sm font-medium transition
+                    border border-[#A30A24]
+                    ${
+                      isSelected
+                        ? "bg-[#A30A24] text-white shadow-md"
+                        : "bg-white text-[#A30A24]"
+                    }
+                    ${
+                      isBooked || isBlocked
+                        ? "opacity-30 cursor-not-allowed"
+                        : "hover:bg-[#A30A24] hover:text-white"
+                    }
+                  `}
                   >
                     {slot}
                   </button>
@@ -286,12 +318,12 @@ export default function BookingForm({
           </div>
         </div>
 
-        {/* Bottom: Form Inputs */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Left: Name, Email, Phone */}
-          <div className="flex flex-col gap-4">
+        {/* Bottom Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-6">
+          {/* Inputs */}
+          <div className="bg-gray-50 border rounded-xl p-4 flex flex-col gap-4">
             <div className="flex flex-col">
-              <label className="text-[16px] md:text-[18px] font-medium mb-1 text-[#191919]">
+              <label className="text-sm md:text-base font-medium mb-1 text-[#191919]">
                 Full Name
               </label>
               <input
@@ -299,13 +331,13 @@ export default function BookingForm({
                 placeholder="Your Full Name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#191919] text-[#191919]"
+                className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[#A30A24] focus:border-transparent transition text-[#191919]"
                 required
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[16px] md:text-[18px] font-medium mb-1 text-[#191919]">
+              <label className="text-sm md:text-base font-medium mb-1 text-[#191919]">
                 Contact Number
               </label>
               <input
@@ -317,13 +349,13 @@ export default function BookingForm({
                 onChange={(e) =>
                   setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })
                 }
-                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#191919] text-[#191919]"
+                className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[#A30A24] focus:border-transparent transition text-[#191919]"
                 required
               />
             </div>
 
             <div className="flex flex-col">
-              <label className="text-[16px] md:text-[18px] font-medium mb-1 text-[#191919]">
+              <label className="text-sm md:text-base font-medium mb-1 text-[#191919]">
                 Email Address
               </label>
               <input
@@ -331,38 +363,39 @@ export default function BookingForm({
                 placeholder="you@example.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#191919] text-[#191919]"
+                className="border border-gray-300 rounded-lg px-4 py-2.5 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[#A30A24] focus:border-transparent transition text-[#191919]"
                 required
               />
             </div>
           </div>
 
-          {/* Right: Description */}
-          <div className="flex flex-col">
-            <label className="text-[16px] md:text-[18px] font-medium mb-1 text-[#191919]">
+          {/* Description */}
+          <div className="bg-gray-50 border rounded-xl p-4 flex flex-col">
+            <label className="text-sm md:text-base font-medium mb-2 text-[#191919]">
               Additional Details
             </label>
             <textarea
               placeholder="Tell us about your event..."
-              rows={5}
+              rows={6}
               value={form.description}
               onChange={(e) =>
                 setForm({ ...form, description: e.target.value })
               }
-              className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#191919] text-[#191919] resize-none"
+              className="h-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[#A30A24] focus:border-transparent transition resize-none text-[#191919]"
             />
           </div>
 
-          {/* Bottom Button */}
-          <div className="mt-auto pt-6 col-span-2">
-            <p className="text-[18px] mb-4 font-bold">
-              Selected: {date ? format(date, "PPPP") : "None"}{" "}
-              {selectedTime && `@ ${selectedTime}`}
-            </p>
+          {/* Bottom */}
+          <div className="col-span-1 lg:col-span-2">
+            <div className="bg-[#A30A24]/5 border border-[#A30A24] rounded-lg p-4 mb-4 text-sm md:text-base text-[#A30A24]">
+              {date ? format(date, "PPPP") : "No date selected"}
+              {selectedTime && ` • ${selectedTime}`}
+            </div>
+
             <button
               type="button"
               onClick={handleNext}
-              className="w-full h-12 bg-[#A30A24] text-white font-bold"
+              className="w-full h-12 rounded-lg bg-[#A30A24] text-white font-semibold hover:opacity-90 transition shadow-md"
             >
               Review Booking
             </button>

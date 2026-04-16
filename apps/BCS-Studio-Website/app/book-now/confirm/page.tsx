@@ -81,50 +81,48 @@ function BookingConfirmation() {
 
   return (
     <>
-      {/* 🔥 LOCKED PAGE WRAPPER */}
+      {/* WRAPPER */}
       <div
-        className={`bg-white text-[#A30A24] transition-opacity duration-200 ${
+        className={`min-h-screen bg-gray-50 transition-opacity duration-200 ${
           loading ? "pointer-events-none opacity-60 select-none" : ""
         }`}
       >
-        <section className="bg-white flex flex-col overflow-hidden">
-          <div className="bg-[#A30A24] text-white pt-28 pb-10 px-6">
-            <div className="max-w-220 w-full flex flex-col justify-center items-center mx-auto text-center">
-              <h1 className="text-[72px] md:text-[96px] font-bold">
-                Confirm Booking
-              </h1>
-            </div>
-          </div>
+        {/* HEADER */}
+        <section className="bg-[#A30A24] text-white py-16 px-4 text-center">
+          <h1 className="text-3xl md:text-5xl font-bold">Confirm Booking</h1>
         </section>
 
-        <div className="flex">
-          <div className="max-w-[15%] w-full h-30.5 bg-[#A30A24]"></div>
+        {/* CONTENT */}
+        <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
+          {/* INTRO */}
+          <div className="text-center space-y-2">
+            <h2 className="text-2xl md:text-3xl font-bold text-[#191919]">
+              Almost there!
+            </h2>
+            <p className="text-sm md:text-base text-gray-600">
+              Please review your booking details before confirming.
+            </p>
+          </div>
 
-          <div className="bg-white max-w-[80%] mx-auto py-10 px-18 border-4 border-[#A30A24] space-y-4">
-            <div className="text-center">
-              <h1 className="text-[72px] font-bold">Almost There!</h1>
-              <p className="text-[36px]">
-                Please review your booking details carefully before confirming.
-                We&apos;ll send a confirmation email to your registered email
-                address.
-              </p>
-            </div>
-
-            <div className="w-full h-[1.5px] bg-[#A30A24] my-12"></div>
-
+          {/* CARD */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 space-y-6">
             {/* Customer Info */}
-            <section className="space-y-4 my-12">
-              <h4 className="text-[36px] font-bold">Your Information</h4>
-              <hr />
-              <div className="text-[24px]">
+            <section>
+              <h3 className="text-lg font-semibold mb-4 text-[#191919]">
+                Your Information
+              </h3>
+              <div className="space-y-2 text-sm md:text-base">
                 <p className="flex justify-between">
-                  <span>Full Name:</span> {customer.name}
+                  <span className="text-gray-500">Full Name</span>
+                  <span>{customer.name}</span>
                 </p>
                 <p className="flex justify-between">
-                  <span>Email Address:</span> {customer.email}
+                  <span className="text-gray-500">Email</span>
+                  <span>{customer.email}</span>
                 </p>
                 <p className="flex justify-between">
-                  <span>Contact Number:</span> {customer.phone}
+                  <span className="text-gray-500">Phone</span>
+                  <span>{customer.phone}</span>
                 </p>
               </div>
             </section>
@@ -132,17 +130,22 @@ function BookingConfirmation() {
             <hr />
 
             {/* Service Info */}
-            <section className="space-y-4 my-12">
-              <h4 className="text-[36px] font-bold">Service Information</h4>
-              <div className="text-[24px]">
+            <section>
+              <h3 className="text-lg font-semibold mb-4 text-[#191919]">
+                Service Details
+              </h3>
+              <div className="space-y-2 text-sm md:text-base">
                 <p className="flex justify-between">
-                  <span>Service Details:</span> {service.title}
+                  <span className="text-gray-500">Service</span>
+                  <span>{service.title}</span>
                 </p>
                 <p className="flex justify-between">
-                  <span>Base Price:</span> ₱{service.price}
+                  <span className="text-gray-500">Base Price</span>
+                  <span>₱{service.price}</span>
                 </p>
                 <p className="flex justify-between">
-                  <span>Description:</span> {customer.description || "N/A"}
+                  <span className="text-gray-500">Notes</span>
+                  <span>{customer.description || "N/A"}</span>
                 </p>
               </div>
             </section>
@@ -151,44 +154,58 @@ function BookingConfirmation() {
 
             {/* Add-ons */}
             {addons && addons.length > 0 && (
-              <section className="space-y-4 my-12">
-                <h4 className="text-[36px] font-bold">Add-ons</h4>
-                <ul className="list-disc ml-6 text-[24px]">
-                  {addons.map((addon) => (
-                    <li key={addon.id}>
-                      {addon.label} (+ ₱{addon.price})
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              <>
+                <section>
+                  <h3 className="text-lg font-semibold mb-4 text-[#191919]">
+                    Add-ons
+                  </h3>
+                  <div className="space-y-2 text-sm md:text-base">
+                    {addons.map((addon) => (
+                      <p key={addon.id} className="flex justify-between">
+                        <span>{addon.label}</span>
+                        <span className="text-[#A30A24]">+₱{addon.price}</span>
+                      </p>
+                    ))}
+                  </div>
+                </section>
+
+                <hr />
+              </>
             )}
 
-            <hr />
-
             {/* Schedule */}
-            <section className="space-y-4 my-12">
-              <h4 className="text-[36px] font-bold">Schedule</h4>
-              <div className="text-[24px]">
+            <section>
+              <h3 className="text-lg font-semibold mb-4 text-[#191919]">
+                Schedule
+              </h3>
+              <div className="space-y-2 text-sm md:text-base">
                 <p className="flex justify-between">
-                  <span>Date:</span> {date}
+                  <span className="text-gray-500">Date</span>
+                  <span>{date}</span>
                 </p>
                 <p className="flex justify-between">
-                  <span>Time:</span> {time}
+                  <span className="text-gray-500">Time</span>
+                  <span>{time}</span>
                 </p>
               </div>
             </section>
 
-            {/* Total */}
-            <section className="bg-[#F2F2F2] border-2 border-[#A30A24] p-12">
-              <p className="flex justify-between text-[48px]">
-                <span>Total Amount</span>₱{totalPrice}
-              </p>
-            </section>
+            {/* TOTAL */}
+            <div className="bg-[#A30A24]/5 border border-[#A30A24] rounded-xl p-4 flex justify-between items-center">
+              <span className="text-base font-medium text-gray-700">Total</span>
+              <span className="text-xl md:text-2xl font-bold text-[#A30A24]">
+                ₱{totalPrice}
+              </span>
+            </div>
 
-            {/* Upload Proof */}
-            <section className="border-2 border-[#A30A24] p-12 text-center">
-              <p className="text-[36px] font-bold">Upload Proof</p>
-              <p className="text-[24px]">Please upload your payment receipt</p>
+            {/* Upload */}
+            <section className="border border-dashed border-gray-300 rounded-xl p-6 text-center">
+              <p className="font-semibold text-[#191919] mb-1">
+                Upload Payment Proof
+              </p>
+              <p className="text-sm text-gray-500 mb-4">
+                JPG, PNG, or PDF (max 5MB)
+              </p>
 
               <input
                 type="file"
@@ -207,47 +224,43 @@ function BookingConfirmation() {
 
                   setProof(file);
                 }}
-                className="mt-4"
+                className="block mx-auto text-sm"
               />
-
-              <p className="text-[24px] mt-2">JPG, PNG, PDF • Max 5MB</p>
             </section>
 
-            {/* Actions */}
-            <div className="flex justify-center gap-4 pt-4">
+            {/* ACTIONS */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <button
                 type="button"
-                className="px-6 py-3 border-2 border-[#A30A24]"
                 onClick={() => router.back()}
                 disabled={loading}
+                className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
               >
                 Back
               </button>
 
               <button
                 type="button"
-                className="px-6 py-3 bg-[#A30A24] text-white disabled:opacity-50"
                 onClick={handleConfirm}
                 disabled={loading}
+                className="w-full sm:flex-1 px-6 py-3 rounded-lg bg-[#A30A24] text-white font-semibold hover:opacity-90 transition disabled:opacity-50"
               >
                 {loading ? "Processing..." : "Confirm & Book"}
               </button>
             </div>
           </div>
-
-          <div className="max-w-[15%] w-full h-30.5 bg-[#A30A24]"></div>
         </div>
       </div>
 
-      {/* 🔥 FULL SCREEN BLOCKING OVERLAY */}
+      {/* LOADING OVERLAY */}
       {loading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white px-10 py-8 rounded-xl shadow-xl text-center">
-            <p className="text-2xl font-bold text-[#A30A24]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white px-8 py-6 rounded-xl shadow-lg text-center">
+            <p className="text-lg font-semibold text-[#A30A24]">
               Processing your booking...
             </p>
-            <p className="mt-2 text-[#808080]">
-              Saving booking and sending confirmation email.
+            <p className="text-sm text-gray-500 mt-2">
+              Please wait while we confirm your booking.
             </p>
           </div>
         </div>

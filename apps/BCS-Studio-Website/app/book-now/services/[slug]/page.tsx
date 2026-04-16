@@ -81,51 +81,72 @@ export default function ServicePage({ params }: Props) {
   if (!service) return null;
 
   return (
-    <section className="px-6 lg:px-24 py-24 bg-white">
-      <div className="grid grid-cols-2 gap-4">
+    <section className="px-4 sm:px-6 lg:px-20 py-12 md:py-16 lg:py-20 bg-white">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 lg:gap-10">
         {/* LEFT SIDE */}
-        <div className="border-2 border-[#A30A24] w-full h-fit p-8 text-[#191919]">
-          <h1 className="text-[24px] md:text-[36px] font-bold mb-6">
+        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 md:p-8 text-[#191919]">
+          {/* Title */}
+          <h1 className="text-xl md:text-3xl font-bold mb-4">
             {service.title}
           </h1>
 
-          <p className="text-[18px] md:text-[24px] font-bold text-[#A30A24]">
+          {/* Price */}
+          <p className="text-lg md:text-2xl font-semibold text-[#A30A24] mb-4">
             ₱{service.price.toLocaleString()}
           </p>
 
+          {/* Description */}
           {service.desc && (
-            <p className="text-[16px] md:text-[18px] mb-4">{service.desc}</p>
+            <p className="text-sm md:text-base text-gray-700 mb-6 leading-relaxed">
+              {service.desc}
+            </p>
           )}
 
-          <p className="text-[18px] md:text-[24px] font-bold text-[#A30A24]">
-            INCLUSIONS
-          </p>
+          {/* Inclusions */}
+          <h3 className="text-base md:text-lg font-semibold text-[#191919] mb-3">
+            Inclusions
+          </h3>
 
-          <ul className="mt-6 space-y-2">
+          <ul className="mb-6 space-y-2">
             {service.inclusions.map((item, index) => (
-              <li key={index} className="flex gap-2">
-                {item}
+              <li
+                key={index}
+                className="flex items-start gap-2 text-sm md:text-base"
+              >
+                <span className="text-[#A30A24] mt-1">•</span>
+                <span>{item}</span>
               </li>
             ))}
           </ul>
 
-          <ServiceAddons
-            addons={service.addons}
-            selectedAddons={selectedAddons}
-            onChange={setSelectedAddons}
-          />
+          {/* Addons */}
+          <div className="border-t pt-6">
+            <ServiceAddons
+              addons={service.addons}
+              selectedAddons={selectedAddons}
+              onChange={setSelectedAddons}
+            />
+          </div>
 
-          <p className="mt-6 text-[20px] font-bold text-[#A30A24]">
-            Total: ₱{totalPrice.toLocaleString()}
-          </p>
+          {/* Total */}
+          <div className="mt-6 p-4 rounded-xl bg-[#A30A24]/5 border border-[#A30A24]">
+            <p className="text-sm text-gray-600">Total Price</p>
+            <p className="text-xl md:text-2xl font-bold text-[#A30A24]">
+              ₱{totalPrice.toLocaleString()}
+            </p>
+          </div>
         </div>
 
         {/* RIGHT SIDE */}
-        <BookingForm
-          service={service}
-          selectedAddons={selectedAddons}
-          totalPrice={totalPrice}
-        />
+        <div className="lg:sticky lg:top-6 h-fit">
+          <div className="bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-sm">
+            <BookingForm
+              service={service}
+              selectedAddons={selectedAddons}
+              totalPrice={totalPrice}
+            />
+          </div>
+        </div>
       </div>
     </section>
   );
