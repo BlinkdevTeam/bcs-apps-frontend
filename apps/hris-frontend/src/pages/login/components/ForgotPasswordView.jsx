@@ -26,7 +26,7 @@ export default function ForgotPasswordView({ onBack }) {
 
     try {
       setLoading(true);
-      await axios.post(`${API_URL}/api/auth/forgot-password`, { email });
+      await axios.post(`${API_URL}api/auth/forgot-password`, { email });
       setSent(true);
     } catch (err) {
       console.error(err);

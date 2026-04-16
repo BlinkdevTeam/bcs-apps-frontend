@@ -25,7 +25,7 @@ export default function SetPasswordView({ token, onComplete }) {
 
     const verifyToken = async () => {
       try {
-        const res = await axios.post(`${API_URL}/auth/verify-reset-token`, { token });
+        const res = await axios.post(`${API_URL}api/auth/verify-reset-token`, { token });
         setTokenValid(res.data.valid);
         if (!res.data.valid) {
           setErrors({ submit: "Reset link expired or invalid." });
@@ -68,7 +68,7 @@ export default function SetPasswordView({ token, onComplete }) {
     try {
       setLoading(true);
 
-      await axios.post(`${API_URL}/auth/reset-password`, {
+      await axios.post(`${API_URL}api/auth/reset-password`, {
         token,
         password,
       });
