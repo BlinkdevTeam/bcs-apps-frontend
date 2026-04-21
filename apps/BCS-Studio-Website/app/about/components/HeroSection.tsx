@@ -25,7 +25,7 @@ export default function HeroSection() {
       >
         <video autoPlay muted loop className="w-full h-full object-cover">
           <source
-            src="https://blinkassets.sgp1.cdn.digitaloceanspaces.com/bcs_ad_10_things.mp4"
+            src="https://blinkassets.sgp1.cdn.digitaloceanspaces.com/studio/works/bcs_ad_10_things.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.

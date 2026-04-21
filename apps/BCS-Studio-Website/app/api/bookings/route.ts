@@ -1,10 +1,12 @@
 // app/api/bookings/route.ts
-"use server";
 
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/postgres/db";
 import { sendBookingConfirmationEmail } from "@/lib/email/sendConfirmation";
 import { BookingData } from "@/types/BookingData";
+
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { s3 } from "@/lib/s3";
 
 // ─── GET: Fetch all bookings ─────────────────────────────────────────────
 export async function GET(req: NextRequest) {
@@ -52,7 +54,7 @@ export async function GET(req: NextRequest) {
         time: b.booking_time,
         totalPrice: parseFloat(b.total_price),
         status: b.status,
-        proof: null,
+        proof: b.payment_proof,
       };
     });
 
@@ -74,32 +76,53 @@ export async function POST(request: NextRequest) {
     if (!bookingRaw || !proof) {
       return NextResponse.json(
         { error: "Missing booking data or payment proof" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    // Validate file size (5MB)
+    // Validate size
     if (proof.size > 5 * 1024 * 1024) {
       return NextResponse.json(
         { error: "File must be 5MB or smaller" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
-    // Validate file type
+    // Validate type
     const allowedTypes = ["image/png", "image/jpeg", "application/pdf"];
     if (!allowedTypes.includes(proof.type)) {
-      return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid file type" },
+        { status: 400 }
+      );
     }
 
-    // Parse booking data
+    // Parse booking
     const booking: BookingData = JSON.parse(bookingRaw.toString());
     const { customer, service, addons, date, time, totalPrice } = booking;
 
-    // Convert file to buffer
+    // 🔥 Upload to DigitalOcean Spaces
     const buffer = Buffer.from(await proof.arrayBuffer());
 
-    // Insert booking into PostgreSQL
+    const safeName = proof.name
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9.-]/g, "");
+
+    const fileName = `studio/receipt/${Date.now()}-${safeName}`;
+
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: process.env.DO_SPACES_BUCKET!,
+        Key: fileName,
+        Body: buffer,
+        ContentType: proof.type,
+        ACL: "public-read", // optional
+      })
+    );
+
+    const fileUrl = `https://${process.env.DO_SPACES_BUCKET}.${process.env.DO_SPACES_REGION}.cdn.digitaloceanspaces.com/${fileName}`;
+
+    // ✅ Save ONLY URL in DB
     const sql = `
       INSERT INTO appointments (
         full_name,
@@ -112,12 +135,12 @@ export async function POST(request: NextRequest) {
         addons,
         total_price,
         payment_proof,
-        payment_proof_type,
         status
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'Pending')
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'Pending')
       RETURNING id
     `;
+
     const values = [
       customer.name,
       customer.email,
@@ -128,14 +151,13 @@ export async function POST(request: NextRequest) {
       JSON.stringify(service),
       JSON.stringify(addons ?? []),
       totalPrice,
-      buffer,
-      proof.type,
+      fileUrl, // 🔥 store URL instead of buffer
     ];
 
     const result = await query(sql, values);
     const bookingId = result.rows[0].id;
 
-    // Send confirmation email (non-blocking)
+    // 📧 Send email
     try {
       await sendBookingConfirmationEmail(customer.email, customer.name, {
         serviceTitle: service.title,
@@ -150,12 +172,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: "Booking confirmed",
       bookingId,
+      fileUrl,
     });
   } catch (error) {
     console.error("POST booking error:", error);
     return NextResponse.json(
       { error: "Failed to save booking" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

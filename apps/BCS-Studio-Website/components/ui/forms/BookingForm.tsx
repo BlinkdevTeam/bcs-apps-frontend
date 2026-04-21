@@ -223,6 +223,15 @@ export default function BookingForm({
     return (isWeekend || isBlocked) && !isOpen;
   };
 
+  const isToday = (d: Date) => {
+    const today = new Date();
+    return isSameDay(d, today);
+  };
+
+  const isBeforeMinDate = (d: Date) => {
+    return d < getMinBookingDate();
+  };
+
   return (
     <div className="w-full max-w-5xl mx-auto p-4 md:p-6 lg:p-8 bg-white">
       <div className="flex flex-col gap-6 md:gap-8">
@@ -239,7 +248,7 @@ export default function BookingForm({
               mode="single"
               selected={date}
               onSelect={(d) => setDate(d || undefined)}
-              disabled={[{ before: getMinBookingDate() }]}
+              disabled={[{ before: getMinBookingDate() }, isDayDisabled]}
               modifiersClassNames={{
                 selected: "bg-[#A30A24] text-white rounded",
                 today: "text-[#000000]/50 rounded",
@@ -287,28 +296,32 @@ export default function BookingForm({
               {TIME_SLOTS.map((slot) => {
                 const isBooked = bookedSlots.includes(slot);
                 const isBlocked = isTimeBlocked(slot);
-                const isSelected = selectedTime === slot;
+
+                const invalidDate =
+                  !date || isToday(date) || isBeforeMinDate(date);
+
+                const isDisabled = isBooked || isBlocked || invalidDate;
 
                 return (
                   <button
                     key={slot}
                     type="button"
-                    disabled={isBooked || isBlocked}
+                    disabled={isDisabled}
                     onClick={() => setSelectedTime(slot)}
                     className={`
-                    rounded-lg px-3 py-2 text-sm font-medium transition
-                    border border-[#A30A24]
-                    ${
-                      isSelected
-                        ? "bg-[#A30A24] text-white shadow-md"
-                        : "bg-white text-[#A30A24]"
-                    }
-                    ${
-                      isBooked || isBlocked
-                        ? "opacity-30 cursor-not-allowed"
-                        : "hover:bg-[#A30A24] hover:text-white"
-                    }
-                  `}
+        rounded-lg px-3 py-2 text-sm font-medium transition
+        border border-[#A30A24]
+        ${
+          selectedTime === slot
+            ? "bg-[#A30A24] text-white shadow-md"
+            : "bg-white text-[#A30A24]"
+        }
+        ${
+          isDisabled
+            ? "opacity-30 cursor-not-allowed"
+            : "hover:bg-[#A30A24] hover:text-white"
+        }
+      `}
                   >
                     {slot}
                   </button>

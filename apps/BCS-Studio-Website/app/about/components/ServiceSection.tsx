@@ -120,7 +120,7 @@ export default function ServicesSection() {
                 className="flex justify-center items-center bg-white rounded-xl shadow-lg overflow-hidden"
               >
                 <img
-                  src={`/assets/portraits/${img}`}
+                  src={`https://blinkassets.sgp1.cdn.digitaloceanspaces.com/studio/portraits/${img}`}
                   alt={`Portrait ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
@@ -160,7 +160,7 @@ export default function ServicesSection() {
           >
             <video autoPlay muted loop className="w-full h-full object-cover">
               <source
-                src="/assets/blinkworks/bcs_ad_10_things.mp4"
+                src="https://blinkassets.sgp1.cdn.digitaloceanspaces.com/studio/works/bcs_ad_10_things.mp4"
                 type="video/mp4"
               />
               Your browser does not support the video tag.

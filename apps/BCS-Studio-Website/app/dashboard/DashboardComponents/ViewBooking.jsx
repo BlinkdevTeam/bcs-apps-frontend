@@ -126,13 +126,37 @@ function ViewBooking({ booking, onClose }) {
 
       {/* Proof */}
       {proof && (
-        <div
-          className="flex items-center gap-2 p-3 rounded-lg text-xs"
-          style={{ background: "#f5f5f5", border: "1px solid #e0e0e0" }}
-        >
-          <Icon d={Icons.upload} size={14} stroke="#888" />
-          <span className="text-gray-500">Payment proof:</span>
-          <span className="font-medium text-gray-700">{proof}</span>
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-500">Payment Proof</p>
+
+          {/* IMAGE PREVIEW */}
+          {proof.match(/\.(jpg|jpeg|png|webp)$/i) && (
+            <img
+              src={proof}
+              alt="Payment Proof"
+              className="w-full max-h-80 object-contain rounded-lg border"
+            />
+          )}
+
+          {/* PDF PREVIEW */}
+          {proof.match(/\.pdf$/i) && (
+            <iframe
+              src={proof}
+              className="w-full h-80 rounded-lg border"
+            />
+          )}
+
+          {/* Fallback link */}
+          <a
+            href={proof}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
+                      bg-[#A30A24] text-white hover:opacity-90 transition shadow-sm"
+          >
+            <Icon d={Icons.external} size={14} stroke="white" />
+            Open Full File
+          </a>
         </div>
       )}
 
