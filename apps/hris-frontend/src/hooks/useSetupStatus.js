@@ -13,7 +13,9 @@ export default function useSetupStatus() {
     if (cachedStatus !== null) return;
 
     if (!cachedPromise) {
-      cachedPromise = fetch("http://localhost:3000/api/setup/check-super-admin")
+      cachedPromise = fetch(
+        "https://hris.blinkcreativestudio.com/api/setup/check-super-admin",
+      )
         .then((res) => res.json())
         .then((data) => {
           cachedStatus = data.exists;
