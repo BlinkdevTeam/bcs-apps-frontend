@@ -12,7 +12,12 @@ const pool =
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
-    port: parseInt(process.env.PGPORT ?? "5432", 10),
+    port: parseInt(process.env.PGPORT ?? "25060", 10),
+
+    // ✅ ADD THIS (VERY IMPORTANT)
+    ssl: {
+      rejectUnauthorized: false,
+    },
   });
 
 if (process.env.NODE_ENV !== "production") global.pgPool = pool;

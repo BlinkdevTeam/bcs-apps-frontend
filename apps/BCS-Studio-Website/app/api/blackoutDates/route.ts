@@ -9,7 +9,7 @@ interface BlackoutRow {
 export async function GET() {
   try {
     const result = await query<BlackoutRow>(
-      "SELECT TO_CHAR(date, 'YYYY-MM-DD') as date FROM blocked_dates"
+      "SELECT TO_CHAR(date, 'YYYY-MM-DD') as date FROM booking_blocked_dates"
     );
     return NextResponse.json(result.rows.map((r) => r.date));
   } catch (error) {

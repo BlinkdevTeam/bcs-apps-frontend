@@ -8,10 +8,10 @@ import { query } from "@/lib/postgres/db";
 // ─────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   try {
-    const blockedDatesRes = await query("SELECT * FROM blocked_dates");
-    const blockedRangesRes = await query("SELECT * FROM blocked_ranges");
-    const timeBlocksRes = await query("SELECT * FROM time_blocks");
-    const openDatesRes = await query("SELECT * FROM open_dates"); // ✅ NEW
+    const blockedDatesRes = await query("SELECT * FROM booking_blocked_dates");
+    const blockedRangesRes = await query("SELECT * FROM booking_blocked_ranges");
+    const timeBlocksRes = await query("SELECT * FROM booking_time_blocks");
+    const openDatesRes = await query("SELECT * FROM booking_open_dates"); // ✅ NEW
 
     return NextResponse.json({
       blockedDates: blockedDatesRes.rows,
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       }
 
       await query(
-        `INSERT INTO blocked_dates (date, label)
+        `INSERT INTO booking_blocked_dates (date, label)
          VALUES ($1, $2)
          ON CONFLICT (date) DO NOTHING`,
         [date, label || "Manual Block"]
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       }
 
       const result = await query(
-        `INSERT INTO blocked_ranges (start_date, end_date, label)
+        `INSERT INTO booking_blocked_ranges (start_date, end_date, label)
          VALUES ($1, $2, $3)
          RETURNING id`,
         [start, end, label || "Blocked Range"]
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
       }
 
       const result = await query(
-        `INSERT INTO time_blocks (date, start_time, end_time, label)
+        `INSERT INTO booking_time_blocks (date, start_time, end_time, label)
          VALUES ($1, $2, $3, $4)
          RETURNING id`,
         [date, start_time, end_time, label || null]
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
       }
 
       await query(
-        `INSERT INTO open_dates (date)
+        `INSERT INTO booking_open_dates (date)
          VALUES ($1)
          ON CONFLICT (date) DO NOTHING`,
         [date]
@@ -189,7 +189,7 @@ export async function DELETE(req: NextRequest) {
         );
       }
 
-      await query(`DELETE FROM blocked_dates WHERE date = $1`, [date]);
+      await query(`DELETE FROM booking_blocked_dates WHERE date = $1`, [date]);
 
       return NextResponse.json({ success: true });
     }
@@ -203,7 +203,7 @@ export async function DELETE(req: NextRequest) {
         );
       }
 
-      await query(`DELETE FROM blocked_ranges WHERE id = $1`, [id]);
+      await query(`DELETE FROM booking_blocked_ranges WHERE id = $1`, [id]);
 
       return NextResponse.json({ success: true });
     }
@@ -217,7 +217,7 @@ export async function DELETE(req: NextRequest) {
         );
       }
 
-      await query(`DELETE FROM time_blocks WHERE id = $1`, [id]);
+      await query(`DELETE FROM booking_time_blocks WHERE id = $1`, [id]);
 
       return NextResponse.json({ success: true });
     }
@@ -231,7 +231,7 @@ export async function DELETE(req: NextRequest) {
         );
       }
 
-      await query(`DELETE FROM open_dates WHERE date = $1`, [date]);
+      await query(`DELETE FROM booking_open_dates WHERE date = $1`, [date]);
 
       return NextResponse.json({ success: true });
     }

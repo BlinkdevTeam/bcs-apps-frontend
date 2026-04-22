@@ -12,7 +12,7 @@ import { s3 } from "@/lib/s3";
 export async function GET(req: NextRequest) {
   try {
     const sql = `
-      SELECT * FROM appointments
+      SELECT * FROM booking_appointments
       ORDER BY booking_date DESC, booking_time DESC
     `;
     const result = await query(sql);
@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
 
     // ✅ Save ONLY URL in DB
     const sql = `
-      INSERT INTO appointments (
+      INSERT INTO booking_appointments (
         full_name,
         email,
         phone,
@@ -194,7 +194,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const sql = `
-      UPDATE appointments
+      UPDATE booking_appointments
       SET
         booking_date = $1,
         booking_time = $2,

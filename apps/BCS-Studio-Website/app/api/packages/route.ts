@@ -47,13 +47,13 @@ async function upsertDetails(
   addons: { id: string; label: string; price: number }[]
 ): Promise<void> {
   // Clear old records
-  await query(`DELETE FROM package_inclusions WHERE package_id = $1`, [packageId]);
-  await query(`DELETE FROM package_addons WHERE package_id = $1`, [packageId]);
+  await query(`DELETE FROM booking_package_inclusions WHERE package_id = $1`, [packageId]);
+  await query(`DELETE FROM booking_package_addons WHERE package_id = $1`, [packageId]);
 
   // Insert new inclusions
   for (const inc of inclusions) {
     await query(
-      `INSERT INTO package_inclusions (id, package_id, text) VALUES ($1, $2, $3)`,
+      `INSERT INTO booking_package_inclusions (id, package_id, text) VALUES ($1, $2, $3)`,
       [inc.id, packageId, inc.text]
     );
   }
@@ -61,7 +61,7 @@ async function upsertDetails(
   // Insert new add-ons
   for (const a of addons) {
     await query(
-      `INSERT INTO package_addons (id, package_id, label, price) VALUES ($1, $2, $3, $4)`,
+      `INSERT INTO booking_package_addons (id, package_id, label, price) VALUES ($1, $2, $3, $4)`,
       [a.id, packageId, a.label, a.price]
     );
   }
@@ -70,9 +70,9 @@ async function upsertDetails(
 // ── GET packages ──
 export async function GET() {
   try {
-    const packagesRes = await query<PackageRow>(`SELECT * FROM packages ORDER BY created_at DESC`);
-    const inclusionsRes = await query<InclusionRow>(`SELECT * FROM package_inclusions`);
-    const addonsRes = await query<AddonRow>(`SELECT * FROM package_addons`);
+    const packagesRes = await query<PackageRow>(`SELECT * FROM booking_packages ORDER BY created_at DESC`);
+    const inclusionsRes = await query<InclusionRow>(`SELECT * FROM booking_package_inclusions`);
+    const addonsRes = await query<AddonRow>(`SELECT * FROM booking_package_addons`);
 
     const packages = packagesRes.rows.map((pkg) => ({
       ...pkg,
@@ -116,7 +116,7 @@ export async function POST(req: Request) {
     if (id) {
       // Update existing package
       await query(
-        `UPDATE packages
+        `UPDATE booking_packages
          SET title=$1, description=$2, duration=$3, price=$4, is_active=$5, color=$6, type=$7
          WHERE id=$8`,
         [title, description, duration, price, isActive, color, type, id]
@@ -124,26 +124,26 @@ export async function POST(req: Request) {
     } else {
       // Insert new package
       await query(
-        `INSERT INTO packages (id, title, description, duration, price, is_active, color, type, created_at)
+        `INSERT INTO booking_packages (id, title, description, duration, price, is_active, color, type, created_at)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NOW())`,
         [packageId, title, description, duration, price, isActive, color, type]
       );
     }
 
     // ── Upsert inclusions ──
-    await query(`DELETE FROM package_inclusions WHERE package_id = $1`, [packageId]);
+    await query(`DELETE FROM booking_package_inclusions WHERE package_id = $1`, [packageId]);
     for (const inc of inclusions) {
       await query(
-        `INSERT INTO package_inclusions (id, package_id, text) VALUES ($1, $2, $3)`,
+        `INSERT INTO booking_package_inclusions (id, package_id, text) VALUES ($1, $2, $3)`,
         [inc.id || uuidv4(), packageId, inc.text]
       );
     }
 
     // ── Upsert add-ons ──
-    await query(`DELETE FROM package_addons WHERE package_id = $1`, [packageId]);
+    await query(`DELETE FROM booking_package_addons WHERE package_id = $1`, [packageId]);
     for (const a of addons) {
       await query(
-        `INSERT INTO package_addons (id, package_id, label, price) VALUES ($1, $2, $3, $4)`,
+        `INSERT INTO booking_package_addons (id, package_id, label, price) VALUES ($1, $2, $3, $4)`,
         [a.id || uuidv4(), packageId, a.label, a.price]
       );
     }

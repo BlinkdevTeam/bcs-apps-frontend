@@ -32,7 +32,7 @@ export async function PATCH(
 
     // Update in DB
     const sql = `
-      UPDATE appointments
+      UPDATE booking_appointments
       SET status = $1
       WHERE id = $2
       RETURNING id, status

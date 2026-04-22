@@ -16,7 +16,7 @@ export async function GET(req: Request) {
 
   try {
     const result = await query<BookingSlotRow>(
-      "SELECT TO_CHAR(booking_time, 'HH24:MI') as slot FROM appointments WHERE booking_date = $1",
+      "SELECT TO_CHAR(booking_time, 'HH24:MI') as slot FROM booking_appointments WHERE booking_date = $1",
       [date]
     );
     return NextResponse.json(result.rows.map((r) => r.slot));
