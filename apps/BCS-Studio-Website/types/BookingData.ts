@@ -15,6 +15,7 @@ export interface BookingData {
 
   // Service info
   service: {
+    id: number;
     slug: string;
     title: string;
     price: number;

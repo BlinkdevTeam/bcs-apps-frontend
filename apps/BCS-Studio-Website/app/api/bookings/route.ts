@@ -8,6 +8,12 @@ import { BookingData } from "@/types/BookingData";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { s3 } from "@/lib/s3";
 
+// ✅ Helper: Safe error message extractor
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
 // ─── GET: Fetch all bookings ─────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   try {
@@ -23,7 +29,12 @@ export async function GET(req: NextRequest) {
       proof: string | null;
     })[] = result.rows.map((b) => {
       // Parse service JSON safely
-      let service: BookingData["service"] = { slug: "", title: "", price: 0 };
+      let service: BookingData["service"] = {
+        id: 0,
+        slug: "",
+        title: "",
+        price: 0
+      };
       try {
         service = typeof b.service === "string" ? JSON.parse(b.service) : b.service;
       } catch (err) {
@@ -80,7 +91,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate size
+    // Validate file size
     if (proof.size > 5 * 1024 * 1024) {
       return NextResponse.json(
         { error: "File must be 5MB or smaller" },
@@ -97,67 +108,121 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse booking
-    const booking: BookingData = JSON.parse(bookingRaw.toString());
+    // Parse booking safely
+    let booking: BookingData;
+    try {
+      booking = JSON.parse(bookingRaw.toString());
+    } catch (err: unknown) {
+      console.error("JSON parse error:", err);
+      return NextResponse.json(
+        { error: "Invalid booking data format" },
+        { status: 400 }
+      );
+    }
+
     const { customer, service, addons, date, time, totalPrice } = booking;
 
-    // 🔥 Upload to DigitalOcean Spaces
-    const buffer = Buffer.from(await proof.arrayBuffer());
+    // Basic validation
+    if (!customer?.name || !customer?.email || !date || !time) {
+      return NextResponse.json(
+        { error: "Missing required booking fields" },
+        { status: 400 }
+      );
+    }
 
-    const safeName = proof.name
-    .replace(/\s+/g, "-")
-    .replace(/[^a-zA-Z0-9.-]/g, "");
+    // Check env
+    if (!process.env.DO_SPACES_BUCKET || !process.env.DO_SPACES_REGION) {
+      throw new Error("Missing DigitalOcean Spaces environment variables");
+    }
 
-    const fileName = `studio/receipt/${Date.now()}-${safeName}`;
+    // ─── Upload to DigitalOcean Spaces ─────────────────────────
+    let fileUrl = "";
 
-    await s3.send(
-      new PutObjectCommand({
-        Bucket: process.env.DO_SPACES_BUCKET!,
-        Key: fileName,
-        Body: buffer,
-        ContentType: proof.type,
-        ACL: "public-read", // optional
-      })
-    );
+    try {
+      const buffer = Buffer.from(await proof.arrayBuffer());
 
-    const fileUrl = `https://${process.env.DO_SPACES_BUCKET}.${process.env.DO_SPACES_REGION}.cdn.digitaloceanspaces.com/${fileName}`;
+      const safeName = proof.name
+        .replace(/\s+/g, "-")
+        .replace(/[^a-zA-Z0-9.-]/g, "");
 
-    // ✅ Save ONLY URL in DB
-    const sql = `
-      INSERT INTO booking_appointments (
-        full_name,
-        email,
-        phone,
-        description,
-        booking_date,
-        booking_time,
-        service,
-        addons,
-        total_price,
-        payment_proof,
-        status
-      )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'Pending')
-      RETURNING id
-    `;
+      const fileName = `studio/receipt/${Date.now()}-${safeName}`;
 
-    const values = [
-      customer.name,
-      customer.email,
-      customer.phone,
-      customer.description || null,
-      date,
-      time,
-      JSON.stringify(service),
-      JSON.stringify(addons ?? []),
-      totalPrice,
-      fileUrl, // 🔥 store URL instead of buffer
-    ];
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: process.env.DO_SPACES_BUCKET,
+          Key: fileName,
+          Body: buffer,
+          ContentType: proof.type,
+          ACL: "public-read",
+        })
+      );
 
-    const result = await query(sql, values);
-    const bookingId = result.rows[0].id;
+      fileUrl = `https://${process.env.DO_SPACES_BUCKET}.${process.env.DO_SPACES_REGION}.cdn.digitaloceanspaces.com/${fileName}`;
+    } catch (uploadError: unknown) {
+      console.error("S3 Upload Error:", uploadError);
 
-    // 📧 Send email
+      return NextResponse.json(
+        {
+          error:
+            getErrorMessage(uploadError) ||
+            "Failed to upload payment proof",
+        },
+        { status: 500 }
+      );
+    }
+
+    // ─── Save to DB ─────────────────────────────────────────────
+    let bookingId: string;
+
+    try {
+      const sql = `
+        INSERT INTO booking_appointments (
+          full_name,
+          email,
+          phone,
+          description,
+          booking_date,
+          booking_time,
+          service_id,
+          addons,
+          total_price,
+          payment_proof,
+          status
+        )
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'Pending')
+        RETURNING id
+      `;
+
+      // ✅ FIX: use slug, NOT id
+      const serviceId = service.slug;
+
+      const values = [
+        customer.name,
+        customer.email,
+        customer.phone || null,
+        customer.description || null,
+        date,
+        time,
+        serviceId, // ✅ FIXED HERE
+        JSON.stringify(addons ?? []),
+        totalPrice,
+        fileUrl,
+      ];
+
+      const result = await query(sql, values);
+      bookingId = result.rows[0].id;
+    } catch (dbError: unknown) {
+      console.error("DB Insert Error:", dbError);
+
+      return NextResponse.json(
+        {
+          error: getErrorMessage(dbError) || "Database error while saving booking",
+        },
+        { status: 500 }
+      );
+    }
+
+    // ─── Send Email (non-blocking) ─────────────────────────────
     try {
       await sendBookingConfirmationEmail(customer.email, customer.name, {
         serviceTitle: service.title,
@@ -165,7 +230,7 @@ export async function POST(request: NextRequest) {
         time,
         totalPrice,
       });
-    } catch (emailError) {
+    } catch (emailError: unknown) {
       console.error("Email sending failed:", emailError);
     }
 
@@ -174,10 +239,11 @@ export async function POST(request: NextRequest) {
       bookingId,
       fileUrl,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("POST booking error:", error);
+
     return NextResponse.json(
-      { error: "Failed to save booking" },
+      { error: getErrorMessage(error) },
       { status: 500 }
     );
   }

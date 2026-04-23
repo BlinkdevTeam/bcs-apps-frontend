@@ -16,6 +16,7 @@ export interface BookingData {
   time: string; // HH:mm
 
   service: {
+    id: number;
     slug: string;
     title: string;
     price: number;

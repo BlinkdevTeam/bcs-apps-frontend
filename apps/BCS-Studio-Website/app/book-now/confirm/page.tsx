@@ -34,11 +34,18 @@ function BookingConfirmation() {
   }, [searchParams, router]);
 
   const handleConfirm = async (): Promise<void> => {
-    if (loading) return; // 🔥 Prevent double click
+    if (loading) return;
     if (!booking) return;
 
     if (!proof) {
       alert("Please upload payment proof");
+      return;
+    }
+
+    // 🔥 ADD THIS CHECK
+    if (!booking.service?.slug) {
+      console.error("Missing service ID:", booking.service);
+      alert("Invalid service selected. Please try again.");
       return;
     }
 
@@ -55,6 +62,8 @@ function BookingConfirmation() {
       });
 
       const result = await res.json();
+
+      console.log("API RESULT:", result); // ✅ DEBUG
 
       if (!res.ok) {
         throw new Error(result.error || "Booking failed");

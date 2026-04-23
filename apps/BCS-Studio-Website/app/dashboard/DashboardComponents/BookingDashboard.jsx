@@ -36,9 +36,20 @@ const safeData = Array.isArray(data) ? data : [];
 
 const normalized = safeData.map((b) => ({
   ...b,
-  customerName: b.customer?.name || "Unknown",
-  customerEmail: b.customer?.email || "",
-  serviceTitle: b.service?.title || "Service",
+
+  customer: {
+    name: b.customer?.name || "Unknown",
+    email: b.customer?.email || "",
+    phone: b.customer?.phone || "",
+  },
+
+  service: {
+    id: b.service?.id || 0,
+    title: b.service?.title || "Service",
+    price: b.service?.price || 0,
+  },
+
+  addons: Array.isArray(b.addons) ? b.addons : [],
 }));
 
 setBookings(normalized);
@@ -443,7 +454,7 @@ const pastBookings = filtered.filter((b) => isPastBooking(b));
                                 className="font-medium text-xs"
                                 style={{ color: "#1a0a0d" }}
                               >
-                                {b.service.title}
+                                {b.service?.title || "Service"}
                               </p>
                               {b.addons.length > 0 && (
                                 <p

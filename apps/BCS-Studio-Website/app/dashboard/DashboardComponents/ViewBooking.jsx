@@ -5,7 +5,17 @@ import { format } from "date-fns";
 import { Icon, Icons, STATUS_STYLES, STATUS_DOT, fmtPrice } from "../data/compData";
 
 function ViewBooking({ booking, onClose }) {
-  const { customer, service, addons, date, time, totalPrice, status, proof, id } = booking;
+  const {
+  customer,
+  service = { id: 0, slug: "", title: "Service", price: 0 },
+  addons = [],
+  date,
+  time,
+  totalPrice,
+  status,
+  proof,
+  id,
+} = booking;
 
   let formattedDate = date || "—";
   let formattedTime = time || "—";
