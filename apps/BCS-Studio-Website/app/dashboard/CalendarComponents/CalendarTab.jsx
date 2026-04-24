@@ -701,14 +701,14 @@ export default function CalendarTab() {
                 {/* Quick actions */}
                 {!isPast(selectedDate) && (
                   <div className="space-y-2">
-                    <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#7a4a50" }}>
+                    {/* <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#7a4a50" }}>
                       Quick Actions
-                    </p>
+                    </p> */}
 
                     <div className="flex flex-col gap-2">
 
                       {/* BLOCK (only if NOT blocked at all) */}
-                      {!isBlocked(selStatus) && (
+                      {/* {!isBlocked(selStatus) && (
                         <button
                           onClick={async () => await manualBlock(selectedDate)}
                           className="w-full py-2 px-3 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 hover:bg-red-50 transition-colors"
@@ -716,7 +716,7 @@ export default function CalendarTab() {
                         >
                           <Ic d={I.lock} size={12} sw={2.5} /> Block This Day
                         </button>
-                      )}
+                      )} */}
 
                       {/* UNBLOCK (ONLY for manual block) */}
                       {selStatus === "blocked-manual" && (

@@ -1,10 +1,16 @@
-import BookingDashboard from "./DashboardComponents/BookingDashboard";
-// import BookingDashboard from "../templates/PackagesTab";
+"use client";
 
-function Dashboard() {
+import BookingDashboard from "./DashboardComponents/BookingDashboard";
+import { withAuth, AuthUser } from "@/middleware/withAuth";
+
+interface Props {
+  user: AuthUser;
+}
+
+function Dashboard({ user }: Props) {
   return <BookingDashboard />;
 }
 
 Dashboard.noLayout = true;
 
-export default Dashboard;
+export default withAuth(Dashboard);

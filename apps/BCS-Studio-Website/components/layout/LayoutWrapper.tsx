@@ -12,17 +12,18 @@ export default function LayoutWrapper({
 }) {
   const pathname = usePathname();
 
-  const isDashboard = pathname.startsWith("/dashboard");
+  const hideLayout =
+    pathname.startsWith("/dashboard") || pathname.startsWith("/login");
 
   return (
     <>
       <TitleWatcher />
 
-      {!isDashboard && <Header />}
+      {!hideLayout && <Header />}
 
       {children}
 
-      {!isDashboard && <Footer />}
+      {!hideLayout && <Footer />}
     </>
   );
 }
