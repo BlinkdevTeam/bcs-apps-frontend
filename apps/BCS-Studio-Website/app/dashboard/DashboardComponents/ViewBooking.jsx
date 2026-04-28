@@ -78,9 +78,9 @@ function ViewBooking({ booking, onClose }) {
           <p className="font-bold text-base" style={{ color: "#A30A24" }}>
             {customer.name}
           </p>
-          <p className="text-xs" style={{ color: "#7a3a42" }}>
+          {/* <p className="text-xs" style={{ color: "#7a3a42" }}>
             {id}
-          </p>
+          </p> */}
         </div>
         <span
           className={`ml-auto text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1.5 ${STATUS_STYLES[status]}`}

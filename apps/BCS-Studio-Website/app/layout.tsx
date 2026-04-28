@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "@/components/layout/LayoutWrapper";
-import { Analytics } from "@vercel/analytics/next";
 
 // Load Inter font via Next.js
 const inter = Inter({
@@ -25,7 +24,6 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <body className="antialiased font-sans">
         <LayoutWrapper>{children}</LayoutWrapper>
-        <Analytics />
       </body>
     </html>
   );

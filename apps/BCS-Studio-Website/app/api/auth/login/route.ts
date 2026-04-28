@@ -81,7 +81,7 @@ await query(
   )
   VALUES ($1, $2, $3, $4, NOW() + INTERVAL '7 days', NOW())
   `,
-  [randomUUID(), user.id, "hris", tokenHash]
+  [randomUUID(), user.id, "booking", tokenHash]
 );
 
     // 4. Safe user object
