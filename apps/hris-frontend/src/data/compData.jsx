@@ -746,9 +746,38 @@ export const SS = {
 
 export const AV = ["#ffffff","#cccccc","#999999","#777777","#555555","#444444","#ffffff","#bbbbbb","#888888","#666666","#aaaaaa","#333333"];
 
-export function Avatar({emp,size=36}) { 
-    const{bg,fg}=gc(emp.id)
-    return <div className="rounded-full flex items-center justify-center font-bold flex-shrink-0" style={{width:size,height:size,backgroundColor:bg,color:fg,fontFamily:"system-ui,sans-serif",fontSize:size<32?11:size<56?13:20}}>{emp.avatar}</div>
+export function Avatar({ emp, size = 36 }) {
+  if (!emp) return null;
+
+  const safeId = emp?.id ?? 0;
+  const { bg, fg } = gc(safeId);
+
+  const initials =
+    emp?.avatar ||
+    emp?.avatar_initials ||
+    emp?.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() ||
+    "U";
+
+  return (
+    <div
+      className="rounded-full flex items-center justify-center font-bold flex-shrink-0"
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: bg,
+        color: fg,
+        fontFamily: "system-ui,sans-serif",
+        fontSize: size < 32 ? 11 : size < 56 ? 13 : 20,
+      }}
+    >
+      {initials}
+    </div>
+  );
 }
 
 export const IC = "w-full px-3 py-2.5 rounded text-sm text-white placeholder-gray-600 outline-none";
@@ -1059,6 +1088,8 @@ export const ROLE_ACCESS = {
   ],
 };
 
+export const ROLES = ["super_admin","hr_admin","manager","employee"];
+
 export const ROLE_LABELS = {
   super_admin: "Super Admin",
   hr_admin:    "HR Admin",
@@ -1074,3 +1105,23 @@ export const ROLE_COLORS = {
 };
 
 export function avatarBg(id) { return AV_COLORS[id % AV_COLORS.length]; }
+
+export const ALL_PERMISSIONS = {
+  Employees:   ["employees.view_all","employees.view_dept","employees.view_own","employees.create","employees.edit_all","employees.edit_own","employees.deactivate"],
+  Payroll:     ["payroll.view_all","payroll.view_own","payroll.run","payroll.adjust","payroll.configure"],
+  Attendance:  ["attendance.view_all","attendance.view_dept","attendance.view_own","attendance.correct","attendance.correct_dept"],
+  Leave:       ["leave.view_all","leave.view_dept","leave.view_own","leave.file","leave.approve_all","leave.approve_dept","leave.configure"],
+  Offset:      ["offset.view_all","offset.view_own","offset.create","offset.approve","offset.void"],
+  Recruitment: ["recruitment.view","recruitment.manage_jobs","recruitment.manage_applicants","recruitment.schedule_interviews","recruitment.manage_offers","recruitment.manage_onboarding"],
+  Tasks:       ["tasks.view_all","tasks.view_dept","tasks.view_own","tasks.create","tasks.assign_any","tasks.assign_dept","tasks.manage_projects"],
+  System:      ["users.manage","roles.assign","permissions.override","system.audit_logs"],
+};
+
+export const ROLE_PERMISSIONS = {
+  super_admin: Object.values(ALL_PERMISSIONS).flat(),
+  hr_admin:    ["employees.view_all","employees.view_dept","employees.view_own","employees.create","employees.edit_all","employees.edit_own","employees.deactivate","payroll.view_all","payroll.view_own","payroll.run","payroll.adjust","payroll.configure","attendance.view_all","attendance.view_dept","attendance.view_own","attendance.correct","attendance.correct_dept","leave.view_all","leave.view_dept","leave.view_own","leave.file","leave.approve_all","leave.approve_dept","leave.configure","offset.view_all","offset.view_own","offset.create","offset.approve","offset.void","recruitment.view","recruitment.manage_jobs","recruitment.manage_applicants","recruitment.schedule_interviews","recruitment.manage_offers","recruitment.manage_onboarding","tasks.view_all","tasks.view_dept","tasks.view_own","tasks.create","tasks.assign_any","tasks.assign_dept","tasks.manage_projects","users.manage"],
+  manager:     ["employees.view_dept","employees.view_own","employees.edit_own","payroll.view_own","attendance.view_dept","attendance.view_own","attendance.correct_dept","leave.view_dept","leave.view_own","leave.file","leave.approve_dept","offset.view_own","tasks.view_dept","tasks.view_own","tasks.create","tasks.assign_dept","tasks.manage_projects"],
+  employee:    ["employees.view_own","employees.edit_own","payroll.view_own","attendance.view_own","leave.view_own","leave.file","offset.view_own","tasks.view_own","tasks.create"],
+};
+
+export const CURRENT_USER_ROLE = "super_admin";

@@ -1,12 +1,37 @@
-import { avatarBg, initials, ROLE_COLORS, ROLE_LABELS } from "../../data/compData";
+import {
+  avatarBg,
+  // initials,
+  ROLE_COLORS,
+  ROLE_LABELS,
+} from "../../data/compData";
+
+/* ---------------- ROLE NORMALIZER ---------------- */
+const normalizeRole = (roleTitle) => {
+  if (!roleTitle) return "employee";
+
+  const map = {
+    "Super Admin": "super_admin",
+    "HR Admin": "hr_admin",
+    "Manager": "manager",
+    "Employee": "employee",
+  };
+
+  return map[roleTitle] || "employee";
+};
 
 export default function DropdownMenu({ user, onClose, onLogout }) {
-  if (!user) return null; // ✅ early return if user not loaded
+  if (!user) return null;
 
   const bg = avatarBg(user.id);
-  const rc = ROLE_COLORS[user.role_title] || { bg: "#111", color: "#aaa" };
 
-  // Menu items
+  /* 🔥 FIX: unified role key */
+  const roleKey = normalizeRole(user.role_title);
+
+  const rc = ROLE_COLORS[roleKey] || {
+    bg: "#111",
+    color: "#aaa",
+  };
+
   const menuItems = [
     {
       icon: (
@@ -25,7 +50,9 @@ export default function DropdownMenu({ user, onClose, onLogout }) {
         </svg>
       ),
       label: "Notifications",
-      sub: user.unreadNotifications > 0 ? `${user.unreadNotifications} unread` : "All caught up",
+      sub: user.unreadNotifications > 0
+        ? `${user.unreadNotifications} unread`
+        : "All caught up",
       badge: user.unreadNotifications > 0 ? user.unreadNotifications : null,
       onClick: () => onClose(),
     },
@@ -44,6 +71,7 @@ export default function DropdownMenu({ user, onClose, onLogout }) {
 
   return (
     <div className="absolute right-0 top-full mt-2 w-72 rounded-xl overflow-hidden bg-gray-900 border border-gray-800 shadow-[0_16px_48px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.04)] z-50">
+
       {/* User header */}
       <div className="px-4 py-4 border-b border-gray-800">
         <div className="flex items-center gap-3 mb-3">
@@ -55,18 +83,33 @@ export default function DropdownMenu({ user, onClose, onLogout }) {
               border: `2px solid ${bg}40`,
             }}
           >
-            {initials(user.first_name || "User")} {/* ✅ fallback */}
+            {user.avatar_initials || "U"}
           </div>
+
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-white font-medium truncate">{user.first_name || "User"}</p>
-            <p className="text-xs text-gray-500 truncate">{user.email || "-"}</p>
+            <p className="text-sm text-white font-medium truncate">
+              {user.first_name || "User"}
+            </p>
+            <p className="text-xs text-gray-500 truncate">
+              {user.email || "-"}
+            </p>
           </div>
         </div>
+
         <div className="flex items-center gap-2">
-          <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: rc.bg, color: rc.color }}>
-            {ROLE_LABELS[user.role_title] || "Employee"}
+          <span
+            className="text-xs px-2 py-0.5 rounded-full"
+            style={{
+              backgroundColor: rc.bg,
+              color: rc.color,
+            }}
+          >
+            {ROLE_LABELS[roleKey] || "Employee"}
           </span>
-          <span className="text-xs text-gray-500">{user.dept || "-"}</span>
+
+          <span className="text-xs text-gray-500">
+            {user.dept || "-"}
+          </span>
         </div>
       </div>
 
@@ -81,17 +124,36 @@ export default function DropdownMenu({ user, onClose, onLogout }) {
             <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-700 text-gray-400 border border-gray-800">
               {item.icon}
             </div>
+
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-300 mb-0.5 truncate">{item.label}</p>
-              <p className={`text-xs truncate ${item.badge ? "text-yellow-400" : "text-gray-400"}`}>{item.sub}</p>
+              <p className="text-sm text-gray-300 mb-0.5 truncate">
+                {item.label}
+              </p>
+              <p className={`text-xs truncate ${item.badge ? "text-yellow-400" : "text-gray-400"}`}>
+                {item.sub}
+              </p>
             </div>
+
             {item.badge && (
               <div className="w-5 h-5 rounded-full flex items-center justify-center text-black flex-shrink-0 bg-red-500 text-[9px] font-mono font-bold">
                 {item.badge}
               </div>
             )}
-            <svg className="flex-shrink-0 text-gray-700" width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M4.5 2.5L8 6l-3.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+
+            <svg
+              className="flex-shrink-0 text-gray-700"
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+            >
+              <path
+                d="M4.5 2.5L8 6l-3.5 3.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         ))}
@@ -113,9 +175,14 @@ export default function DropdownMenu({ user, onClose, onLogout }) {
               <path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
             </svg>
           </div>
+
           <div className="flex-1">
-            <p className="text-sm leading-none mb-0.5 text-red-500 font-sans">Sign Out</p>
-            <p className="text-xs text-gray-500 leading-none font-sans">End your current session</p>
+            <p className="text-sm leading-none mb-0.5 text-red-500 font-sans">
+              Sign Out
+            </p>
+            <p className="text-xs text-gray-500 leading-none font-sans">
+              End your current session
+            </p>
           </div>
         </button>
       </div>

@@ -6,7 +6,7 @@ import api from "./api";
  * @returns {Promise} Axios Promise
  */
 export const createEmployee = (employeeData) => {
-  return api.post("/employees", employeeData);
+  return api.post("api/employees", employeeData);
 };
 
 /**
@@ -14,7 +14,7 @@ export const createEmployee = (employeeData) => {
  * @returns {Promise} Axios Promise
  */
 export const getEmployees = () => {
-  return api.get("/employees");
+  return api.get("api/employees");
 };
 
 /**
@@ -23,7 +23,7 @@ export const getEmployees = () => {
  * @returns {Promise} Axios Promise
  */
 export const getEmployeeById = (id) => {
-  return api.get(`/employees/${id}`);
+  return api.get(`api/employees/${id}`);
 };
 
 /**
@@ -33,7 +33,7 @@ export const getEmployeeById = (id) => {
  * @returns {Promise} Axios Promise
  */
 export const updateEmployee = (id, employeeData) => {
-  return api.put(`/employees/${id}`, employeeData);
+  return api.put(`api/employees/${id}`, employeeData);
 };
 
 /**
@@ -42,5 +42,5 @@ export const updateEmployee = (id, employeeData) => {
  * @returns {Promise} Axios Promise
  */
 export const deleteEmployee = (id) => {
-  return api.delete(`/employees/${id}`);
+  return api.delete(`api/employees/${id}`);
 };

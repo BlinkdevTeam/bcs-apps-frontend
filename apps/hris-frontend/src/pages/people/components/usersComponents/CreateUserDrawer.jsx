@@ -17,7 +17,7 @@ function CreateUserDrawer({ onClose, onSave, CURRENT_USER_ROLE }) {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/roles");
+        const res = await axios.get("http://localhost:3001/api/roles");
         setRoles(res.data);
         // Default role
         if (!form.role && res.data.length > 0) setForm(f => ({ ...f, role: res.data[0].id }));
@@ -32,7 +32,7 @@ function CreateUserDrawer({ onClose, onSave, CURRENT_USER_ROLE }) {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/api/departments");
+        const res = await axios.get("http://localhost:3001/api/departments");
         setDepartments(res.data);
         // Default department
         if (!form.dept && res.data.length > 0) setForm(f => ({ ...f, dept: res.data[0].id }));

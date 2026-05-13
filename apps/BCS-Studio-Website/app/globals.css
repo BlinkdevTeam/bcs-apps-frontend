@@ -51,7 +51,7 @@ body {
 /* --- Left panel --- */
 .panel {
   width: 44%;
-  background: #1a1410;
+  background: #a30a24;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -67,8 +67,8 @@ body {
   background: repeating-linear-gradient(-45deg,
       transparent,
       transparent 28px,
-      rgba(255, 255, 255, 0.018) 28px,
-      rgba(255, 255, 255, 0.018) 29px);
+      rgba(255, 255, 255, 0.112) 28px,
+      rgba(255, 0, 0, 0.018) 29px);
   pointer-events: none;
 }
 
@@ -239,8 +239,8 @@ body {
 .btn {
   width: 100%;
   padding: 12px;
-  background: var(--red);
-  color: #fff;
+  background: #a30a24;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
   font-size: 14px;

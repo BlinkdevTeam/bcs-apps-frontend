@@ -7,8 +7,11 @@ import AddEmployeeDrawer from "./components/AddEmployeeDrawer";
 import DepartmentsTab from "./components/DepartmentsTab";
 import CreateDepartmentDrawer from "./components/CreateDepartmentDrawer";
 import CreateUserDrawer from "./components/usersComponents/CreateUserDrawer";
+import CreateRoleDrawer from "./components/usersComponents/CreateRoleDrawer";
 import { getEmployees } from "../../services/employeeService";
 import { getDepartments } from "../../services/departmentService";
+
+const CURRENT_USER_ROLE = "super_admin";
 
 export default function People({
   onUpdateEmployee,
@@ -29,6 +32,9 @@ export default function People({
   const [showCreateDept, setShowCreateDept] = useState(false);
 
   const [showCreateUser, setShowCreateUser] = useState(false);
+
+  const [customRoles,  setCustomRoles]= useState([]);
+  const [showCreateRole, setShowCreateRole] = useState(false);
 
   const mappedUsers = employees.map((emp) => ({
     id: emp.id,
@@ -92,6 +98,11 @@ export default function People({
     setDepartments((prev) => [...prev, dept]);
   };
 
+  function handleSaveRole(role) {
+    setCustomRoles(p => [...p, role]);
+    setShowCreateRole(false);
+  }
+
   return (
     <>
       {/* Header */}
@@ -154,17 +165,14 @@ export default function People({
             )}
             {peopleView === "user" && (
               <>
-                <button
-                  className="px-4 py-2 rounded text-sm flex items-center gap-2 hover:opacity-70"
-                  style={{
-                    fontFamily: "system-ui,sans-serif",
-                    backgroundColor: "#111",
-                    color: "#aaa",
-                    border: "1px solid #2a2a2a",
-                  }}
-                >
-                  🛡 Create Role
-                </button>
+                {/* Create Role button — Super Admin only */}
+            {CURRENT_USER_ROLE === "super_admin" && (
+              <button onClick={() => setShowCreateRole(true)}
+                className="px-4 py-2 rounded text-sm font-medium hover:opacity-80 flex items-center gap-2"
+                style={{fontFamily:"system-ui,sans-serif", backgroundColor:"#111", color:"#aaa", border:"1px solid #2a2a2a"}}>
+                🛡 Create Role
+              </button>
+            )}
                 <button
                   onClick={() => setShowCreateUser(true)}
                   className="px-4 py-2 rounded text-sm font-medium bg-white text-black flex items-center gap-2 hover:opacity-80"
@@ -256,6 +264,13 @@ export default function People({
           onUpdateBasicPay={onUpdateBasicPay}
           onUpdateContributions={onUpdateContributions}
           onUpdateBenefits={onUpdateBenefits}
+        />
+      )}
+
+      {showCreateRole && (
+        <CreateRoleDrawer
+          onClose={() => setShowCreateRole(false)}
+          onSave={handleSaveRole}
         />
       )}
 

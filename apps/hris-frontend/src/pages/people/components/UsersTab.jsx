@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { getEmployees } from "../../../services/employeeService";
+import EditUserDrawer from "./usersComponents/EditUserDrawer"; // adjust path if needed
 
 const ROLES = ["super_admin", "hr_admin", "manager", "employee"];
 
@@ -111,26 +112,32 @@ export default function UserManagementPage() {
       try {
         const res = await getEmployees();
 
-        const mapped = res.data.map((emp) => ({
-          id: emp.id,
-          name: `${emp.first_name || ""} ${emp.last_name || ""}`.trim(),
-          email: emp.email,
-          role: mapRole(emp.role_title), // 🔹 normalize role
-          dept: emp.department?.name || "—",
-          status: emp.status || "inactive",
-          lastLogin: emp.last_login_at
-            ? new Date(emp.last_login_at).toLocaleString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-                hour: "numeric",
-                minute: "2-digit",
-              })
-            : "Never",
-          mustChangePassword: false,
-          createdOn: emp.created_at,
-          avatar: emp.avatar_initials,
-        }));
+        const mapped = (res.data || []).map((emp) => ({
+  id: emp?.id ?? 0,
+  name: `${emp?.first_name ?? ""} ${emp?.last_name ?? ""}`.trim() || "Unnamed",
+  email: emp?.email ?? "—",
+
+  role: mapRole(emp?.role_title),
+
+  dept: emp?.department?.name ?? "—",
+
+  // 🔥 THIS IS THE KEY FIX (Postgres status safety)
+  status: emp?.status ?? "inactive",
+
+  lastLogin: emp?.last_login_at
+    ? new Date(emp.last_login_at).toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : "Never",
+
+  mustChangePassword: false,
+  createdOn: emp?.created_at ?? null,
+  avatar: emp?.avatar_initials ?? "",
+}));
 
         setUsers(mapped);
       } catch (err) {

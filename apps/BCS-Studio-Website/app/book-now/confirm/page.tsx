@@ -123,15 +123,21 @@ function BookingConfirmation() {
               <div className="space-y-2 text-sm md:text-base">
                 <p className="flex justify-between">
                   <span className="text-gray-500">Full Name</span>
-                  <span>{customer.name}</span>
+                  <span className="text-[#A30A24] font-medium">
+                    {customer.name}
+                  </span>
                 </p>
                 <p className="flex justify-between">
                   <span className="text-gray-500">Email</span>
-                  <span>{customer.email}</span>
+                  <span className="text-[#A30A24] font-medium">
+                    {customer.email}
+                  </span>
                 </p>
                 <p className="flex justify-between">
                   <span className="text-gray-500">Phone</span>
-                  <span>{customer.phone}</span>
+                  <span className="text-[#A30A24] font-medium">
+                    {customer.phone}
+                  </span>
                 </p>
               </div>
             </section>
@@ -146,15 +152,21 @@ function BookingConfirmation() {
               <div className="space-y-2 text-sm md:text-base">
                 <p className="flex justify-between">
                   <span className="text-gray-500">Service</span>
-                  <span>{service.title}</span>
+                  <span className="text-[#A30A24] font-medium">
+                    {service.title}
+                  </span>
                 </p>
                 <p className="flex justify-between">
                   <span className="text-gray-500">Base Price</span>
-                  <span>₱{service.price}</span>
+                  <span className="text-[#A30A24] font-medium">
+                    ₱{service.price}
+                  </span>
                 </p>
                 <p className="flex justify-between">
                   <span className="text-gray-500">Notes</span>
-                  <span>{customer.description || "N/A"}</span>
+                  <span className="text-[#A30A24] font-medium">
+                    {customer.description || "N/A"}
+                  </span>
                 </p>
               </div>
             </section>
@@ -190,11 +202,11 @@ function BookingConfirmation() {
               <div className="space-y-2 text-sm md:text-base">
                 <p className="flex justify-between">
                   <span className="text-gray-500">Date</span>
-                  <span>{date}</span>
+                  <span className="text-[#A30A24] font-medium">{date}</span>
                 </p>
                 <p className="flex justify-between">
                   <span className="text-gray-500">Time</span>
-                  <span>{time}</span>
+                  <span className="text-[#A30A24] font-medium">{time}</span>
                 </p>
               </div>
             </section>
@@ -208,33 +220,49 @@ function BookingConfirmation() {
             </div>
 
             {/* Upload */}
-            <section className="border border-dashed border-gray-300 rounded-xl p-6 text-center">
+            {/* Upload */}
+            <section className="border border-dashed border-gray-300 rounded-xl p-6 flex flex-col items-center text-center">
               <p className="font-semibold text-[#191919] mb-1">
                 Upload Payment Proof
               </p>
+
               <p className="text-sm text-gray-500 mb-4">
                 JPG, PNG, or PDF (max 5MB)
               </p>
 
-              <input
-                type="file"
-                disabled={loading}
-                accept="image/png,image/jpeg,application/pdf"
-                onChange={(e) => {
-                  if (loading) return;
+              <label className="cursor-pointer">
+                <span className="inline-block px-4 py-2 bg-[#A30A24] text-white rounded-lg text-sm hover:bg-gray-800 transition">
+                  {proof ? "Replace File" : "Choose File"}
+                </span>
 
-                  const file = e.target.files?.[0];
-                  if (!file) return;
+                <input
+                  type="file"
+                  disabled={loading}
+                  accept="image/png,image/jpeg,application/pdf"
+                  onChange={(e) => {
+                    if (loading) return;
 
-                  if (file.size > 5 * 1024 * 1024) {
-                    alert("File must be 5MB or smaller");
-                    return;
-                  }
+                    const file = e.target.files?.[0];
+                    if (!file) return;
 
-                  setProof(file);
-                }}
-                className="block mx-auto text-sm"
-              />
+                    if (file.size > 5 * 1024 * 1024) {
+                      alert("File must be 5MB or smaller");
+                      return;
+                    }
+
+                    setProof(file);
+                  }}
+                  className="hidden"
+                />
+              </label>
+
+              {/* File info */}
+              {proof && (
+                <div className="mt-4 text-sm text-gray-700">
+                  <p className="font-medium text-green-600">✓ File selected</p>
+                  <p className="truncate max-w-xs">{proof.name}</p>
+                </div>
+              )}
             </section>
 
             {/* ACTIONS */}
@@ -243,7 +271,7 @@ function BookingConfirmation() {
                 type="button"
                 onClick={() => router.back()}
                 disabled={loading}
-                className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
+                className="w-full sm:w-auto px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-100 transition text-[#191919]"
               >
                 Back
               </button>

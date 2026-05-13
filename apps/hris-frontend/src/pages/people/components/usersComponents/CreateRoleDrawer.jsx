@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IC, IS } from "../../../../data/compData";
+import {
+  getPermissions,
+  createRole,
+} from "../../../../services/roleService";
 
 // Custom role color palette options
 const CUSTOM_ROLE_COLORS = [
@@ -13,17 +17,6 @@ const CUSTOM_ROLE_COLORS = [
   { bg:"#151515", color:"#aaaaaa", label:"Gray" },
 ];
 
-const ALL_PERMISSIONS = {
-  Employees:   ["employees.view_all","employees.view_dept","employees.view_own","employees.create","employees.edit_all","employees.edit_own","employees.deactivate"],
-  Payroll:     ["payroll.view_all","payroll.view_own","payroll.run","payroll.adjust","payroll.configure"],
-  Attendance:  ["attendance.view_all","attendance.view_dept","attendance.view_own","attendance.correct","attendance.correct_dept"],
-  Leave:       ["leave.view_all","leave.view_dept","leave.view_own","leave.file","leave.approve_all","leave.approve_dept","leave.configure"],
-  Offset:      ["offset.view_all","offset.view_own","offset.create","offset.approve","offset.void"],
-  Recruitment: ["recruitment.view","recruitment.manage_jobs","recruitment.manage_applicants","recruitment.schedule_interviews","recruitment.manage_offers","recruitment.manage_onboarding"],
-  Tasks:       ["tasks.view_all","tasks.view_dept","tasks.view_own","tasks.create","tasks.assign_any","tasks.assign_dept","tasks.manage_projects"],
-  System:      ["users.manage","roles.assign","permissions.override","system.audit_logs"],
-};
-
 // ── CREATE ROLE DRAWER ────────────────────────────────────────────────────────
 function CreateRoleDrawer({ onClose, onSave }) {
   const [form, setForm] = useState({
@@ -35,6 +28,44 @@ function CreateRoleDrawer({ onClose, onSave }) {
   const [section, setSection] = useState("details"); // "details" | "permissions"
   const [saved, setSaved] = useState(false);
 
+  const [permissions, setPermissions] = useState([]);
+const [loadingPermissions, setLoadingPermissions] = useState(true);
+  const [saving, setSaving] = useState(false);
+  
+  useEffect(() => {
+  fetchPermissions();
+}, []);
+
+async function fetchPermissions() {
+  try {
+    setLoadingPermissions(true);
+
+    const data = await getPermissions();
+
+    setPermissions(data.data || []);
+  } catch (err) {
+    console.error("Failed to load permissions:", err);
+  } finally {
+    setLoadingPermissions(false);
+  }
+  }
+  
+  const groupedPermissions = useMemo(() => {
+  const grouped = {};
+
+  permissions.forEach((perm) => {
+    const moduleName = perm.module || "General";
+
+    if (!grouped[moduleName]) {
+      grouped[moduleName] = [];
+    }
+
+    grouped[moduleName].push(perm);
+  });
+
+  return grouped;
+}, [permissions]);
+
   function set(k, v) { setForm(f => ({ ...f, [k]: v })); }
 
   function togglePerm(perm) {
@@ -45,23 +76,57 @@ function CreateRoleDrawer({ onClose, onSave }) {
     });
   }
 
-  function toggleModule(perms) {
-    const allSelected = perms.every(p => selectedPerms.has(p));
-    setSelectedPerms(prev => {
-      const next = new Set(prev);
-      if (allSelected) { perms.forEach(p => next.delete(p)); }
-      else { perms.forEach(p => next.add(p)); }
-      return next;
-    });
-  }
+function toggleModule(perms) {
+  const permCodes = perms.map((p) => p.code);
+
+  const allSelected = permCodes.every((p) =>
+    selectedPerms.has(p),
+  );
+
+  setSelectedPerms((prev) => {
+    const next = new Set(prev);
+
+    if (allSelected) {
+      permCodes.forEach((p) => next.delete(p));
+    } else {
+      permCodes.forEach((p) => next.add(p));
+    }
+
+    return next;
+  });
+}
 
   const canSave = form.name.trim().length >= 2;
 
-  function handleSave() {
-    if (!canSave) return;
-    onSave({ ...form, permissions: [...selectedPerms], id: Date.now() });
+async function handleSave() {
+  if (!canSave) return;
+
+  try {
+    setSaving(true);
+
+    await createRole({
+      name: form.name,
+      description: form.description,
+      color: form.color,
+      permissions: [...selectedPerms],
+    });
+
     setSaved(true);
+
+    if (onSave) {
+      onSave();
+    }
+  } catch (err) {
+    console.error(err);
+
+    alert(
+      err.response?.data?.message ||
+        "Failed to create role",
+    );
+  } finally {
+    setSaving(false);
   }
+}
 
   if (saved) return (
     <>
@@ -181,68 +246,243 @@ function CreateRoleDrawer({ onClose, onSave }) {
 
           {/* PERMISSIONS */}
           {section === "permissions" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-gray-500" style={{ fontFamily:"system-ui,sans-serif" }}>
-                  {selectedPerms.size} of {Object.values(ALL_PERMISSIONS).flat().length} selected
-                </p>
-                <div className="flex gap-2">
-                  <button onClick={() => setSelectedPerms(new Set(Object.values(ALL_PERMISSIONS).flat()))}
-                    className="text-xs px-3 py-1 rounded hover:opacity-80"
-                    style={{ fontFamily:"system-ui,sans-serif", backgroundColor:"#1a1a1a", color:"#aaa", border:"1px solid #2a2a2a" }}>
-                    Select all
-                  </button>
-                  <button onClick={() => setSelectedPerms(new Set())}
-                    className="text-xs px-3 py-1 rounded hover:opacity-80"
-                    style={{ fontFamily:"system-ui,sans-serif", backgroundColor:"#1a1a1a", color:"#aaa", border:"1px solid #2a2a2a" }}>
-                    Clear
-                  </button>
+            <>
+              {loadingPermissions ? (
+                <div className="text-sm text-gray-500">
+                  Loading permissions...
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p
+                      className="text-xs text-gray-500"
+                      style={{ fontFamily: "system-ui,sans-serif" }}
+                    >
+                      {selectedPerms.size} of {permissions.length} selected
+                    </p>
 
-              {Object.entries(ALL_PERMISSIONS).map(([module, perms]) => {
-                const allSelected = perms.every(p => selectedPerms.has(p));
-                const someSelected = perms.some(p => selectedPerms.has(p)) && !allSelected;
-                return (
-                  <div key={module} className="rounded-lg overflow-hidden" style={{ border:"1px solid #1e1e1e" }}>
-                    <button onClick={() => toggleModule(perms)}
-                      className="w-full flex items-center justify-between px-4 py-2.5 transition-colors hover:opacity-80"
-                      style={{ backgroundColor:"#111", fontFamily:"system-ui,sans-serif" }}>
-                      <p className="text-xs uppercase tracking-widest text-gray-400">{module}</p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-600" style={{ fontFamily:"monospace" }}>
-                          {perms.filter(p => selectedPerms.has(p)).length}/{perms.length}
-                        </span>
-                        <div className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: allSelected ? form.color.bg : someSelected ? "#1a1a0a" : "transparent",
-                            border:`1.5px solid ${allSelected ? form.color.color : someSelected ? "#f0c85a" : "#2a2a2a"}` }}>
-                          {allSelected && <span style={{ fontSize:8, color:form.color.color, lineHeight:1 }}>✓</span>}
-                          {someSelected && <span style={{ fontSize:8, color:"#f0c85a", lineHeight:1 }}>−</span>}
-                        </div>
-                      </div>
-                    </button>
-                    <div className="px-4 pb-3 pt-1 space-y-1" style={{ backgroundColor:"#0d0d0d" }}>
-                      {perms.map(perm => {
-                        const has = selectedPerms.has(perm);
-                        return (
-                          <div key={perm} onClick={() => togglePerm(perm)}
-                            className="flex items-center gap-3 px-3 py-1.5 rounded cursor-pointer transition-all"
-                            style={{ backgroundColor: has ? form.color.bg : "transparent",
-                              border:`1px solid ${has ? form.color.color+"33" : "transparent"}` }}>
-                            <div className="w-3.5 h-3.5 rounded flex items-center justify-center flex-shrink-0"
-                              style={{ backgroundColor: has ? form.color.bg : "transparent",
-                                border:`1.5px solid ${has ? form.color.color : "#2a2a2a"}` }}>
-                              {has && <span style={{ fontSize:7, color:form.color.color, lineHeight:1 }}>✓</span>}
-                            </div>
-                            <span className="text-xs" style={{ fontFamily:"monospace", color: has ? "#ccc" : "#3a3a3a" }}>{perm}</span>
-                          </div>
-                        );
-                      })}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() =>
+                          setSelectedPerms(
+                            new Set(permissions.map((p) => p.code)),
+                          )
+                        }
+                        className="text-xs px-3 py-1 rounded hover:opacity-80"
+                        style={{
+                          fontFamily: "system-ui,sans-serif",
+                          backgroundColor: "#1a1a1a",
+                          color: "#aaa",
+                          border: "1px solid #2a2a2a",
+                        }}
+                      >
+                        Select all
+                      </button>
+
+                      <button
+                        onClick={() => setSelectedPerms(new Set())}
+                        className="text-xs px-3 py-1 rounded hover:opacity-80"
+                        style={{
+                          fontFamily: "system-ui,sans-serif",
+                          backgroundColor: "#1a1a1a",
+                          color: "#aaa",
+                          border: "1px solid #2a2a2a",
+                        }}
+                      >
+                        Clear
+                      </button>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+
+                  {Object.entries(groupedPermissions).map(
+                    ([module, perms]) => {
+                      const permCodes = perms.map((p) => p.code);
+
+                      const allSelected = permCodes.every((p) =>
+                        selectedPerms.has(p),
+                      );
+
+                      const someSelected =
+                        permCodes.some((p) =>
+                          selectedPerms.has(p),
+                        ) && !allSelected;
+
+                      return (
+                        <div
+                          key={module}
+                          className="rounded-lg overflow-hidden"
+                          style={{
+                            border: "1px solid #1e1e1e",
+                          }}
+                        >
+                          <button
+                            onClick={() => toggleModule(perms)}
+                            className="w-full flex items-center justify-between px-4 py-2.5 transition-colors hover:opacity-80"
+                            style={{
+                              backgroundColor: "#111",
+                              fontFamily:
+                                "system-ui,sans-serif",
+                            }}
+                          >
+                            <p className="text-xs uppercase tracking-widest text-gray-400">
+                              {module}
+                            </p>
+
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="text-xs text-gray-600"
+                                style={{
+                                  fontFamily: "monospace",
+                                }}
+                              >
+                                {
+                                  permCodes.filter((p) =>
+                                    selectedPerms.has(p),
+                                  ).length
+                                }
+                                /{permCodes.length}
+                              </span>
+
+                              <div
+                                className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0"
+                                style={{
+                                  backgroundColor:
+                                    allSelected
+                                      ? form.color.bg
+                                      : someSelected
+                                        ? "#1a1a0a"
+                                        : "transparent",
+
+                                  border: `1.5px solid ${
+                                    allSelected
+                                      ? form.color.color
+                                      : someSelected
+                                        ? "#f0c85a"
+                                        : "#2a2a2a"
+                                  }`,
+                                }}
+                              >
+                                {allSelected && (
+                                  <span
+                                    style={{
+                                      fontSize: 8,
+                                      color:
+                                        form.color.color,
+                                      lineHeight: 1,
+                                    }}
+                                  >
+                                    ✓
+                                  </span>
+                                )}
+
+                                {someSelected && (
+                                  <span
+                                    style={{
+                                      fontSize: 8,
+                                      color: "#f0c85a",
+                                      lineHeight: 1,
+                                    }}
+                                  >
+                                    −
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+
+                          <div
+                            className="px-4 pb-3 pt-1 space-y-1"
+                            style={{
+                              backgroundColor: "#0d0d0d",
+                            }}
+                          >
+                            {perms.map((perm) => {
+                              const has =
+                                selectedPerms.has(
+                                  perm.code,
+                                );
+
+                              return (
+                                <div
+                                  key={perm.id}
+                                  onClick={() =>
+                                    togglePerm(
+                                      perm.code,
+                                    )
+                                  }
+                                  className="flex items-center gap-3 px-3 py-1.5 rounded cursor-pointer transition-all"
+                                  style={{
+                                    backgroundColor: has
+                                      ? form.color.bg
+                                      : "transparent",
+
+                                    border: `1px solid ${
+                                      has
+                                        ? form.color.color +
+                                          "33"
+                                        : "transparent"
+                                    }`,
+                                  }}
+                                >
+                                  <div
+                                    className="w-3.5 h-3.5 rounded flex items-center justify-center flex-shrink-0"
+                                    style={{
+                                      backgroundColor: has
+                                        ? form.color.bg
+                                        : "transparent",
+
+                                      border: `1.5px solid ${
+                                        has
+                                          ? form.color.color
+                                          : "#2a2a2a"
+                                      }`,
+                                    }}
+                                  >
+                                    {has && (
+                                      <span
+                                        style={{
+                                          fontSize: 7,
+                                          color:
+                                            form.color.color,
+                                          lineHeight: 1,
+                                        }}
+                                      >
+                                        ✓
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <div className="flex flex-col">
+                                    <span
+                                      className="text-xs"
+                                      style={{
+                                        fontFamily:
+                                          "monospace",
+                                        color: has
+                                          ? "#ccc"
+                                          : "#3a3a3a",
+                                      }}
+                                    >
+                                      {perm.code}
+                                    </span>
+
+                                    {perm.description && (
+                                      <span className="text-[10px] text-gray-600">
+                                        {perm.description}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    },
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -255,7 +495,7 @@ function CreateRoleDrawer({ onClose, onSave }) {
               backgroundColor: canSave ? "#fff" : "#1a1a1a",
               color: canSave ? "#000" : "#444",
               cursor: canSave ? "pointer" : "not-allowed" }}>
-            Create Role 🛡
+            {saving ? "Creating..." : "Create Role 🛡"}
           </button>
         </div>
       </div>

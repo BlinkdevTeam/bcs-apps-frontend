@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { parseLocalDateTime, formatDateTime } from "../../../utils/dateUtils";
 import {
   Icon,
@@ -146,7 +147,15 @@ setBookings(normalized);
 };
 
 const currentBookings = filtered.filter((b) => !isPastBooking(b));
-const pastBookings = filtered.filter((b) => isPastBooking(b));
+  const pastBookings = filtered.filter((b) => isPastBooking(b));
+  
+  // Inside the component:
+  const router = useRouter();
+  
+  const handleLogout = async () => {
+  await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+  router.replace("/login");
+};
 
   return (
     <div
@@ -214,6 +223,15 @@ const pastBookings = filtered.filter((b) => isPastBooking(b));
             </button>
           ))}
         </nav>
+        {/* Logout */}
+        <button
+  onClick={handleLogout}
+  className="mx-2 mb-2 flex items-center justify-center gap-2 py-2 rounded-lg text-xs transition-colors"
+  style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.75)" }}
+>
+  <Icon d={Icons.logout} size={14} />
+  {sidebarOpen && "Logout"}
+</button>
 
         {/* Toggle */}
         <button

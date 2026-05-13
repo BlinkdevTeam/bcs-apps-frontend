@@ -137,11 +137,14 @@ const submit = async () => {
 
       {/* Service & schedule */}
       <div>
-        <h3 className="font-bold text-base mb-3" style={{ color: "#A30A24" }}>
+        {/* <h3 className="font-bold text-base mb-3" style={{ color: "#A30A24" }}>
           Service & Schedule
+        </h3> */}
+        <h3 className="font-bold text-base mb-3" style={{ color: "#A30A24" }}>
+          Schedule
         </h3>
         <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-2">
+          {/* <div className="col-span-2">
             <label className={labelCls} style={{ color: "#7a3a42" }}>Service</label>
             <input
               type="text"
@@ -150,7 +153,7 @@ const submit = async () => {
               value={form.service ? `${form.service.title} - ₱${Number(form.service.price).toLocaleString()}` : ""}
               readOnly
             />
-          </div>
+          </div> */}
           <div>
             <label className={labelCls} style={{ color: "#7a3a42" }}>Date *</label>
             <input
@@ -175,7 +178,7 @@ const submit = async () => {
       </div>
 
       {/* Add-ons */}
-      {availableAddons.length > 0 && (
+      {/* {availableAddons.length > 0 && (
         <div>
           <label className={labelCls} style={{ color: "#7a3a42" }}>Add-ons</label>
           <div className="grid grid-cols-2 gap-2 mt-1">
@@ -205,10 +208,10 @@ const submit = async () => {
             })}
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Total */}
-      <div
+      {/* <div
         className="rounded-xl p-4 flex items-center justify-between"
         style={{ background: "#A30A24", color: "#fff" }}
       >
@@ -216,7 +219,7 @@ const submit = async () => {
         <span className="text-2xl font-bold" style={{ fontFamily: "'Georgia', serif" }}>
           ₱{Number(total).toLocaleString()}
         </span>
-      </div>
+      </div> */}
 
       {/* Actions */}
       <div className="flex justify-end gap-3 pt-1">

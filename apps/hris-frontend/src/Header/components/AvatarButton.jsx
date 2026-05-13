@@ -1,9 +1,32 @@
-import { avatarBg, initials, ROLE_COLORS, ROLE_LABELS } from "../../data/compData";
+import {
+  avatarBg,
+  // initials,
+  ROLE_COLORS,
+  ROLE_LABELS,
+} from "../../data/compData";
+
+/* ---------------- ROLE NORMALIZER ---------------- */
+const normalizeRole = (roleTitle) => {
+  if (!roleTitle) return "employee";
+
+  const map = {
+    "Super Admin": "super_admin",
+    "HR Admin": "hr_admin",
+    "Manager": "manager",
+    "Employee": "employee",
+  };
+
+  return map[roleTitle] || "employee";
+};
 
 export default function AvatarButton({ user, onClick, isOpen }) {
-  if (!user) return null; // no user yet
+  // console.log("USER DATA:", user);
+  if (!user) return null;
 
   const bg = avatarBg(user.id);
+
+  // 🔥 FIX: convert backend role_title → frontend key
+  const roleKey = normalizeRole(user.role_title);
 
   return (
     <button
@@ -26,7 +49,7 @@ export default function AvatarButton({ user, onClick, isOpen }) {
             fontFamily: "system-ui, sans-serif",
           }}
         >
-          {initials(user.avatar_initials || "User")}
+          {user.avatar_initials || "U"}
         </div>
 
         {/* Online indicator */}
@@ -36,22 +59,23 @@ export default function AvatarButton({ user, onClick, isOpen }) {
         />
       </div>
 
-      {/* Name + role — visible on wider nav */}
+      {/* Name + role */}
       <div className="text-left hidden sm:block">
         <p
           className="text-xs text-white leading-none mb-0.5 uppercase font-bold"
           style={{ fontFamily: "system-ui, sans-serif" }}
         >
-          {(user.avatar_initials?.split(" ")[0]) || "User"}
+          {user.first_name?.split(" ")[0] || "User"}
         </p>
+
         <p
           className="text-xs leading-none"
           style={{
             fontFamily: "system-ui, sans-serif",
-            color: ROLE_COLORS[user.role]?.color || "#aaa",
+            color: ROLE_COLORS[roleKey]?.color || "#aaa",
           }}
         >
-          {ROLE_LABELS[user.role] || "Employee"}
+          {ROLE_LABELS[roleKey] || "Employee"}
         </p>
       </div>
 
@@ -67,16 +91,29 @@ export default function AvatarButton({ user, onClick, isOpen }) {
           color: "#444",
         }}
       >
-        <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path
+          d="M2 4l4 4 4-4"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
 
       {/* Unread badge */}
       {user.unreadNotifications > 0 && !isOpen && (
         <div
           className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-black"
-          style={{ backgroundColor: "#f05a5a", fontSize: 9, fontFamily: "monospace", fontWeight: 700 }}
+          style={{
+            backgroundColor: "#f05a5a",
+            fontSize: 9,
+            fontFamily: "monospace",
+            fontWeight: 700,
+          }}
         >
-          {user.unreadNotifications > 9 ? "9+" : user.unreadNotifications}
+          {user.unreadNotifications > 9
+            ? "9+"
+            : user.unreadNotifications}
         </div>
       )}
     </button>
