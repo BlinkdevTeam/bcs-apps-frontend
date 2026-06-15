@@ -17,9 +17,16 @@ function getErrorMessage(error: unknown): string {
 // ─── GET: Fetch all bookings ─────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   try {
+    // ✅ JOIN booking_packages to get service title + price
     const sql = `
-      SELECT * FROM booking_appointments
-      ORDER BY booking_date DESC, booking_time DESC
+      SELECT 
+        ba.*,
+        bp.title  AS service_title,
+        bp.price  AS service_price,
+        bp.id     AS service_uuid
+      FROM booking_appointments ba
+      LEFT JOIN booking_packages bp ON ba.service_id = bp.id
+      ORDER BY ba.booking_date DESC, ba.booking_time DESC
     `;
     const result = await query(sql);
 
@@ -28,19 +35,6 @@ export async function GET(req: NextRequest) {
       status: string;
       proof: string | null;
     })[] = result.rows.map((b) => {
-      // Parse service JSON safely
-      let service: BookingData["service"] = {
-        id: 0,
-        slug: "",
-        title: "",
-        price: 0
-      };
-      try {
-        service = typeof b.service === "string" ? JSON.parse(b.service) : b.service;
-      } catch (err) {
-        console.error("Failed to parse service JSON:", b.service, err);
-      }
-
       // Parse addons JSON safely
       let addons: BookingData["addons"] = [];
       try {
@@ -58,10 +52,15 @@ export async function GET(req: NextRequest) {
           phone: b.phone,
           description: b.description || undefined,
         },
-        service,
+        // ✅ Built from JOIN — no more parsing a missing column
+        service: {
+          id: b.service_uuid || b.service_id,
+          slug: b.service_id,
+          title: b.service_title || "Service",
+          price: Number(b.service_price) || 0,
+        },
         addons,
-        // ✅ Use raw date string from DB to avoid timezone shift
-        date: b.booking_date,  
+        date: b.booking_date,
         time: b.booking_time,
         totalPrice: parseFloat(b.total_price),
         status: b.status,
@@ -120,7 +119,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { customer, service, addons, date, time, totalPrice } = booking;
+    const { customer, service, addons, date, time } = booking;
 
     // Basic validation
     if (!customer?.name || !customer?.email || !date || !time) {
@@ -129,6 +128,26 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // ✅ Fetch the real price from DB using service slug — never trust client totalPrice
+    const pkgResult = await query(
+      `SELECT price FROM booking_packages WHERE id = $1`,
+      [service.slug]
+    );
+
+    if (pkgResult.rows.length === 0) {
+      return NextResponse.json(
+        { error: "Invalid service selected" },
+        { status: 400 }
+      );
+    }
+
+    const basePrice = Number(pkgResult.rows[0].price);
+    const addonsTotal = (addons ?? []).reduce(
+      (sum, a) => sum + Number(a.price || 0),
+      0
+    );
+    const totalPrice = basePrice + addonsTotal;
 
     // Check env
     if (!process.env.DO_SPACES_BUCKET || !process.env.DO_SPACES_REGION) {
@@ -193,9 +212,6 @@ export async function POST(request: NextRequest) {
         RETURNING id
       `;
 
-      // ✅ FIX: use slug, NOT id
-      const serviceId = service.slug;
-
       const values = [
         customer.name,
         customer.email,
@@ -203,9 +219,9 @@ export async function POST(request: NextRequest) {
         customer.description || null,
         date,
         time,
-        serviceId, // ✅ FIXED HERE
+        service.slug,
         JSON.stringify(addons ?? []),
-        totalPrice,
+        totalPrice, // ✅ server-computed, never 0
         fileUrl,
       ];
 
@@ -253,30 +269,48 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, customer, service, addons, date, time, totalPrice } = body;
+    const { id, addons, date, time } = body;
 
     if (!id) {
       return NextResponse.json({ error: "Missing booking ID" }, { status: 400 });
     }
+
+    // ✅ Fetch current service_id then recalculate total from DB price
+    const current = await query(
+      `SELECT service_id FROM booking_appointments WHERE id = $1`,
+      [id]
+    );
+
+    if (current.rows.length === 0) {
+      return NextResponse.json({ error: "Booking not found" }, { status: 404 });
+    }
+
+    const serviceId = current.rows[0].service_id;
+
+    const pkgResult = await query(
+      `SELECT price FROM booking_packages WHERE id = $1`,
+      [serviceId]
+    );
+
+    const basePrice = Number(pkgResult.rows[0]?.price) || 0;
+    const addonsTotal = (addons ?? []).reduce(
+      (sum: number, a: { price?: number | string }) => sum + Number(a.price || 0),
+      0
+    );
+    const totalPrice = basePrice + addonsTotal;
 
     const sql = `
       UPDATE booking_appointments
       SET
         booking_date = $1,
         booking_time = $2,
-        addons = $3,
-        total_price = $4
+        addons       = $3,
+        total_price  = $4
       WHERE id = $5
       RETURNING *
     `;
 
-    const values = [
-      date,
-      time,
-      JSON.stringify(addons ?? []),
-      totalPrice,
-      id,
-    ];
+    const values = [date, time, JSON.stringify(addons ?? []), totalPrice, id];
 
     await query(sql, values);
 

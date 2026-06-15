@@ -193,7 +193,7 @@ export default function Directory({
                   "Department",
                   "Role",
                   "Location",
-                  "Status",
+                  // "Status",
                   "Joined",
                 ].map((h) => (
                   <th
@@ -241,14 +241,14 @@ export default function Directory({
                   </td>
                   <td className="py-3 pr-6 text-gray-300">{emp.role_title}</td>
                   <td className="py-3 pr-6 text-gray-400">{emp.location}</td>
-                  <td className="py-3 pr-6">
+                  {/* <td className="py-3 pr-6">
                     <span
                       className="text-xs px-2 py-0.5 rounded-full"
                       style={{ ...SS[emp.status] }}
                     >
                       {emp.status}
                     </span>
-                  </td>
+                  </td> */}
                   <td className="py-3 pr-6 text-gray-500 text-xs">
                     {emp.hire_date}
                   </td>

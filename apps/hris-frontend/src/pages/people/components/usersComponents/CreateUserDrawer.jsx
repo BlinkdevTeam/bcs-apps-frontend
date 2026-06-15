@@ -3,15 +3,36 @@ import { IC, IS } from "../../../../data/compData";
 import axios from "axios";
 
 function CreateUserDrawer({ onClose, onSave, CURRENT_USER_ROLE }) {
+  const [employees, setEmployees] = useState([]);
   const [roles, setRoles] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    role: "",
-    dept: "",
-  });
+
+const [form, setForm] = useState({
+  employeeId: "",
+  role: "",
+});
+  
+      const selectedEmployee =
+  employees.find(
+    (e) => String(e.id) === String(form.employeeId)
+  ) || null;
+  const selectedRole =
+  roles.find((r) => String(r.id) === String(form.role)) || null;
   const [sent, setSent] = useState(false);
+
+    // Fetch employees from API
+  useEffect(() => {
+  const fetchEmployees = async () => {
+    try {
+      const res = await axios.get("http://localhost:3001/api/employees");
+      setEmployees(res.data);
+    } catch (err) {
+      console.error("Failed to fetch employees:", err);
+    }
+    };
+
+  fetchEmployees();
+}, []);
 
   // Fetch roles from API
   useEffect(() => {
@@ -47,13 +68,19 @@ function CreateUserDrawer({ onClose, onSave, CURRENT_USER_ROLE }) {
     setForm(f => ({ ...f, [k]: v }));
   }
 
-  const canSave = form.name.trim() && form.email.includes("@");
+  const canSave = form.employeeId && form.role;
 
-  function handleSave() {
-    if (!canSave) return;
-    onSave(form);
-    setSent(true);
-  }
+function handleSave() {
+  if (!canSave) return;
+
+  onSave({
+    employeeId: form.employeeId,
+    role: form.role,
+    dept: form.dept,
+  });
+
+  setSent(true);
+}
 
   if (sent)
     return (
@@ -79,7 +106,9 @@ function CreateUserDrawer({ onClose, onSave, CURRENT_USER_ROLE }) {
             style={{ fontFamily: "system-ui,sans-serif" }}
           >
             An invite email was sent to{" "}
-            <strong className="text-white">{form.email}</strong>. The link expires in{" "}
+            <strong className="text-white">
+  {selectedEmployee?.email || "—"}
+</strong>. The link expires in{" "}
             <strong className="text-white">72 hours</strong>.
           </p>
           <button
@@ -144,50 +173,39 @@ function CreateUserDrawer({ onClose, onSave, CURRENT_USER_ROLE }) {
 
           {/* Name & Email */}
           <div>
-            <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
-              Full Name
-            </label>
-            <input
-              className={IC}
-              style={IS}
-              placeholder="e.g. Sara Okafor"
-              value={form.name}
-              onChange={(e) => setField("name", e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
-              Work Email
-            </label>
-            <input
-              className={IC}
-              style={IS}
-              type="email"
-              placeholder="sara@company.com"
-              value={form.email}
-              onChange={(e) => setField("email", e.target.value)}
-            />
-          </div>
+  <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
+    Select Employee
+  </label>
+
+  <select
+    className={IC}
+    style={IS}
+    value={form.employeeId}
+    onChange={(e) => setField("employeeId", e.target.value)}
+  >
+    <option value="">Select employee...</option>
+
+    {employees.map((emp) => (
+      <option key={emp.id} value={emp.id}>
+        {emp.first_name} {emp.last_name} ({emp.email})
+      </option>
+    ))}
+  </select>
+</div>
 
           {/* Department & Role */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
-                Department
-              </label>
-              <select
-                className={IC}
-                style={IS}
-                value={form.dept}
-                onChange={(e) => setField("dept", e.target.value)}
-              >
-                {departments.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+  <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
+    Department
+  </label>
+
+<div className={IC} style={IS}>
+  {departments.find(
+    (d) => d.id === selectedEmployee?.department_id
+  )?.name || "—"}
+</div>
+</div>
             <div>
               <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
                 Role
@@ -213,24 +231,33 @@ function CreateUserDrawer({ onClose, onSave, CURRENT_USER_ROLE }) {
             <p className="text-xs uppercase tracking-widest text-gray-600 mb-3">
               Permissions for{" "}
               <span className="text-white">
-                {roles.find((r) => r.id === form.role)?.name || "—"}
+                {selectedRole?.name || "—"}
               </span>
             </p>
             <div className="space-y-1.5 max-h-40 overflow-y-auto">
-              {(roles.find((r) => r.id === form.role)?.permissions || []).slice(0, 12).map((p) => (
-                <div key={p} className="flex items-center gap-2">
+              {(selectedRole?.permissions || [])
+                .slice(0, 12)
+                .map((permission, index) => (
                   <div
-                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: "#4ade80" }}
-                  />
-                  <span className="text-xs text-gray-500" style={{ fontFamily: "monospace" }}>
-                    {p}
-                  </span>
-                </div>
+                    key={permission.id || permission.name || index}
+                    className="flex items-center gap-2"
+                  >
+                    <div
+                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: "#4ade80" }}
+                    />
+
+                    <span
+                      className="text-xs text-gray-500"
+                      style={{ fontFamily: "monospace" }}
+                    >
+                      {permission.name || permission}
+                    </span>
+                  </div>
               ))}
-              {(roles.find((r) => r.id === form.role)?.permissions?.length || 0) > 12 && (
+              {(selectedRole?.permissions?.length || 0) > 12 && (
                 <p className="text-xs text-gray-700">
-                  +{(roles.find((r) => r.id === form.role)?.permissions?.length || 0) - 12} more permissions
+                  +{(selectedRole?.permissions?.length || 0) - 12} more permissions
                 </p>
               )}
             </div>

@@ -6,6 +6,7 @@ const NAV_ITEMS = ["Dashboard", "People", "Payroll", "Time & Leave", "Recruitmen
 // empType: "Regular" | "Contractual" | "Part-time" | "Custom"
 // taxExempt: false | "Minimum Wage" | "DOLE Exemption" | "Treaty Exempt" | "Other"
 // deductOverrides: per-deduction on/off flags for Custom type
+
 const EMPLOYEES = [
   { id:1,  name:"Sara Okafor",      avatar:"SO", dept:"Engineering", role:"Senior Engineer",   salary:142000, payFreq:"Bi-weekly",    tax:28, benefits:1280, status:"Active",   empType:"Regular",     taxExempt:false,          deductOverrides:{sss:true,  philhealth:true,  pagibig:true}  },
   { id:2,  name:"Marcus Chen",      avatar:"MC", dept:"Sales",       role:"Account Executive", salary:98000,  payFreq:"Bi-weekly",    tax:22, benefits:960,  status:"Active",   empType:"Regular",     taxExempt:false,          deductOverrides:{sss:true,  philhealth:true,  pagibig:true}  },

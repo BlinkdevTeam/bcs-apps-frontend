@@ -28,15 +28,15 @@ function BookingForm({ initial, onSave, onCancel }) {
   }, []);
 
   // ─── Form state (hooks must be top-level, unconditional)
-  const [form, setForm] = useState({
-    customer: initial?.customer || { name: "", email: "", phone: "", description: "" },
-    service: initial?.service || null,
-    addons: initial?.addons || [],
-    date: initial?.date || "",
-    time: initial?.time || "",
-    status: initial?.status || "Pending",
-    proof: initial?.proof || null,
-  });
+const [form, setForm] = useState({
+  customer: initial?.customer || { name: "", email: "", phone: "", description: "" },
+  service: initial?.service ?? null,     // already fine, but make sure initial has it
+  addons: initial?.addons || [],
+  date: initial?.date || "",
+  time: initial?.time || "",
+  status: initial?.status || "Pending",
+  proof: initial?.proof || null,
+});
 
   // ─── Handlers
   const toggleAddon = (addon) => {
@@ -52,44 +52,35 @@ function BookingForm({ initial, onSave, onCancel }) {
   };
 
 const submit = async () => {
-  setSaving(true); // 🔥 START loading
+  setSaving(true);
 
   try {
-    const total =
-      Number(form.service?.price || 0) +
-      form.addons.reduce((sum, a) => sum + Number(a.price || 0), 0);
-
     const payload = {
       id: initial.id,
       customer: form.customer,
-      service: form.service,
-      addons: form.addons,
+      service: initial.service,          // ← use initial directly
+      addons: initial.addons,            // ← use initial directly
       date: form.date,
       time: form.time,
-      totalPrice: total,
+      totalPrice: initial.totalPrice,    // ← never recalculate, preserve original
     };
 
     const res = await fetch("/api/bookings", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
     const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to update booking");
 
-    if (!res.ok) {
-      throw new Error(data.error || "Failed to update booking");
-    }
-
-    onSave(payload); // optional UI refresh
+    onSave(payload);
     alert("Booking updated successfully!");
   } catch (err) {
     console.error(err);
     alert("Failed to update booking");
   } finally {
-    setSaving(false); // 🔥 STOP loading (always runs)
+    setSaving(false);
   }
 };
 

@@ -159,7 +159,7 @@ function BookingConfirmation() {
                 <p className="flex justify-between">
                   <span className="text-gray-500">Base Price</span>
                   <span className="text-[#A30A24] font-medium">
-                    ₱{service.price}
+                    ₱{Number(service.price).toLocaleString()}
                   </span>
                 </p>
                 <p className="flex justify-between">

@@ -74,7 +74,7 @@ export default function EditDrawer({ emp, onClose, onSave }) {
 
       {/* Drawer */}
       <div
-        className="fixed top-0 right-0 h-full z-30 flex flex-col"
+        className="fixed top-0 right-0 h-full z-50 flex flex-col"
         style={{
           width: 480,
           backgroundColor: "#080808",
