@@ -68,9 +68,17 @@ async function upsertDetails(
 }
 
 // ── GET packages ──
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const packagesRes = await query<PackageRow>(`SELECT * FROM booking_packages ORDER BY created_at DESC`);
+    const { searchParams } = new URL(req.url);
+    const all = searchParams.get("all") === "true";
+
+    const packagesRes = await query<PackageRow>(
+      all
+        ? `SELECT * FROM booking_packages ORDER BY created_at DESC`
+        : `SELECT * FROM booking_packages WHERE is_active = true ORDER BY created_at DESC`
+    );
+
     const inclusionsRes = await query<InclusionRow>(`SELECT * FROM booking_package_inclusions`);
     const addonsRes = await query<AddonRow>(`SELECT * FROM booking_package_addons`);
 
@@ -152,5 +160,41 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error("Failed to save package:", err);
     return NextResponse.json({ error: "Failed to save package" }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { id } = await req.json();
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing package ID" }, { status: 400 });
+    }
+
+    // ← this must run BEFORE the deletes
+    const bookingsCheck = await query(
+      `SELECT COUNT(*) as count FROM booking_appointments WHERE service_id = $1`,
+      [id]
+    );
+
+    const bookingCount = Number(bookingsCheck.rows[0].count);
+    if (bookingCount > 0) {
+      return NextResponse.json(
+        { error: `Cannot delete — this package has ${bookingCount} existing booking(s).` },
+        { status: 409 }
+      );
+    }
+
+    await query(`DELETE FROM booking_package_inclusions WHERE package_id = $1`, [id]);
+    await query(`DELETE FROM booking_package_addons WHERE package_id = $1`, [id]);
+    await query(`DELETE FROM booking_packages WHERE id = $1`, [id]);
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Failed to delete package:", err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Failed to delete package" },
+      { status: 500 }
+    );
   }
 }

@@ -16,6 +16,7 @@ interface PackageAPI {
   title: string;
   description?: string;
   price: number | string;
+  duration?: number;
   type?: "portrait" | "rental";
   inclusions: { id: string; text: string }[];
   addons: { id: string; label: string; price: number }[];
@@ -47,6 +48,7 @@ export default function ServicePage({ params }: Props) {
           title: pkg.title,
           desc: pkg.description ?? "",
           price: Number(pkg.price),
+          duration: Number(pkg.duration ?? 0),
 
           // map type → category
           category: pkg.type === "rental" ? "studio" : "portraits",

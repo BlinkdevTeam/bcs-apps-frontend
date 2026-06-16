@@ -172,7 +172,10 @@ export default function ServiceSection() {
 
               {service.description && (
                 <p className="text-[18px] md:text-[24px] text-[#808080] mt-2">
-                  {service.description}
+                  {service.description.split(" ").length > 13
+                    ? service.description.split(" ").slice(0, 13).join(" ") +
+                      "..."
+                    : service.description}
                 </p>
               )}
 

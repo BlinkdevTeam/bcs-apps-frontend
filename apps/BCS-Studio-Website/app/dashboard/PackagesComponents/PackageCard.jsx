@@ -9,6 +9,8 @@ import {
 
 import Toggle from "../components/Toggle";
 
+import { FiEye, FiEyeOff, FiEdit2, FiCopy, FiTrash2 } from "react-icons/fi";
+
 export default // ─── Package Card ─────────────────────────────────────────────────────────────
 function PackageCard({ pkg, onEdit, onDuplicate, onDelete, onToggle }) {
   const [expanded, setExpanded] = useState(false);
@@ -58,27 +60,27 @@ function PackageCard({ pkg, onEdit, onDuplicate, onDelete, onToggle }) {
 
           {/* Action buttons */}
           <div className="flex items-center gap-1 flex-shrink-0">
-            <button onClick={() => setExpanded(e => !e)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
-              style={{ color: "#A30A24" }} title={expanded ? "Collapse" : "Preview"}>
-              <Ic d={expanded ? I.eyeoff : I.eye} size={13} sw={2} />
-            </button>
-            <button onClick={() => onEdit(pkg)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
-              style={{ color: "#A30A24" }} title="Edit">
-              <Ic d={I.edit} size={13} sw={2} />
-            </button>
-            <button onClick={() => onDuplicate(pkg)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
-              style={{ color: "#A30A24" }} title="Duplicate">
-              <Ic d={I.copy} size={13} sw={2} />
-            </button>
-            <button onClick={() => onDelete(pkg.id)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
-              style={{ color: "#c05070" }} title="Delete">
-              <Ic d={I.trash} size={13} sw={2} />
-            </button>
-          </div>
+  <button onClick={() => setExpanded(e => !e)}
+    className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
+    style={{ color: "#A30A24" }} title={expanded ? "Collapse" : "Preview"}>
+    {expanded ? <FiEyeOff size={13} /> : <FiEye size={13} />}
+  </button>
+  <button onClick={() => onEdit(pkg)}
+    className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
+    style={{ color: "#A30A24" }} title="Edit">
+    <FiEdit2 size={13} />
+  </button>
+  <button onClick={() => onDuplicate(pkg)}
+    className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
+    style={{ color: "#A30A24" }} title="Duplicate">
+    <FiCopy size={13} />
+  </button>
+  <button onClick={() => onDelete(pkg.id)}
+    className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
+    style={{ color: "#c05070" }} title="Delete">
+    <FiTrash2 size={13} />
+  </button>
+</div>
         </div>
 
         {/* Description */}

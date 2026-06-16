@@ -268,7 +268,11 @@ export const STRIPE_SOFT = "repeating-linear-gradient(45deg,#ede0e2,#ede0e2 2px,
 export const STRIPE_HARD = "repeating-linear-gradient(45deg,#c5a5aa,#c5a5aa 2.5px,#d8b5ba 2.5px,#d8b5ba 8px)";
 
 export const inp = "w-full px-3 py-2 rounded-lg text-xs border outline-none transition-all focus:border-[#A30A24] focus:ring-1 focus:ring-[#A30A24]/20";
-export const inpSty = { borderColor: "#e5d5d8", background: "#fdfafa" };
+export const inpSty = {
+  borderColor: "#e5d5d8",
+  background: "#fdfafa",
+  color: "#1a0a0d", // ← was probably "#9a6a72" or similar light color, change to dark
+};
 
 export const getCellBg = (ds, status, sel) => {
     if (!ds) return "#fafafa";

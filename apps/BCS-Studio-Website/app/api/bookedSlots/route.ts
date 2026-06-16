@@ -1,9 +1,11 @@
 // GET: Fetch booked slots for a specific date
+// app/api/bbokedSlots/route.ts
 import { NextResponse } from "next/server";
 import { query } from "@/lib/postgres/db";
 
 interface BookingSlotRow {
-  slot: string;
+  time: string;
+  duration: number;
 }
 
 export async function GET(req: Request) {
@@ -16,10 +18,17 @@ export async function GET(req: Request) {
 
   try {
     const result = await query<BookingSlotRow>(
-      "SELECT TO_CHAR(booking_time, 'HH24:MI') as slot FROM booking_appointments WHERE booking_date = $1",
+      `SELECT 
+        TO_CHAR(a.booking_time, 'HH24:MI') AS time,
+        p.duration
+      FROM booking_appointments a
+      JOIN booking_packages p ON a.service_id = p.id
+      WHERE a.booking_date = $1
+        AND a.status != 'Cancelled'`,
       [date]
     );
-    return NextResponse.json(result.rows.map((r) => r.slot));
+
+    return NextResponse.json(result.rows); // [{ time: "13:30", duration: 60 }, ...]
   } catch (error) {
     console.error("Booked slots fetch error:", error);
     return NextResponse.json({ error: "Database error" }, { status: 500 });

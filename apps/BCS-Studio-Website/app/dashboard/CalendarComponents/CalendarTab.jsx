@@ -141,28 +141,30 @@ export default function CalendarTab() {
   // Status helpers
   // ----------------------------
   const getStatus = useCallback(
-    (s) => {
-      if (!s) return "available";
-      const d = parseD(s);
-      if (!d) return "available";
+  (s) => {
+    if (!s) return "available";
+    const d = parseD(s);
+    if (!d) return "available";
 
-      const dow = d.getDay();
+    const dow = d.getDay();
 
-      if (isPast(s) && !isToday(s)) return "past";
-      if (blockedDates.has(s)) return "blocked-manual";
+    if (isPast(s) && !isToday(s)) return "past";
 
-      const inRange = blockedRanges.find((r) => s >= r.start && s <= r.end);
-      if (inRange && !openDates.has(s)) return "blocked-range";
+    // ✅ Manual block can also be overridden by openDates
+    if (blockedDates.has(s) && !openDates.has(s)) return "blocked-manual";
 
-      if (dayOffsBlocked.has(dow) && !openDates.has(s)) return "blocked-dayoff";
+    const inRange = blockedRanges.find((r) => s >= r.start && s <= r.end);
+    if (inRange && !openDates.has(s)) return "blocked-range";
 
-      if (weekendsBlocked && (dow === 0 || dow === 6) && !openDates.has(s))
-        return "blocked-weekend";
+    if (dayOffsBlocked.has(dow) && !openDates.has(s)) return "blocked-dayoff";
 
-      return "available";
-    },
-    [blockedDates, blockedRanges, openDates, dayOffsBlocked, weekendsBlocked, isPast, isToday]
-  );
+    if (weekendsBlocked && (dow === 0 || dow === 6) && !openDates.has(s))
+      return "blocked-weekend";
+
+    return "available";
+  },
+  [blockedDates, blockedRanges, openDates, dayOffsBlocked, weekendsBlocked]
+);
 
   const isBlocked = (s) => s.startsWith("blocked");
   const isOverridable = (s) =>

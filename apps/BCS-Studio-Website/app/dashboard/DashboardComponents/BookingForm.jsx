@@ -55,14 +55,17 @@ const submit = async () => {
   setSaving(true);
 
   try {
+    const addonTotal = form.addons.reduce((sum, a) => sum + Number(a.price || 0), 0);
+    const newTotal = Number(initial.service?.price || 0) + addonTotal;
+
     const payload = {
       id: initial.id,
       customer: form.customer,
-      service: initial.service,          // ← use initial directly
-      addons: initial.addons,            // ← use initial directly
+      service: initial.service,
+      addons: form.addons,          // ← was initial.addons, now reads from form state
       date: form.date,
       time: form.time,
-      totalPrice: initial.totalPrice,    // ← never recalculate, preserve original
+      totalPrice: newTotal,         // ← recalculate so total reflects new addons
     };
 
     const res = await fetch("/api/bookings", {
@@ -135,7 +138,7 @@ const submit = async () => {
           Schedule
         </h3>
         <div className="grid grid-cols-2 gap-3">
-          {/* <div className="col-span-2">
+          <div className="col-span-2">
             <label className={labelCls} style={{ color: "#7a3a42" }}>Service</label>
             <input
               type="text"
@@ -144,7 +147,7 @@ const submit = async () => {
               value={form.service ? `${form.service.title} - ₱${Number(form.service.price).toLocaleString()}` : ""}
               readOnly
             />
-          </div> */}
+          </div>
           <div>
             <label className={labelCls} style={{ color: "#7a3a42" }}>Date *</label>
             <input
@@ -169,7 +172,7 @@ const submit = async () => {
       </div>
 
       {/* Add-ons */}
-      {/* {availableAddons.length > 0 && (
+      {availableAddons.length > 0 && (
         <div>
           <label className={labelCls} style={{ color: "#7a3a42" }}>Add-ons</label>
           <div className="grid grid-cols-2 gap-2 mt-1">
@@ -190,7 +193,7 @@ const submit = async () => {
                     onChange={() => toggleAddon(addon)}
                     className="accent-[#A30A24]"
                   />
-                  <span className="flex-1 text-xs">{addon.label}</span>
+                  <span style={inputStyle} className="flex-1 text-xs">{addon.label}</span>
                   <span className="text-xs font-semibold" style={{ color: "#A30A24" }}>
                     +₱{Number(addon.price).toLocaleString()}
                   </span>
@@ -199,10 +202,10 @@ const submit = async () => {
             })}
           </div>
         </div>
-      )} */}
+      )}
 
       {/* Total */}
-      {/* <div
+      <div
         className="rounded-xl p-4 flex items-center justify-between"
         style={{ background: "#A30A24", color: "#fff" }}
       >
@@ -210,7 +213,7 @@ const submit = async () => {
         <span className="text-2xl font-bold" style={{ fontFamily: "'Georgia', serif" }}>
           ₱{Number(total).toLocaleString()}
         </span>
-      </div> */}
+      </div>
 
       {/* Actions */}
       <div className="flex justify-end gap-3 pt-1">

@@ -74,7 +74,10 @@ export default function BookingForm({
   const router = useRouter();
 
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  // Change state to store objects instead of plain strings
+  const [bookedSlots, setBookedSlots] = useState<
+    { time: string; duration: number }[]
+  >([]);
   const [blackoutDates, setBlackoutDates] = useState<Date[]>([]);
   const [openDates, setOpenDates] = useState<Date[]>([]);
   const [timeBlocks, setTimeBlocks] = useState<
@@ -150,7 +153,8 @@ export default function BookingForm({
     async function getBookedSlots(d: Date) {
       try {
         const formattedDate = format(d, "yyyy-MM-dd");
-        const slots = await fetchBookedSlots(formattedDate);
+        const res = await fetch(`/api/bookedSlots?date=${formattedDate}`);
+        const slots = await res.json(); // [{ time: "13:30", duration: 60 }, ...]
         setBookedSlots(slots);
       } catch (err) {
         console.error("Failed to fetch booked slots", err);
@@ -171,6 +175,22 @@ export default function BookingForm({
       const start = normalizeTime(b.start_time);
       const end = normalizeTime(b.end_time);
       return blockDay === selectedDay && slot >= start && slot < end;
+    });
+  };
+
+  // ← ADD THIS RIGHT AFTER
+  const isSlotOccupied = (slot: string) => {
+    const [sH, sM] = slot.split(":").map(Number);
+    const slotStart = sH * 60 + sM;
+    const slotEnd = slotStart + service.duration; // current service's duration
+
+    return bookedSlots.some(({ time, duration }) => {
+      const [bH, bM] = time.split(":").map(Number);
+      const bookedStart = bH * 60 + bM;
+      const bookedEnd = bookedStart + duration;
+
+      // Overlap if: slotStart < bookedEnd AND slotEnd > bookedStart
+      return slotStart < bookedEnd && slotEnd > bookedStart;
     });
   };
 
@@ -376,7 +396,7 @@ export default function BookingForm({
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {TIME_SLOTS.map((slot) => {
-                const isBooked = bookedSlots.includes(slot);
+                const isBooked = isSlotOccupied(slot);
                 const isBlocked = isTimeBlocked(slot);
                 const invalidDate =
                   !date || isToday(date) || isBeforeMinDate(date);

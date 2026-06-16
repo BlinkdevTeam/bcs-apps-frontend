@@ -19,7 +19,104 @@ import DeleteConfirm from "./DeleteConfirm";
 import CalendarTab from "../CalendarComponents/CalendarTab";
 import PackagesTab from "../PackagesComponents/PackagesTab";
 
-// ── Helper to format date + time ──
+// ─── Status Confirmation Modal ───────────────────────────────────────────────
+function StatusConfirmModal({ booking, newStatus, onConfirm, onCancel }) {
+  const isConfirm = newStatus === "Confirmed";
+
+  return (
+    <div className="space-y-5 text-sm">
+      {/* Icon */}
+      <div
+        className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto"
+        style={{ background: isConfirm ? "#ecfdf5" : "#FEF0F2" }}
+      >
+        {isConfirm ? (
+          <svg
+            className="w-7 h-7 text-emerald-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        ) : (
+          <svg
+            className="w-7 h-7"
+            style={{ color: "#A30A24" }}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        )}
+      </div>
+
+      {/* Text */}
+      <div className="text-center space-y-1">
+        <p className="font-bold text-base" style={{ color: "#1a0a0d" }}>
+          {isConfirm ? "Confirm Booking?" : "Cancel Booking?"}
+        </p>
+        <p className="text-xs" style={{ color: "#9a6a72" }}>
+          {isConfirm
+            ? "This will mark the booking as confirmed."
+            : "This will mark the booking as cancelled. This action cannot be undone."}
+        </p>
+      </div>
+
+      {/* Booking summary */}
+      <div
+        className="rounded-xl p-4 space-y-2 text-xs"
+        style={{ background: "#fdf5f6", border: "1px solid #f0e0e3" }}
+      >
+        <div className="flex justify-between">
+          <span style={{ color: "#9a6a72" }}>Customer</span>
+          <span className="font-semibold" style={{ color: "#1a0a0d" }}>
+            {booking.customer?.name || "Unknown"}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span style={{ color: "#9a6a72" }}>Service</span>
+          <span className="font-semibold" style={{ color: "#1a0a0d" }}>
+            {booking.service?.title || "Service"}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span style={{ color: "#9a6a72" }}>Schedule</span>
+          <span className="font-semibold" style={{ color: "#1a0a0d" }}>
+            {formatDateTime(parseLocalDateTime(booking.date, booking.time))}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span style={{ color: "#9a6a72" }}>Total</span>
+          <span className="font-semibold" style={{ color: "#A30A24" }}>
+            {fmtPrice(booking.totalPrice)}
+          </span>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-3">
+        <button
+          onClick={onCancel}
+          className="flex-1 py-2.5 rounded-lg text-sm font-medium border transition-colors hover:bg-gray-50"
+          style={{ borderColor: "#e5d5d8", color: "#7a3a42" }}
+        >
+          Go Back
+        </button>
+        <button
+          onClick={onConfirm}
+          className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          style={{ background: isConfirm ? "#10b981" : "#A30A24" }}
+        >
+          {isConfirm ? "Yes, Confirm" : "Yes, Cancel"}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 // ─── Main Dashboard ─────────────────────────────────────────────────────────────
 export default function BookingsDashboard() {
@@ -30,30 +127,26 @@ export default function BookingsDashboard() {
     const fetchBookings = async () => {
       try {
         const res = await fetch("/api/bookings");
-const data = await res.json();
+        const data = await res.json();
 
-// ✅ FIX: ensure it's always an array
-const safeData = Array.isArray(data) ? data : [];
+        const safeData = Array.isArray(data) ? data : [];
 
-const normalized = safeData.map((b) => ({
-  ...b,
+        const normalized = safeData.map((b) => ({
+          ...b,
+          customer: {
+            name: b.customer?.name || "Unknown",
+            email: b.customer?.email || "",
+            phone: b.customer?.phone || "",
+          },
+          service: {
+            id: b.service?.id || 0,
+            title: b.service?.title || "Service",
+            price: b.service?.price || 0,
+          },
+          addons: Array.isArray(b.addons) ? b.addons : [],
+        }));
 
-  customer: {
-    name: b.customer?.name || "Unknown",
-    email: b.customer?.email || "",
-    phone: b.customer?.phone || "",
-  },
-
-  service: {
-    id: b.service?.id || 0,
-    title: b.service?.title || "Service",
-    price: b.service?.price || 0,
-  },
-
-  addons: Array.isArray(b.addons) ? b.addons : [],
-}));
-
-setBookings(normalized);
+        setBookings(normalized);
       } catch (err) {
         console.error(err);
       } finally {
@@ -63,9 +156,10 @@ setBookings(normalized);
 
     fetchBookings();
   }, []);
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [modal, setModal] = useState(null); // { type: "create"|"edit"|"view"|"delete", booking? }
+  const [modal, setModal] = useState(null); // { type: "create"|"edit"|"view"|"delete"|"statusConfirm", booking?, newStatus? }
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeTab, setActiveTab] = useState("Bookings");
 
@@ -85,8 +179,8 @@ setBookings(normalized);
     confirmed: bookings.filter((b) => b.status === "Confirmed").length,
     pending: bookings.filter((b) => b.status === "Pending").length,
     revenue: bookings
-      .filter((b) => b.status !== "Cancelled")
-      .reduce((s, b) => s + b.totalPrice, 0),
+  .filter((b) => b.status === "Confirmed")
+  .reduce((s, b) => s + b.totalPrice, 0),
   };
 
   const closeModal = () => setModal(null);
@@ -110,12 +204,13 @@ setBookings(normalized);
     closeModal();
   };
 
-  // ── Update booking status ──
+  // ── Update booking status (called after confirmation) ──
   const updateBookingStatus = async (id, newStatus) => {
     const previous = bookings;
 
+    closeModal();
+
     try {
-      // optimistic update
       setBookings((prev) =>
         prev.map((b) => (b.id === id ? { ...b, status: newStatus } : b)),
       );
@@ -129,33 +224,32 @@ setBookings(normalized);
       if (!res.ok) throw new Error("Failed to update status");
     } catch (err) {
       console.error(err);
-
-      // rollback
       setBookings(previous);
-
       alert("Failed to update booking status");
     }
   };
 
+  // ── Open status confirmation modal ──
+  const promptStatusChange = (booking, newStatus) => {
+    setModal({ type: "statusConfirm", booking, newStatus });
+  };
+
   const isPastBooking = (b) => {
-  if (!b.date) return false;
+    if (!b.date) return false;
+    const bookingDate = parseLocalDateTime(b.date, b.time);
+    const now = new Date();
+    return bookingDate < now;
+  };
 
-  const bookingDate = parseLocalDateTime(b.date, b.time); // returns Date object
-  const now = new Date();
-
-  return bookingDate < now;
-};
-
-const currentBookings = filtered.filter((b) => !isPastBooking(b));
+  const currentBookings = filtered.filter((b) => !isPastBooking(b));
   const pastBookings = filtered.filter((b) => isPastBooking(b));
-  
-  // Inside the component:
+
   const router = useRouter();
-  
+
   const handleLogout = async () => {
-  await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-  router.replace("/login");
-};
+    await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    router.replace("/login");
+  };
 
   return (
     <div
@@ -191,7 +285,7 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                 className="font-bold text-sm leading-tight"
                 style={{ fontFamily: "'Georgia', serif" }}
               >
-                StudioRed
+                Blink Creative Studio
               </p>
               <p className="text-xs opacity-60">Booking Manager</p>
             </div>
@@ -223,15 +317,16 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
             </button>
           ))}
         </nav>
+
         {/* Logout */}
         <button
-  onClick={handleLogout}
-  className="mx-2 mb-2 flex items-center justify-center gap-2 py-2 rounded-lg text-xs transition-colors"
-  style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.75)" }}
->
-  <Icon d={Icons.logout} size={14} />
-  {sidebarOpen && "Logout"}
-</button>
+          onClick={handleLogout}
+          className="mx-2 mb-2 flex items-center justify-center gap-2 py-2 rounded-lg text-xs transition-colors"
+          style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.75)" }}
+        >
+          <Icon d={Icons.logout} size={14} />
+          {sidebarOpen && "Logout"}
+        </button>
 
         {/* Toggle */}
         <button
@@ -249,22 +344,17 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
 
       {/* ── Main ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Bar */}
-
-        {/* Content */}
         <main className="flex-1 overflow-y-auto px-7 py-6 space-y-6">
           {activeTab === "Calendar" ? (
-            // CalendarTab bookings prop mapping
             <CalendarTab
               bookings={bookings.map((b) => {
                 const dt = parseLocalDateTime(b.date, b.time);
-
                 return {
                   id: b.id,
                   status: b.status,
                   customer: b.customer?.name || "Unknown",
                   service: b.service?.title || "Service",
-                  date: dt.toISOString().slice(0, 10), // YYYY-MM-DD
+                  date: dt.toISOString().slice(0, 10),
                   time: dt.toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -292,6 +382,7 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                   </p>
                 </div>
               </div>
+
               {/* Stats */}
               <div className="grid grid-cols-4 gap-4">
                 <StatCard
@@ -372,10 +463,7 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                       </button>
                     ))}
                   </div>
-                  <span
-                    className="ml-auto text-xs"
-                    style={{ color: "#9a6a72" }}
-                  >
+                  <span className="ml-auto text-xs" style={{ color: "#9a6a72" }}>
                     {filtered.length} record{filtered.length !== 1 ? "s" : ""}
                   </span>
                 </div>
@@ -424,7 +512,7 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                           </td>
                         </tr>
                       ) : (
-                        currentBookings.map((b, i) => (
+                        currentBookings.map((b) => (
                           <tr
                             key={b.id}
                             className="border-t transition-colors hover:bg-red-50/40"
@@ -433,10 +521,7 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                             <td className="px-6 py-4">
                               <span
                                 className="font-mono text-xs font-bold px-2 py-1 rounded"
-                                style={{
-                                  background: "#FEF0F2",
-                                  color: "#A30A24",
-                                }}
+                                style={{ background: "#FEF0F2", color: "#A30A24" }}
                               >
                                 {b.id}
                               </span>
@@ -450,57 +535,34 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                                   {(b.customer?.name || b.customer || "?")[0]}
                                 </div>
                                 <div>
-                                  <p
-                                    className="font-semibold text-xs"
-                                    style={{ color: "#1a0a0d" }}
-                                  >
-                                    {b.customer?.name ||
-                                      b.customer ||
-                                      "Unknown"}
+                                  <p className="font-semibold text-xs" style={{ color: "#1a0a0d" }}>
+                                    {b.customer?.name || b.customer || "Unknown"}
                                   </p>
-                                  <p
-                                    className="text-xs"
-                                    style={{ color: "#9a6a72" }}
-                                  >
+                                  <p className="text-xs" style={{ color: "#9a6a72" }}>
                                     {b.customer?.email || "-"}
                                   </p>
                                 </div>
                               </div>
                             </td>
                             <td className="px-6 py-4">
-                              <p
-                                className="font-medium text-xs"
-                                style={{ color: "#1a0a0d" }}
-                              >
+                              <p className="font-medium text-xs" style={{ color: "#1a0a0d" }}>
                                 {b.service?.title || "Service"}
                               </p>
                               {b.addons.length > 0 && (
-                                <p
-                                  className="text-xs mt-0.5"
-                                  style={{ color: "#9a6a72" }}
-                                >
-                                  {b.addons.length} add-on
-                                  {b.addons.length > 1 ? "s" : ""}
+                                <p className="text-xs mt-0.5" style={{ color: "#9a6a72" }}>
+                                  {b.addons.length} add-on{b.addons.length > 1 ? "s" : ""}
                                 </p>
                               )}
                             </td>
                             <td className="px-6 py-4">
-                              <p
-                                className="text-xs font-medium"
-                                style={{ color: "#1a0a0d" }}
-                              >
-                                {formatDateTime(
-                                  parseLocalDateTime(b.date, b.time),
-                                )}
+                              <p className="text-xs font-medium" style={{ color: "#1a0a0d" }}>
+                                {formatDateTime(parseLocalDateTime(b.date, b.time))}
                               </p>
                             </td>
                             <td className="px-6 py-4">
                               <span
                                 className="font-bold text-xs"
-                                style={{
-                                  color: "#A30A24",
-                                  fontFamily: "'Georgia', serif",
-                                }}
+                                style={{ color: "#A30A24", fontFamily: "'Georgia', serif" }}
                               >
                                 {fmtPrice(b.totalPrice)}
                               </span>
@@ -509,18 +571,14 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                               <span
                                 className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS_STYLES[b.status]}`}
                               >
-                                <span
-                                  className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[b.status]}`}
-                                />
+                                <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[b.status]}`} />
                                 {b.status}
                               </span>
                             </td>
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-1">
                                 <button
-                                  onClick={() =>
-                                    setModal({ type: "view", booking: b })
-                                  }
+                                  onClick={() => setModal({ type: "view", booking: b })}
                                   title="View"
                                   className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
                                   style={{ color: "#A30A24" }}
@@ -528,22 +586,19 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                                   <Icon d={Icons.eye} size={14} />
                                 </button>
                                 <button
-                                  onClick={() =>
-                                    setModal({ type: "edit", booking: b })
-                                  }
+                                  onClick={() => setModal({ type: "edit", booking: b })}
                                   title="Edit"
                                   className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-blue-50"
                                   style={{ color: "#2563eb" }}
                                 >
                                   <Icon d={Icons.edit} size={14} />
                                 </button>
-                                {/* ── New Confirm / Cancel buttons ── */}
+
+                                {/* ── Confirm / Cancel with confirmation modal ── */}
                                 {b.status !== "Confirmed" && (
                                   <button
                                     type="button"
-                                    onClick={() =>
-                                      updateBookingStatus(b.id, "Confirmed")
-                                    }
+                                    onClick={() => promptStatusChange(b, "Confirmed")}
                                     className="px-3 py-1.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-colors cursor-pointer"
                                     title="Mark as Confirmed"
                                   >
@@ -553,9 +608,7 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                                 {b.status !== "Cancelled" && (
                                   <button
                                     type="button"
-                                    onClick={() =>
-                                      updateBookingStatus(b.id, "Cancelled")
-                                    }
+                                    onClick={() => promptStatusChange(b, "Cancelled")}
                                     className="px-3 py-1.5 text-xs font-semibold rounded-full bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
                                     title="Mark as Cancelled"
                                   >
@@ -571,7 +624,8 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                   </table>
                 </div>
               </div>
-              {/* NEW TABLE */}
+
+              {/* Past Bookings Table */}
               <div
                 className="bg-white rounded-2xl overflow-hidden mt-6"
                 style={{
@@ -579,14 +633,8 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                   border: "1px solid #f0e0e3",
                 }}
               >
-                <div
-                  className="px-6 py-4 border-b"
-                  style={{ borderColor: "#f5eaec" }}
-                >
-                  <h2
-                    className="text-sm font-bold"
-                    style={{ color: "#A30A24" }}
-                  >
+                <div className="px-6 py-4 border-b" style={{ borderColor: "#f5eaec" }}>
+                  <h2 className="text-sm font-bold" style={{ color: "#A30A24" }}>
                     Past Bookings
                   </h2>
                 </div>
@@ -595,25 +643,19 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                   <table className="w-full text-sm">
                     <thead>
                       <tr style={{ background: "#fdf5f6" }}>
-                        {[
-                          "Booking ID",
-                          "Customer",
-                          "Service",
-                          "Schedule",
-                          "Total",
-                          "Status",
-                        ].map((h) => (
-                          <th
-                            key={h}
-                            className="text-left px-6 py-3.5 text-xs font-bold uppercase tracking-wider"
-                            style={{ color: "#b0707a" }}
-                          >
-                            {h}
-                          </th>
-                        ))}
+                        {["Booking ID", "Customer", "Service", "Schedule", "Total", "Status"].map(
+                          (h) => (
+                            <th
+                              key={h}
+                              className="text-left px-6 py-3.5 text-xs font-bold uppercase tracking-wider"
+                              style={{ color: "#b0707a" }}
+                            >
+                              {h}
+                            </th>
+                          ),
+                        )}
                       </tr>
                     </thead>
-
                     <tbody>
                       {pastBookings.length === 0 ? (
                         <tr>
@@ -623,38 +665,19 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
                         </tr>
                       ) : (
                         pastBookings.map((b) => (
-                          <tr
-                            key={b.id}
-                            className="border-t"
-                            style={{ borderColor: "#f5eaec" }}
-                          >
+                          <tr key={b.id} className="border-t text-gray-400" style={{ borderColor: "#f5eaec" }}>
                             <td className="px-6 py-4">{b.id}</td>
-
-                            <td className="px-6 py-4">
-                              {b.customer?.name || "Unknown"}
-                            </td>
-
+                            <td className="px-6 py-4">{b.customer?.name || "Unknown"}</td>
                             <td className="px-6 py-4">{b.service?.title}</td>
-
                             <td className="px-6 py-4">
-                              {formatDateTime(
-                                parseLocalDateTime(b.date, b.time),
-                              )}
+                              {formatDateTime(parseLocalDateTime(b.date, b.time))}
                             </td>
-
+                            <td className="px-6 py-4">{fmtPrice(b.totalPrice)}</td>
                             <td className="px-6 py-4">
-                              {fmtPrice(b.totalPrice)}
-                            </td>
-
-                            <td className="px-6 py-4">
-                              <span
-                                className={`px-2 py-1 rounded text-xs ${STATUS_STYLES[b.status]}`}
-                              >
+                              <span className={`px-2 py-1 rounded text-xs ${STATUS_STYLES[b.status]}`}>
                                 {b.status}
                               </span>
                             </td>
-
-                            {/* ❌ NO ACTIONS */}
                           </tr>
                         ))
                       )}
@@ -675,11 +698,7 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
       )}
       {modal?.type === "edit" && (
         <Modal title="Edit Booking" onClose={closeModal}>
-          <BookingForm
-            initial={modal.booking}
-            onSave={handleEdit}
-            onCancel={closeModal}
-          />
+          <BookingForm initial={modal.booking} onSave={handleEdit} onCancel={closeModal} />
         </Modal>
       )}
       {modal?.type === "view" && (
@@ -692,6 +711,21 @@ const currentBookings = filtered.filter((b) => !isPastBooking(b));
           <DeleteConfirm
             booking={modal.booking}
             onConfirm={handleDelete}
+            onCancel={closeModal}
+          />
+        </Modal>
+      )}
+
+      {/* ── Status Confirmation Modal ── */}
+      {modal?.type === "statusConfirm" && (
+        <Modal
+          title={modal.newStatus === "Confirmed" ? "Confirm Booking" : "Cancel Booking"}
+          onClose={closeModal}
+        >
+          <StatusConfirmModal
+            booking={modal.booking}
+            newStatus={modal.newStatus}
+            onConfirm={() => updateBookingStatus(modal.booking.id, modal.newStatus)}
             onCancel={closeModal}
           />
         </Modal>

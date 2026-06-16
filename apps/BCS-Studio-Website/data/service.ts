@@ -1,4 +1,4 @@
-// data/works.ts
+// data/service.ts
 export type ServiceCategory = "portraits" | "studio" | "event";
 
 export interface ServiceAddon {
@@ -17,6 +17,7 @@ export interface Service {
   image: string;
   inclusions: string[];
   addons: ServiceAddon[];
+  duration: number;
 }
 
 export const PORTRAITS_FEATURES = [

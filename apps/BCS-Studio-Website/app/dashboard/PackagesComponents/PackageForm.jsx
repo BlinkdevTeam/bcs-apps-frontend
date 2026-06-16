@@ -67,7 +67,7 @@ const handleSave = async () => {
 };
 
   try {
-    const res = await fetch("/api/packages", {
+    const res = await fetch("/api/packages?all=true", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
