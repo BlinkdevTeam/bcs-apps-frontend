@@ -21,7 +21,7 @@ export default function LayoutWrapper({
 
       {!hideLayout && <Header />}
 
-      {children}
+      <main className={!hideLayout ? "pt-20" : ""}>{children}</main>
 
       {!hideLayout && <Footer />}
     </>

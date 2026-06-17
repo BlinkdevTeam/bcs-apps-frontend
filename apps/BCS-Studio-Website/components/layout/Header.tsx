@@ -18,7 +18,7 @@ export default function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <header className="border-b bg-white">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md border-b">
       <div className="mx-auto max-w-full px-6 md:px-12 lg:px-24 py-5 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">

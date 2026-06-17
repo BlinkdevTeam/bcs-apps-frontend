@@ -83,14 +83,29 @@ export default function ServiceSection() {
     loadServices();
   }, []);
 
+  // const displayedServices =
+  //   activeFilter === "event"
+  //     ? []
+  //     : services.filter((service) =>
+  //         activeFilter === "portraits"
+  //           ? service.type === "portrait"
+  //           : service.type === "rental",
+  //       );
+
+  const portraitServices = services
+    .filter((s) => s.type === "portrait")
+    .sort((a, b) => a.title.localeCompare(b.title));
+
+  const rentalServices = services
+    .filter((s) => s.type === "rental")
+    .sort((a, b) => a.title.localeCompare(b.title));
+
   const displayedServices =
     activeFilter === "event"
       ? []
-      : services.filter((service) =>
-          activeFilter === "portraits"
-            ? service.type === "portrait"
-            : service.type === "rental",
-        );
+      : activeFilter === "portraits"
+        ? portraitServices
+        : rentalServices;
 
   // -------------------- Handle TalkToOurTeam Submit --------------------
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -141,6 +156,7 @@ export default function ServiceSection() {
               key={filter.value}
               onClick={() => setActiveFilter(filter.value)}
               isActive={activeFilter === filter.value}
+              className="cursor-pointer"
             >
               <span className="text-[18px] md:text-[24px]">{filter.label}</span>
             </SkewButton>
@@ -155,35 +171,92 @@ export default function ServiceSection() {
 
       {/* Services Grid */}
       {!loading && activeFilter !== "event" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {displayedServices.map((service) => (
-            <div
-              key={service.id}
-              className="border shadow-md bg-white rounded-xl p-8 flex flex-col gap-4"
-            >
-              <div className="flex justify-between">
-                <h4 className="text-[24px] md:text-[36px] text-[#191919] font-bold">
-                  {service.title}
-                </h4>
-                <h4 className="text-[24px] md:text-[36px] text-[#A30A24] font-bold">
-                  ₱{service.price.toLocaleString()}
-                </h4>
+        <div className="flex flex-col gap-12">
+          {/* Portraits Group */}
+          {activeFilter === "portraits" && portraitServices.length > 0 && (
+            <div>
+              <h3 className="text-[20px] md:text-[28px] font-bold text-[#191919] mb-6 pb-2 border-b border-gray-200">
+                Portrait Packages
+                <span className="ml-3 text-[14px] font-normal text-[#808080]">
+                  {portraitServices.length} package
+                  {portraitServices.length > 1 ? "s" : ""}
+                </span>
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                {portraitServices.map((service) => (
+                  <div
+                    key={service.id}
+                    className="border shadow-md bg-white rounded-xl p-8 flex flex-col gap-4"
+                  >
+                    <div className="flex justify-between">
+                      <h4 className="text-[24px] md:text-[36px] text-[#191919] font-bold">
+                        {service.title}
+                      </h4>
+                      <h4 className="text-[24px] md:text-[36px] text-[#A30A24] font-bold">
+                        ₱{service.price.toLocaleString()}
+                      </h4>
+                    </div>
+                    {service.description && (
+                      <p className="text-[18px] md:text-[24px] text-[#808080] mt-2">
+                        {service.description.split(" ").length > 13
+                          ? service.description
+                              .split(" ")
+                              .slice(0, 13)
+                              .join(" ") + "..."
+                          : service.description}
+                      </p>
+                    )}
+                    <SkewButton href={`/book-now/services/${service.id}`}>
+                      Book Now
+                    </SkewButton>
+                  </div>
+                ))}
               </div>
-
-              {service.description && (
-                <p className="text-[18px] md:text-[24px] text-[#808080] mt-2">
-                  {service.description.split(" ").length > 13
-                    ? service.description.split(" ").slice(0, 13).join(" ") +
-                      "..."
-                    : service.description}
-                </p>
-              )}
-
-              <SkewButton href={`/book-now/services/${service.id}`}>
-                Book Now
-              </SkewButton>
             </div>
-          ))}
+          )}
+
+          {/* Studio Rental Group */}
+          {activeFilter === "studio" && rentalServices.length > 0 && (
+            <div>
+              <h3 className="text-[20px] md:text-[28px] font-bold text-[#191919] mb-6 pb-2 border-b border-gray-200">
+                Studio Rental Packages
+                <span className="ml-3 text-[14px] font-normal text-[#808080]">
+                  {rentalServices.length} package
+                  {rentalServices.length > 1 ? "s" : ""}
+                </span>
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                {rentalServices.map((service) => (
+                  <div
+                    key={service.id}
+                    className="border shadow-md bg-white rounded-xl p-8 flex flex-col gap-4"
+                  >
+                    <div className="flex justify-between">
+                      <h4 className="text-[24px] md:text-[36px] text-[#191919] font-bold">
+                        {service.title}
+                      </h4>
+                      <h4 className="text-[24px] md:text-[36px] text-[#A30A24] font-bold">
+                        ₱{service.price.toLocaleString()}
+                      </h4>
+                    </div>
+                    {service.description && (
+                      <p className="text-[18px] md:text-[24px] text-[#808080] mt-2">
+                        {service.description.split(" ").length > 13
+                          ? service.description
+                              .split(" ")
+                              .slice(0, 13)
+                              .join(" ") + "..."
+                          : service.description}
+                      </p>
+                    )}
+                    <SkewButton href={`/book-now/services/${service.id}`}>
+                      Book Now
+                    </SkewButton>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -194,10 +267,8 @@ export default function ServiceSection() {
             TALK TO OUR TEAM
           </h5>
 
-          {/* Contact Form */}
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex flex-col md:flex-row gap-4 w-full">
-              {/* Full Name */}
               <div className="flex flex-col w-full">
                 <label className="text-[16px] md:text-[18px] font-medium mb-1">
                   Full Name
@@ -209,12 +280,11 @@ export default function ServiceSection() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, name: e.target.value }))
                   }
-                  className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#A30A24]"
+                  className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] text-black placeholder:text-black/50"
                   required
                 />
               </div>
 
-              {/* Contact Number */}
               <div className="flex flex-col w-full">
                 <label className="text-[16px] md:text-[18px] font-medium mb-1">
                   Contact Number
@@ -231,12 +301,11 @@ export default function ServiceSection() {
                       phone: e.target.value.replace(/\D/g, ""),
                     }))
                   }
-                  className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#A30A24]"
+                  className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] text-black placeholder:text-black/50"
                   required
                 />
               </div>
 
-              {/* Email Address */}
               <div className="flex flex-col w-full">
                 <label className="text-[16px] md:text-[18px] font-medium mb-1">
                   Email Address
@@ -248,13 +317,12 @@ export default function ServiceSection() {
                   onChange={(e) =>
                     setForm((f) => ({ ...f, email: e.target.value }))
                   }
-                  className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#A30A24]"
+                  className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] text-black placeholder:text-black/50"
                   required
                 />
               </div>
             </div>
 
-            {/* Description */}
             <div className="flex flex-col">
               <label className="text-[16px] md:text-[18px] font-medium mb-1">
                 Please provide any additional details, ideas, specifications, or
@@ -268,12 +336,11 @@ export default function ServiceSection() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, message: e.target.value }))
                 }
-                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] focus:outline-none focus:ring-2 focus:ring-[#A30A24] resize-none"
+                className="border border-gray-300 rounded-md px-4 py-2 text-[16px] md:text-[18px] text-black placeholder:text-black/50"
                 required
               />
             </div>
 
-            {/* Success/Error Messages */}
             {success && (
               <p className="text-green-600 font-medium">
                 Message sent successfully!
@@ -281,7 +348,6 @@ export default function ServiceSection() {
             )}
             {error && <p className="text-red-600 font-medium">{error}</p>}
 
-            {/* Submit Button */}
             <div className="mt-4">
               <button
                 type="submit"

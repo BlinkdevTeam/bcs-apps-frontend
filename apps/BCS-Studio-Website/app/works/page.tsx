@@ -40,7 +40,7 @@ export default function WorksPage() {
           </div>
         </div>
       </div>
-      <div className="bg-[#F2F2F2] py-24 px-6 md:px-24">
+      <div className="bg-[#ffffff] py-24 px-6 md:px-24">
         <div className="w-full flex flex-col justify-center items-center gap-12 mx-auto text-center">
           <div className="w-fit flex flex-col gap-2 text-[#161616]">
             <h1 className="text-[#A30A24] text-[48px] md:text-[72px] font-bold">
@@ -50,16 +50,16 @@ export default function WorksPage() {
               Take a glimpse into our creative process and studio environment
             </p>
           </div>
-          <div className="flex-1 w-full lg:max-w-[1620px] h-auto bg-[#A30A24] overflow-hidden">
-            <video autoPlay muted loop className="w-full h-full object-cover">
-              <source
-                src="/assets/blinkworks/bcs_ad_10_things.mp4"
-                type="video/mp4"
-              />
-              Your browser does not support the video tag.
-            </video>
-          </div>
         </div>
+      </div>
+      <div className="flex-1 w-full lg:max-w-full h-auto bg-[#A30A24] overflow-hidden">
+        <video autoPlay muted loop className="w-full h-full object-cover">
+          <source
+            src="https://blinkassets.sgp1.cdn.digitaloceanspaces.com/studio/works/3D%20studio%20animation.mp4"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
       </div>
       <WorksSection />
     </section>
