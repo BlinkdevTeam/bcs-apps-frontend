@@ -1,6 +1,9 @@
+// ServiceSection.tsx
 "use client";
 
-import { motion, Variants } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, Variants, useInView } from "framer-motion";
+import { JetBrains_Mono } from "next/font/google";
 import SkewButton from "../../../components/ui/buttons/SkewButton";
 import { PORTRAITS_FEATURES, PORTRAITS_IMAGES } from "../../../data/service";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,7 +11,8 @@ import { EffectCards, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/effect-cards";
 
-// Framer Motion Variants
+const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["500", "600"] });
+
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 60 },
   visible: {
@@ -18,81 +22,180 @@ const fadeUp: Variants = {
   },
 };
 
-export default function ServicesSection() {
+function Check() {
   return (
-    <div className="max-w-full mx-auto text-[#191919]">
-      {/* Page Title */}
-      <motion.h2
-        className="text-[36px] md:text-[48px] font-bold text-center my-12"
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M26.6666 8L11.9999 22.6667L5.33325 16"
+        stroke="#A30A24"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function useCountUp(target: number, duration = 1800, active: boolean) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!active) return;
+    let startTime: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [active, target, duration]);
+  return count;
+}
+
+const STATS = [
+  { number: 2500, suffix: "", label: "Happy Clients" },
+  { number: 10, suffix: "", label: "Years in the Industry" },
+  {
+    number: 4,
+    suffix: "",
+    label: ["Universities Official", "Photographer"] as string[],
+  },
+  { number: 98, suffix: "%", label: "Satisfactory Rate" },
+];
+
+function StatItem({
+  number,
+  suffix,
+  label,
+  active,
+}: {
+  number: number;
+  suffix: string;
+  label: string | string[];
+  active: boolean;
+}) {
+  const count = useCountUp(number, 1800, active);
+  const display = number >= 1000 ? count.toLocaleString() : count.toString();
+
+  return (
+    <motion.div className="text-center" variants={fadeUp}>
+      <h3
+        className="font-black tabular-nums"
+        style={{ fontSize: "clamp(40px, 5vw, 64px)" }}
+      >
+        {display}
+        {suffix}
+      </h3>
+      <p
+        className={`${mono.className} text-[11px] uppercase tracking-[0.15em] mt-2`}
+        style={{ color: "rgba(255,255,255,0.8)" }}
+      >
+        {Array.isArray(label)
+          ? label.map((line, i) => (
+              <span key={i} className="block">
+                {line}
+              </span>
+            ))
+          : label}
+      </p>
+    </motion.div>
+  );
+}
+
+export default function ServicesSection() {
+  const statsRef = useRef<HTMLElement>(null); // ← add
+  const statsInView = useInView(statsRef, { once: true, amount: 0.3 }); // ← add
+  return (
+    <div className="max-w-full mx-auto" style={{ color: "#161616" }}>
+      {/* Section intro */}
+      <motion.div
+        className="flex flex-col items-center text-center px-6 lg:px-16 pt-20 pb-4"
         variants={fadeUp}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.3 }}
       >
-        Our Services
-      </motion.h2>
+        <motion.span
+          className={`${mono.className} text-[10px] uppercase tracking-[0.2em] mb-3`}
+          style={{ color: "#A30A24" }}
+          variants={fadeUp}
+        >
+          What We Offer
+        </motion.span>
+        <motion.h2
+          className="font-black"
+          style={{
+            fontSize: "clamp(32px, 5vw, 56px)",
+            letterSpacing: "-0.01em",
+          }}
+          variants={fadeUp}
+        >
+          Our Services
+        </motion.h2>
+      </motion.div>
 
       {/* Portraits Section */}
       <motion.section
-        className="bg-[#F2F2F2] flex flex-col lg:flex-row px-8 lg:px-24 py-24 gap-12 items-center"
+        className="flex flex-col lg:flex-row px-6 lg:px-16 py-20 md:py-28 gap-12 items-center"
+        style={{ background: "#F7F5F2" }}
         variants={fadeUp}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
       >
-        {/* Service Info */}
         <motion.div
           className="flex-1 flex flex-col gap-6 order-2 lg:order-1"
           variants={fadeUp}
         >
           <motion.div variants={fadeUp}>
-            <motion.h3
-              className="text-[48px] md:text-[72px] font-bold"
-              variants={fadeUp}
+            <span
+              className={`${mono.className} text-[10px] uppercase tracking-[0.2em]`}
+              style={{ color: "#A30A24" }}
+            >
+              Frame 02 — Portraits
+            </span>
+            <h3
+              className="font-black mt-2"
+              style={{
+                fontSize: "clamp(36px, 5vw, 64px)",
+                letterSpacing: "-0.01em",
+              }}
             >
               Portraits
-            </motion.h3>
-            <motion.h4
-              className="text-[24px] md:text-[36px] font-bold"
-              variants={fadeUp}
-            >
+            </h3>
+            <h4 className="text-[22px] md:text-[32px] font-bold mt-1">
               Professional Studio Space
-            </motion.h4>
-            <motion.p
-              className="text-[18px] md:text-[24px] text-[#808080]"
-              variants={fadeUp}
+            </h4>
+            <p
+              className="text-[16px] md:text-[20px] leading-relaxed mt-3"
+              style={{ color: "#6E6E6E" }}
             >
               Rent our state-of-the-art studio facilities for your creative
               projects. Our versatile spaces are equipped with professional
               lighting, backdrops, and all the amenities you need for a
               successful shoot.
-            </motion.p>
+            </p>
           </motion.div>
 
-          {/* Features List */}
-          <motion.ul className="flex flex-col gap-2" variants={fadeUp}>
+          <motion.ul className="flex flex-col gap-2 mt-2" variants={fadeUp}>
             {PORTRAITS_FEATURES.map((feature, index) => (
               <motion.li
                 key={index}
                 className="flex items-center gap-3"
                 variants={fadeUp}
               >
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 32 32"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+                <Check />
+                <span
+                  className="text-[16px] md:text-[20px]"
+                  style={{ color: "#6E6E6E" }}
                 >
-                  <path
-                    d="M26.6666 8L11.9999 22.6667L5.33325 16"
-                    stroke="#A20C23"
-                    strokeWidth="5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                <span className="text-[18px] md:text-[24px] text-[#808080]">
                   {feature}
                 </span>
               </motion.li>
@@ -104,7 +207,6 @@ export default function ServicesSection() {
           </motion.div>
         </motion.div>
 
-        {/* Swiper Slider */}
         <motion.div className="flex-1 order-1 lg:order-2" variants={fadeUp}>
           <Swiper
             effect={"cards"}
@@ -132,22 +234,31 @@ export default function ServicesSection() {
 
       {/* Studio Rental Section */}
       <motion.section
-        className="py-24 md:py-40 px-8 lg:px-24"
+        className="py-20 md:py-32 px-6 lg:px-16"
         variants={fadeUp}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
       >
         <motion.div
-          className="flex justify-center items-center my-12"
+          className="flex flex-col items-center text-center mb-12"
           variants={fadeUp}
         >
-          <motion.h3
-            className="text-[48px] md:text-[72px] font-bold"
-            variants={fadeUp}
+          <span
+            className={`${mono.className} text-[10px] uppercase tracking-[0.2em]`}
+            style={{ color: "#A30A24" }}
+          >
+            Frame 03 — Studio Rental
+          </span>
+          <h3
+            className="font-black mt-2"
+            style={{
+              fontSize: "clamp(36px, 5vw, 64px)",
+              letterSpacing: "-0.01em",
+            }}
           >
             Studio Rental
-          </motion.h3>
+          </h3>
         </motion.div>
 
         <motion.div
@@ -155,40 +266,64 @@ export default function ServicesSection() {
           variants={fadeUp}
         >
           <motion.div
-            className="flex-1 w-full lg:w-[820px] h-auto bg-[#A30A24] overflow-hidden"
+            className="relative flex-1 w-full lg:w-[820px] overflow-hidden"
+            style={{ aspectRatio: "4 / 3", background: "#A30A24" }}
             variants={fadeUp}
           >
-            <video autoPlay muted loop className="w-full h-full object-cover">
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover"
+            >
               <source
                 src="https://blinkassets.sgp1.cdn.digitaloceanspaces.com/studio/works/bcs_ad_10_things.mp4"
                 type="video/mp4"
               />
               Your browser does not support the video tag.
             </video>
+            <span
+              className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2"
+              style={{ borderColor: "#fff" }}
+              aria-hidden="true"
+            />
+            <span
+              className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2"
+              style={{ borderColor: "#fff" }}
+              aria-hidden="true"
+            />
+            <span
+              className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2"
+              style={{ borderColor: "#fff" }}
+              aria-hidden="true"
+            />
+            <span
+              className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2"
+              style={{ borderColor: "#fff" }}
+              aria-hidden="true"
+            />
           </motion.div>
 
           <motion.div className="flex-1 flex flex-col gap-6" variants={fadeUp}>
             <motion.div className="flex flex-col gap-2" variants={fadeUp}>
-              <motion.h4
-                className="text-[24px] md:text-[36px] font-bold"
-                variants={fadeUp}
+              <h4 className="text-[22px] md:text-[32px] font-bold">
+                Book the Space by the Hour
+              </h4>
+              <h4
+                className="text-[22px] md:text-[32px] font-bold"
+                style={{ color: "#A30A24" }}
               >
-                Professional Studio Space
-              </motion.h4>
-              <motion.h4
-                className="text-[24px] md:text-[36px] text-[#A30A24] font-bold"
-                variants={fadeUp}
-              >
-                P 650/hr
-              </motion.h4>
-              <motion.p
-                className="text-[18px] md:text-[24px] text-[#808080]"
-                variants={fadeUp}
+                ₱650/hr
+              </h4>
+              <p
+                className="text-[16px] md:text-[20px] leading-relaxed mt-1"
+                style={{ color: "#6E6E6E" }}
               >
                 Rent our studio for your creative projects. Equipped with
                 professional lighting, backdrops, and all the amenities you need
                 for a successful shoot.
-              </motion.p>
+              </p>
             </motion.div>
 
             <motion.ul className="flex flex-col gap-2" variants={fadeUp}>
@@ -198,22 +333,11 @@ export default function ServicesSection() {
                   className="flex items-center gap-3"
                   variants={fadeUp}
                 >
-                  <svg
-                    width="32"
-                    height="32"
-                    viewBox="0 0 32 32"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <Check />
+                  <span
+                    className="text-[16px] md:text-[20px]"
+                    style={{ color: "#6E6E6E" }}
                   >
-                    <path
-                      d="M26.6666 8L11.9999 22.6667L5.33325 16"
-                      stroke="#A20C23"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  <span className="text-[18px] md:text-[24px] text-[#808080]">
                     {feature}
                   </span>
                 </motion.li>
@@ -229,61 +353,69 @@ export default function ServicesSection() {
 
       {/* Event Coverage Section */}
       <motion.section
-        className="bg-[#191919] text-white py-20 md:py-28 px-8 lg:px-24"
+        className="relative text-white py-20 md:py-28 px-6 lg:px-16 overflow-hidden"
+        style={{ background: "#161616" }}
         variants={fadeUp}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
       >
+        <span className="sprocket-rail left-0" aria-hidden="true" />
+        <span className="sprocket-rail right-0" aria-hidden="true" />
+
         <motion.div
           className="flex flex-col gap-16 items-center text-center"
           variants={fadeUp}
         >
-          <motion.div className="flex flex-col gap-8" variants={fadeUp}>
-            <motion.h3
-              className="text-[48px] md:text-[72px] font-bold"
-              variants={fadeUp}
+          <motion.div className="flex flex-col gap-6" variants={fadeUp}>
+            <span
+              className={`${mono.className} text-[10px] uppercase tracking-[0.2em]`}
+              style={{ color: "#A30A24" }}
+            >
+              Frame 04 — Event Coverage
+            </span>
+            <h3
+              className="font-black"
+              style={{
+                fontSize: "clamp(36px, 5vw, 64px)",
+                letterSpacing: "-0.01em",
+              }}
             >
               Event Coverage
-            </motion.h3>
-            <motion.p
-              className="text-[#808080] text-[24px] md:text-[36px]"
-              variants={fadeUp}
+            </h3>
+            <p
+              className="text-[18px] md:text-[24px] max-w-2xl mx-auto"
+              style={{ color: "rgba(255,255,255,0.55)" }}
             >
               From weddings to corporate events, we provide comprehensive
               photography coverage that captures every important moment with
               professional expertise and artistic vision.
-            </motion.p>
+            </p>
           </motion.div>
 
           <motion.div
-            className="flex flex-col lg:flex-row gap-10 text-center"
+            className="flex flex-col lg:flex-row gap-6 text-center"
             variants={fadeUp}
           >
             {["Weddings", "Special events", "Corporate Events"].map(
               (title, index) => (
                 <motion.div
                   key={index}
-                  className="bg-[#A30A24] hover:bg-white hover:text-[#A30A24] border-3 border-[#A30A24] py-24 px-14"
+                  className="transition-colors hover:bg-white hover:text-[#A30A24] py-16 px-10 md:py-20 md:px-14"
+                  style={{ background: "#A30A24", border: "3px solid #A30A24" }}
                   variants={fadeUp}
                 >
-                  <motion.h6
-                    className="text-[24px] md:text-[36px] font-bold"
-                    variants={fadeUp}
-                  >
+                  <h6 className="text-[22px] md:text-[28px] font-bold">
                     {title}
-                  </motion.h6>
-                  <motion.p
-                    className="text-[18px] md:text-[24px]"
-                    variants={fadeUp}
-                  >
+                  </h6>
+                  <p className="text-[16px] md:text-[18px] mt-2">
                     {index === 0 &&
                       "Complete wedding day coverage from preparation to reception"}
                     {index === 1 &&
                       "Birthdays, anniversaries, and milestone celebrations"}
                     {index === 2 &&
                       "Conferences, product launches, and business functions"}
-                  </motion.p>
+                  </p>
                 </motion.div>
               ),
             )}
@@ -297,7 +429,9 @@ export default function ServicesSection() {
 
       {/* Numbers Section */}
       <motion.section
-        className="bg-[#A30A24] py-16 px-8 lg:px-24"
+        ref={statsRef}
+        className="py-16 px-6 lg:px-16"
+        style={{ background: "#A30A24" }}
         variants={fadeUp}
         initial="hidden"
         whileInView="visible"
@@ -307,35 +441,35 @@ export default function ServicesSection() {
           className="flex flex-col lg:flex-row justify-between gap-12 text-center text-white"
           variants={fadeUp}
         >
-          {[
-            { number: "2,500", label: "HAPPY CLIENTS" },
-            { number: "10", label: "YEARS IN THE INDUSTRY" },
-            { number: "4", label: ["UNIVERSITIES OFFICIAL", "PHOTOGRAPHER"] },
-            { number: "98%", label: "SATISFACTORY RATE" },
-          ].map((item, index) => (
-            <motion.div key={index} className="text-center" variants={fadeUp}>
-              <motion.h3
-                className="text-[48px] md:text-[72px] font-bold"
-                variants={fadeUp}
-              >
-                {item.number}
-              </motion.h3>
-              <motion.p
-                className="text-[18px] md:text-[24px]"
-                variants={fadeUp}
-              >
-                {Array.isArray(item.label)
-                  ? item.label.map((line, i) => (
-                      <span key={i} className="block">
-                        {line}
-                      </span>
-                    ))
-                  : item.label}
-              </motion.p>
-            </motion.div>
+          {STATS.map((item, index) => (
+            <StatItem
+              key={index}
+              number={item.number}
+              suffix={item.suffix}
+              label={item.label}
+              active={statsInView}
+            />
           ))}
         </motion.div>
       </motion.section>
+
+      <style jsx>{`
+        .sprocket-rail {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          width: 14px;
+          background-image: repeating-linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.14) 0px,
+            rgba(255, 255, 255, 0.14) 6px,
+            transparent 6px,
+            transparent 26px
+          );
+          background-position: center;
+          background-repeat: repeat-y;
+        }
+      `}</style>
     </div>
   );
 }

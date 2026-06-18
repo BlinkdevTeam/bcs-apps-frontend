@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useMemo } from "react";
-import worksData from "./works.json";
+import worksData from "../../data/works.json";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type WorkCategory = "event" | "portraits" | "studio" | "graduation";

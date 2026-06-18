@@ -1,53 +1,123 @@
+"use client";
+
 import SkewButton from "@/components/ui/buttons/SkewButton";
 import { PROMOS } from "@/data/promo";
+import { motion, Variants } from "framer-motion";
+import { JetBrains_Mono } from "next/font/google";
+
+const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"] });
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 export default function CurrentPromo() {
   return (
-    <section className="bg-white px-6 md:px-24 py-24 overflow-hidden">
-      {/* Header */}
-      <div className="flex flex-col items-center text-center gap-6 mb-20">
-        <h1 className="text-[48px] md:text-[72px] text-[#A30A24] font-bold">
+    <section className="bg-[#F7F5F2] px-6 md:px-16 py-24 overflow-hidden">
+      <motion.div
+        className="flex flex-col items-center text-center gap-4 mb-16"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+      >
+        <motion.span
+          className={`${mono.className} text-[10px] uppercase tracking-[0.25em]`}
+          style={{ color: "#A30A24" }}
+          variants={fadeUp}
+        >
+          Frame 01 — Promos
+        </motion.span>
+        <motion.h2
+          className="text-black font-black"
+          style={{
+            fontSize: "clamp(36px, 5vw, 64px)",
+            letterSpacing: "-0.01em",
+          }}
+          variants={fadeUp}
+        >
           Current Promotions
-        </h1>
-        <p className="max-w-4xl text-[20px] md:text-[32px] text-[#808080]">
-          Take a glimpse into our creative process and studio environment
-        </p>
-      </div>
+        </motion.h2>
+        <motion.p
+          className="max-w-2xl text-[17px] md:text-[20px]"
+          style={{ color: "#6E6E6E" }}
+          variants={fadeUp}
+        >
+          Take a glimpse into our creative process and studio environment.
+        </motion.p>
+      </motion.div>
 
-      {/* Promo Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {PROMOS.map((promo, index) => (
-          <div
+          <motion.div
             key={index}
-            className="border overflow-hidden shadow-md bg-white"
+            className="bg-white overflow-hidden"
+            style={{ border: "1px solid #E8E4DF" }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            variants={fadeUp}
           >
-            {/* Image Placeholder */}
-            <div className="bg-[#A30A24] w-full h-[320px]" />
+            {/* Image placeholder with corner brackets */}
+            <div
+              className="relative w-full"
+              style={{ aspectRatio: "16/9", background: "#A30A24" }}
+            >
+              <span className="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-white/60" />
+              <span className="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-white/60" />
+              <span className="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-white/60" />
+              <span className="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-white/60" />
+            </div>
 
-            {/* Content */}
-            <div className="flex flex-col gap-6 p-12">
+            <div className="flex flex-col gap-5 p-8 md:p-10">
               <div>
-                <h4 className="text-[36px] md:text-[48px] text-[#191919] font-bold">
+                <h3
+                  className="text-black font-black"
+                  style={{
+                    fontSize: "clamp(24px, 3vw, 36px)",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
                   {promo.title}
-                </h4>
-                <p className="text-[18px] md:text-[24px] text-[#808080] mt-2">
+                </h3>
+                <p
+                  className="text-[16px] md:text-[18px] mt-2"
+                  style={{ color: "#6E6E6E" }}
+                >
                   {promo.description}
                 </p>
               </div>
 
-              <div className="flex flex-wrap justify-between items-center gap-4">
-                <h4 className="text-[36px] md:text-[48px] font-bold text-[#A30A24]">
+              <div
+                className="flex flex-wrap justify-between items-center gap-3 py-4"
+                style={{ borderTop: "1px solid #E8E4DF" }}
+              >
+                <span
+                  className="font-black"
+                  style={{
+                    fontSize: "clamp(28px, 3vw, 40px)",
+                    color: "#A30A24",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
                   {promo.discount}
-                </h4>
-                <p className="text-[18px] md:text-[24px] text-[#808080]">
+                </span>
+                <span
+                  className={`${mono.className} text-[11px] uppercase tracking-[0.15em]`}
+                  style={{ color: "#9E9E9E" }}
+                >
                   {promo.validUntil}
-                </p>
+                </span>
               </div>
 
-              {/* CTA from data */}
               <SkewButton href={promo.href}>{promo.cta}</SkewButton>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>
