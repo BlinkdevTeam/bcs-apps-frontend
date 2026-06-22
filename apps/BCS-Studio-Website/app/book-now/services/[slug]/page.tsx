@@ -127,6 +127,7 @@ export default function ServicePage({ params }: Props) {
               addons={service.addons}
               selectedAddons={selectedAddons}
               onChange={setSelectedAddons}
+              basePrice={service.price}
             />
           </div>
 

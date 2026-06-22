@@ -401,8 +401,7 @@ export default function ServicesSection() {
               (title, index) => (
                 <motion.div
                   key={index}
-                  className="transition-colors hover:bg-white hover:text-[#A30A24] py-16 px-10 md:py-20 md:px-14"
-                  style={{ background: "#A30A24", border: "3px solid #A30A24" }}
+                  className="bg-[#A30A24] border-[3px] border-[#A30A24] transition-colors hover:bg-white hover:text-[#A30A24] py-16 px-10 md:py-20 md:px-14"
                   variants={fadeUp}
                 >
                   <h6 className="text-[22px] md:text-[28px] font-bold">

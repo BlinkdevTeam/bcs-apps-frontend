@@ -15,101 +15,69 @@ import Modal from "./Modal";
 import BookingForm from "./BookingForm";
 import ViewBooking from "./ViewBooking";
 import DeleteConfirm from "./DeleteConfirm";
-
 import CalendarTab from "../CalendarComponents/CalendarTab";
 import PackagesTab from "../PackagesComponents/PackagesTab";
 
-// ─── Status Confirmation Modal ───────────────────────────────────────────────
+// ── Status Confirm Modal ──────────────────────────────────────────────────────
 function StatusConfirmModal({ booking, newStatus, onConfirm, onCancel }) {
   const isConfirm = newStatus === "Confirmed";
-
   return (
     <div className="space-y-5 text-sm">
-      {/* Icon */}
-      <div
-        className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto"
-        style={{ background: isConfirm ? "#ecfdf5" : "#FEF0F2" }}
-      >
+      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mx-auto ${
+        isConfirm ? "bg-emerald-950/60" : "bg-[#A30A24]/10"
+      }`}>
         {isConfirm ? (
-          <svg
-            className="w-7 h-7 text-emerald-500"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
+          <svg className="w-7 h-7 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         ) : (
-          <svg
-            className="w-7 h-7"
-            style={{ color: "#A30A24" }}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
+          <svg className="w-7 h-7 text-[#A30A24]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         )}
       </div>
 
-      {/* Text */}
       <div className="text-center space-y-1">
-        <p className="font-bold text-base" style={{ color: "#1a0a0d" }}>
+        <p className="font-bold text-base text-[#1D1D1D]">
           {isConfirm ? "Confirm Booking?" : "Cancel Booking?"}
         </p>
-        <p className="text-xs" style={{ color: "#9a6a72" }}>
+        <p className="text-xs text-[#6E6E6E]">
           {isConfirm
             ? "This will mark the booking as confirmed."
             : "This will mark the booking as cancelled. This action cannot be undone."}
         </p>
       </div>
 
-      {/* Booking summary */}
-      <div
-        className="rounded-xl p-4 space-y-2 text-xs"
-        style={{ background: "#fdf5f6", border: "1px solid #f0e0e3" }}
-      >
-        <div className="flex justify-between">
-          <span style={{ color: "#9a6a72" }}>Customer</span>
-          <span className="font-semibold" style={{ color: "#1a0a0d" }}>
-            {booking.customer?.name || "Unknown"}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span style={{ color: "#9a6a72" }}>Service</span>
-          <span className="font-semibold" style={{ color: "#1a0a0d" }}>
-            {booking.service?.title || "Service"}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span style={{ color: "#9a6a72" }}>Schedule</span>
-          <span className="font-semibold" style={{ color: "#1a0a0d" }}>
-            {formatDateTime(parseLocalDateTime(booking.date, booking.time))}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span style={{ color: "#9a6a72" }}>Total</span>
-          <span className="font-semibold" style={{ color: "#A30A24" }}>
-            {fmtPrice(booking.totalPrice)}
-          </span>
+      <div className="rounded-xl p-4 space-y-2.5 bg-[#0d0d0d] border border-[#2a2a2a]">
+        {[
+          ["Customer", booking.customer?.name || "Unknown"],
+          ["Service",  booking.service?.title  || "Service"],
+          ["Schedule", formatDateTime(parseLocalDateTime(booking.date, booking.time))],
+        ].map(([label, val]) => (
+          <div key={label} className="flex justify-between">
+            <span className="text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E]">{label}</span>
+            <span className="text-xs font-semibold text-[#F7F5F2]">{val}</span>
+          </div>
+        ))}
+        <div className="flex justify-between pt-1 border-t border-[#2a2a2a]">
+          <span className="text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E]">Total</span>
+          <span className="text-sm font-bold text-[#A30A24]">{fmtPrice(booking.totalPrice)}</span>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-3">
+      <div className="flex gap-3 pt-1">
         <button
           onClick={onCancel}
-          className="flex-1 py-2.5 rounded-lg text-sm font-medium border transition-colors hover:bg-gray-50"
-          style={{ borderColor: "#e5d5d8", color: "#7a3a42" }}
+          className="flex-1 py-2.5 rounded-lg text-sm font-medium border border-[#2a2a2a]
+                     text-[#6E6E6E] hover:bg-[#1e1e1e] transition-colors"
         >
           Go Back
         </button>
         <button
           onClick={onConfirm}
-          className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          style={{ background: isConfirm ? "#10b981" : "#A30A24" }}
+          className={`flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 ${
+            isConfirm ? "bg-emerald-600" : "bg-[#A30A24]"
+          }`}
         >
           {isConfirm ? "Yes, Confirm" : "Yes, Cancel"}
         </button>
@@ -118,352 +86,286 @@ function StatusConfirmModal({ booking, newStatus, onConfirm, onCancel }) {
   );
 }
 
-// ─── Main Dashboard ─────────────────────────────────────────────────────────────
+// ── Sidebar nav item ──────────────────────────────────────────────────────────
+function NavItem({ label, icon, active, open, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all cursor-pointer ${
+        active
+          ? "bg-[#A30A24] text-white"
+          : "text-[#6E6E6E] hover:bg-[#1e1e1e] hover:text-[#F7F5F2]"
+      }`}
+    >
+      <Icon d={icon} size={16} strokeWidth={2} />
+      {open && <span className="font-medium font-mono tracking-wide text-xs uppercase">{label}</span>}
+    </button>
+  );
+}
+
+// ── Main Dashboard ────────────────────────────────────────────────────────────
 export default function BookingsDashboard() {
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [bookings, setBookings]     = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [search, setSearch]         = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [modal, setModal]           = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab]   = useState("Bookings");
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchBookings = async () => {
+    (async () => {
       try {
-        const res = await fetch("/api/bookings");
+        const res  = await fetch("/api/bookings");
         const data = await res.json();
-
-        const safeData = Array.isArray(data) ? data : [];
-
-        const normalized = safeData.map((b) => ({
+        const safe = Array.isArray(data) ? data : [];
+        setBookings(safe.map((b) => ({
           ...b,
-          customer: {
-            name: b.customer?.name || "Unknown",
-            email: b.customer?.email || "",
-            phone: b.customer?.phone || "",
-          },
-          service: {
-            id: b.service?.id || 0,
-            title: b.service?.title || "Service",
-            price: b.service?.price || 0,
-          },
-          addons: Array.isArray(b.addons) ? b.addons : [],
-        }));
-
-        setBookings(normalized);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBookings();
+          customer: { name: b.customer?.name || "Unknown", email: b.customer?.email || "", phone: b.customer?.phone || "" },
+          service:  { id: b.service?.id || 0, title: b.service?.title || "Service", price: b.service?.price || 0 },
+          addons:   Array.isArray(b.addons) ? b.addons : [],
+        })));
+      } catch (err) { console.error(err); }
+      finally { setLoading(false); }
+    })();
   }, []);
-
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [modal, setModal] = useState(null); // { type: "create"|"edit"|"view"|"delete"|"statusConfirm", booking?, newStatus? }
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState("Bookings");
 
   const filtered = bookings.filter((b) => {
     const q = search.toLowerCase();
-    const matchQ =
-      !q ||
-      b.customer.name.toLowerCase().includes(q) ||
-      b.id.toLowerCase().includes(q) ||
-      b.service.title.toLowerCase().includes(q);
+    const matchQ = !q || b.customer.name.toLowerCase().includes(q) || b.id.toLowerCase().includes(q) || b.service.title.toLowerCase().includes(q);
     const matchS = statusFilter === "All" || b.status === statusFilter;
     return matchQ && matchS;
   });
 
   const stats = {
-    total: bookings.length,
+    total:     bookings.length,
     confirmed: bookings.filter((b) => b.status === "Confirmed").length,
-    pending: bookings.filter((b) => b.status === "Pending").length,
-    revenue: bookings
-  .filter((b) => b.status === "Confirmed")
-  .reduce((s, b) => s + b.totalPrice, 0),
+    pending:   bookings.filter((b) => b.status === "Pending").length,
+    revenue:   bookings.filter((b) => b.status === "Confirmed").reduce((s, b) => s + b.totalPrice, 0),
   };
 
   const closeModal = () => setModal(null);
 
-  const handleCreate = (data) => {
-    setBookings((prev) => [...prev, { ...data, id: uid(), proof: null }]);
-    closeModal();
-  };
+  const handleCreate = (data) => { setBookings((p) => [...p, { ...data, id: uid(), proof: null }]); closeModal(); };
+  const handleEdit   = (data) => { setBookings((p) => p.map((b) => b.id === modal.booking.id ? { ...b, ...data, id: b.id } : b)); closeModal(); };
+  const handleDelete = ()     => { setBookings((p) => p.filter((b) => b.id !== modal.booking.id)); closeModal(); };
 
-  const handleEdit = (data) => {
-    setBookings((prev) =>
-      prev.map((b) =>
-        b.id === modal.booking.id ? { ...b, ...data, id: b.id } : b,
-      ),
-    );
-    closeModal();
-  };
-
-  const handleDelete = () => {
-    setBookings((prev) => prev.filter((b) => b.id !== modal.booking.id));
-    closeModal();
-  };
-
-  // ── Update booking status (called after confirmation) ──
   const updateBookingStatus = async (id, newStatus) => {
-    const previous = bookings;
-
+    const prev = bookings;
     closeModal();
-
+    setBookings((p) => p.map((b) => b.id === id ? { ...b, status: newStatus } : b));
     try {
-      setBookings((prev) =>
-        prev.map((b) => (b.id === id ? { ...b, status: newStatus } : b)),
-      );
-
-      const res = await fetch(`/api/bookings/${id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (!res.ok) throw new Error("Failed to update status");
-    } catch (err) {
-      console.error(err);
-      setBookings(previous);
-      alert("Failed to update booking status");
-    }
+      const res = await fetch(`/api/bookings/${id}/status`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: newStatus }) });
+      if (!res.ok) throw new Error();
+    } catch { setBookings(prev); alert("Failed to update booking status"); }
   };
 
-  // ── Open status confirmation modal ──
-  const promptStatusChange = (booking, newStatus) => {
-    setModal({ type: "statusConfirm", booking, newStatus });
-  };
+  const promptStatusChange = (booking, newStatus) => setModal({ type: "statusConfirm", booking, newStatus });
 
   const isPastBooking = (b) => {
-    if (!b.date) return false;
-    const bookingDate = parseLocalDateTime(b.date, b.time);
-    const now = new Date();
-    return bookingDate < now;
-  };
+  if (!b.date) return false;
+  return parseLocalDateTime(b.date, b.time) < new Date();
+};
 
-  const currentBookings = filtered.filter((b) => !isPastBooking(b));
-  const pastBookings = filtered.filter((b) => isPastBooking(b));
+// ── Add this sort helper ──
+const byDateAsc = (a, b) =>
+  parseLocalDateTime(a.date, a.time).getTime() -
+  parseLocalDateTime(b.date, b.time).getTime();
 
-  const router = useRouter();
+const currentBookings = filtered.filter((b) => !isPastBooking(b)).sort(byDateAsc);
+const pastBookings    = filtered.filter((b) =>  isPastBooking(b)).sort(byDateAsc);
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
     router.replace("/login");
   };
 
+  // ── Table columns ──
+  const TABLE_HEADS = ["Booking ID", "Customer", "Service", "Schedule", "Total", "Status", "Actions"];
+
   return (
-    <div
-      className="flex h-screen font-sans overflow-hidden"
-      style={{
-        background: "#f7f0f1",
-        fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
-      }}
-    >
-      {/* ── Sidebar ── */}
-      <aside
-        className="flex flex-col shrink-0 transition-all duration-300"
-        style={{
-          width: sidebarOpen ? 240 : 68,
-          background: "#A30A24",
-          color: "#fff",
-        }}
-      >
+    <div className="flex h-screen overflow-hidden bg-[#0d0d0d] font-sans">
+
+      {/* ── Sidebar ──────────────────────────────────────────────────────── */}
+      <aside className={`flex flex-col shrink-0 transition-all duration-300 bg-[#111111] border-r border-[#1e1e1e] ${
+        sidebarOpen ? "w-56" : "w-[68px]"
+      }`}>
+
         {/* Logo */}
-        <div
-          className="flex items-center gap-3 px-4 py-5 border-b"
-          style={{ borderColor: "rgba(255,255,255,0.1)" }}
-        >
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: "rgba(255,255,255,0.2)" }}
-          >
-            <Icon d={Icons.logo} size={18} stroke="#fff" strokeWidth={2} />
-          </div>
-          {sidebarOpen && (
-            <div>
-              <p
-                className="font-bold text-sm leading-tight"
-                style={{ fontFamily: "'Georgia', serif" }}
-              >
-                Blink Creative Studio
-              </p>
-              <p className="text-xs opacity-60">Booking Manager</p>
+        <div className="px-4 py-5 border-b border-[#1e1e1e]">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-[#A30A24] flex items-center justify-center shrink-0">
+              <Icon d={Icons.logo} size={18} stroke="#fff" strokeWidth={2} />
             </div>
-          )}
+            {sidebarOpen && (
+              <div>
+                <p className="text-xs font-extrabold text-[#F7F5F2] tracking-tight leading-tight">
+                  BLINK
+                </p>
+                <p className="text-[9px] font-mono tracking-[2px] text-[#6E6E6E] uppercase">
+                  Admin Panel
+                </p>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Sprocket dots when collapsed */}
+        {!sidebarOpen && (
+          <div className="flex flex-col items-center gap-1.5 py-3 border-b border-[#1e1e1e]">
+            {[...Array(3)].map((_, i) => (
+              <span key={i} className="w-2 h-2 rounded-sm bg-[#1e1e1e]" />
+            ))}
+          </div>
+        )}
 
         {/* Nav */}
         <nav className="flex-1 py-4 space-y-1 px-2">
           {[
             { label: "Bookings", icon: Icons.bookings },
             { label: "Calendar", icon: Icons.calendar },
-            { label: "Packages", icon: Icons.package },
+            { label: "Packages", icon: Icons.package  },
           ].map((item) => (
-            <button
+            <NavItem
               key={item.label}
+              label={item.label}
+              icon={item.icon}
+              active={activeTab === item.label}
+              open={sidebarOpen}
               onClick={() => setActiveTab(item.label)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all"
-              style={{
-                background:
-                  activeTab === item.label
-                    ? "rgba(255,255,255,0.18)"
-                    : "transparent",
-                color:
-                  activeTab === item.label ? "#fff" : "rgba(255,255,255,0.65)",
-              }}
-            >
-              <Icon d={item.icon} size={16} strokeWidth={2} />
-              {sidebarOpen && <span className="font-medium">{item.label}</span>}
-            </button>
+            />
           ))}
         </nav>
 
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          className="mx-2 mb-2 flex items-center justify-center gap-2 py-2 rounded-lg text-xs transition-colors"
-          style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.75)" }}
-        >
-          <Icon d={Icons.logout} size={14} />
-          {sidebarOpen && "Logout"}
-        </button>
-
-        {/* Toggle */}
-        <button
-          onClick={() => setSidebarOpen((o) => !o)}
-          className="mx-2 mb-4 flex items-center justify-center gap-2 py-2 rounded-lg text-xs transition-colors"
-          style={{
-            background: "rgba(255,255,255,0.1)",
-            color: "rgba(255,255,255,0.75)",
-          }}
-        >
-          <Icon d={sidebarOpen ? Icons.close : Icons.filter} size={14} />
-          {sidebarOpen && "Collapse"}
-        </button>
+        {/* Bottom controls */}
+        <div className="px-2 pb-4 space-y-1 border-t border-[#1e1e1e] pt-3">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#6E6E6E]
+                       hover:bg-[#1e1e1e] hover:text-red-400 transition-all cursor-pointer"
+          >
+            <Icon d={Icons.logout} size={15} />
+            {sidebarOpen && <span className="text-xs font-mono tracking-wide uppercase">Logout</span>}
+          </button>
+          <button
+            onClick={() => setSidebarOpen((o) => !o)}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#6E6E6E]
+                       hover:bg-[#1e1e1e] hover:text-[#F7F5F2] transition-all cursor-pointer"
+          >
+            <Icon d={sidebarOpen ? Icons.close : Icons.filter} size={15} />
+            {sidebarOpen && <span className="text-xs font-mono tracking-wide uppercase">Collapse</span>}
+          </button>
+        </div>
       </aside>
 
-      {/* ── Main ── */}
+      {/* ── Main area ────────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-y-auto px-7 py-6 space-y-6">
+
+        {/* Top bar */}
+        <header className="bg-[#111111] border-b border-[#1e1e1e] px-7 py-4 flex items-center justify-between shrink-0">
+          <div>
+            <p className="text-[10px] font-mono tracking-[3px] text-[#A30A24] uppercase mb-0.5">
+              ◳ {activeTab}
+            </p>
+            <h1 className="text-lg font-extrabold text-[#F7F5F2] tracking-tight">
+              {activeTab === "Bookings" ? "Booking Management"
+               : activeTab === "Calendar" ? "Availability Calendar"
+               : "Service Packages"}
+            </h1>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono tracking-[2px] text-[#6E6E6E] uppercase hidden md:block">
+              Blink Creative Studio
+            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto bg-[#0d0d0d] px-7 py-6 space-y-5">
+
+          {/* ── Calendar / Packages tabs ───────────────────────────────── */}
           {activeTab === "Calendar" ? (
             <CalendarTab
               bookings={bookings.map((b) => {
                 const dt = parseLocalDateTime(b.date, b.time);
                 return {
-                  id: b.id,
-                  status: b.status,
+                  id: b.id, status: b.status,
                   customer: b.customer?.name || "Unknown",
-                  service: b.service?.title || "Service",
+                  service:  b.service?.title  || "Service",
                   date: dt.toISOString().slice(0, 10),
-                  time: dt.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }),
+                  time: dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
                 };
               })}
             />
           ) : activeTab === "Packages" ? (
             <PackagesTab />
           ) : (
-            <div className="space-y-6">
-              <div
-                className="flex items-center justify-between px-7 py-4 bg-white border-b"
-                style={{ borderColor: "#ede0e2" }}
-              >
-                <div>
-                  <h1
-                    className="text-xl font-bold"
-                    style={{ color: "#1a0a0d", fontFamily: "'Georgia', serif" }}
-                  >
-                    Bookings
-                  </h1>
-                  <p className="text-xs mt-0.5" style={{ color: "#9a6a72" }}>
-                    Manage all your customer bookings
-                  </p>
-                </div>
-              </div>
+
+            /* ── Bookings tab ─────────────────────────────────────────── */
+            <div className="space-y-5">
 
               {/* Stats */}
-              <div className="grid grid-cols-4 gap-4">
-                <StatCard
-                  label="Total Bookings"
-                  value={stats.total}
-                  sub="All time"
-                  iconPath={Icons.bookings}
-                  accent
-                />
-                <StatCard
-                  label="Confirmed"
-                  value={stats.confirmed}
-                  sub="Active bookings"
-                  iconPath={Icons.check}
-                />
-                <StatCard
-                  label="Pending"
-                  value={stats.pending}
-                  sub="Awaiting confirmation"
-                  iconPath={Icons.calendar}
-                />
-                <StatCard
-                  label="Revenue"
-                  value={fmtPrice(stats.revenue)}
-                  sub="Confirmed + Pending"
-                  iconPath={Icons.money}
-                />
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+                {[
+                  { label: "Total Bookings",  value: stats.total,              sub: "All time",              icon: Icons.bookings, red: true  },
+                  { label: "Confirmed",        value: stats.confirmed,          sub: "Active bookings",       icon: Icons.check,    red: false },
+                  { label: "Pending",          value: stats.pending,            sub: "Awaiting confirmation", icon: Icons.calendar, red: false },
+                  { label: "Revenue",          value: fmtPrice(stats.revenue),  sub: "From confirmed",        icon: Icons.money,    red: false },
+                ].map(({ label, value, sub, icon, red }) => (
+                  <div key={label} className={`rounded-xl border p-5 flex items-start justify-between ${
+                    red ? "bg-[#A30A24]/10 border-[#A30A24]/30" : "bg-[#161616] border-[#1e1e1e]"
+                  }`}>
+                    <div>
+                      <p className="text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E] mb-1">{label}</p>
+                      <p className={`text-2xl font-extrabold tracking-tight ${red ? "text-[#A30A24]" : "text-[#F7F5F2]"}`}>{value}</p>
+                      <p className="text-[10px] text-[#6E6E6E] font-mono mt-1">{sub}</p>
+                    </div>
+                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                      red ? "bg-[#A30A24]/20" : "bg-[#1e1e1e]"
+                    }`}>
+                      <Icon d={icon} size={16} stroke={red ? "#A30A24" : "#6E6E6E"} strokeWidth={2} />
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              {/* Table Card */}
-              <div
-                className="bg-white rounded-2xl overflow-hidden"
-                style={{
-                  boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
-                  border: "1px solid #f0e0e3",
-                }}
-              >
-                {/* Filters */}
-                <div
-                  className="flex items-center gap-3 px-6 py-4 border-b"
-                  style={{ borderColor: "#f5eaec" }}
-                >
-                  <div className="relative flex-1 max-w-xs">
-                    <span
-                      className="absolute left-3 top-1/2 -translate-y-1/2"
-                      style={{ color: "#b0707a" }}
-                    >
-                      <Icon d={Icons.search} size={14} />
+              {/* ── Current Bookings table ─────────────────────────────── */}
+              <div className="bg-[#111111] rounded-2xl border border-[#1e1e1e] overflow-hidden">
+
+                {/* Filters bar */}
+                <div className="flex flex-wrap items-center gap-3 px-6 py-4 border-b border-[#1e1e1e]">
+                  <div className="relative flex-1 min-w-[200px] max-w-xs">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6E6E6E]">
+                      <Icon d={Icons.search} size={13} />
                     </span>
                     <input
-                      className="w-full pl-9 pr-4 py-2 rounded-lg text-sm outline-none text-[#6e6e6e]"
-                      style={{
-                        background: "#fdfafa",
-                        border: "1.5px solid #e5d5d8",
-                      }}
+                      className="w-full pl-9 pr-4 py-2 rounded-lg text-sm bg-[#0d0d0d] border border-[#2a2a2a]
+                                 text-[#F7F5F2] placeholder:text-[#3a3a3a] font-mono
+                                 focus:outline-none focus:ring-1 focus:ring-[#A30A24] focus:border-[#A30A24] transition"
                       placeholder="Search bookings…"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </div>
-                  <div className="flex gap-1.5">
+
+                  <div className="flex gap-1.5 flex-wrap">
                     {["All", "Confirmed", "Pending", "Cancelled"].map((s) => (
                       <button
                         key={s}
                         onClick={() => setStatusFilter(s)}
-                        className="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all"
-                        style={
+                        className={`px-3.5 py-1.5 rounded-lg text-[10px] font-mono tracking-[2px] uppercase font-semibold transition-all ${
                           statusFilter === s
-                            ? { background: "#A30A24", color: "#fff" }
-                            : {
-                                background: "#fdfafa",
-                                color: "#7a3a42",
-                                border: "1.5px solid #e5d5d8",
-                              }
-                        }
+                            ? "bg-[#A30A24] text-white"
+                            : "bg-[#0d0d0d] border border-[#2a2a2a] text-[#6E6E6E] hover:border-[#A30A24] hover:text-[#A30A24]"
+                        }`}
                       >
                         {s}
                       </button>
                     ))}
                   </div>
-                  <span className="ml-auto text-xs" style={{ color: "#9a6a72" }}>
+
+                  <span className="ml-auto text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E]">
                     {filtered.length} record{filtered.length !== 1 ? "s" : ""}
                   </span>
                 </div>
@@ -472,145 +374,113 @@ export default function BookingsDashboard() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr style={{ background: "#fdf5f6" }}>
-                        {[
-                          "Booking ID",
-                          "Customer",
-                          "Service",
-                          "Schedule",
-                          "Total",
-                          "Status",
-                          "Actions",
-                        ].map((h) => (
-                          <th
-                            key={h}
-                            className="text-left px-6 py-3.5 text-xs font-bold uppercase tracking-wider"
-                            style={{ color: "#b0707a" }}
-                          >
+                      <tr className="border-b border-[#1e1e1e]">
+                        {TABLE_HEADS.map((h) => (
+                          <th key={h} className="text-left px-6 py-3.5 text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E]">
                             {h}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {filtered.length === 0 ? (
+                      {currentBookings.length === 0 ? (
                         <tr>
-                          <td
-                            colSpan={7}
-                            className="text-center py-16 text-sm"
-                            style={{ color: "#b0707a" }}
-                          >
-                            <div className="flex flex-col items-center gap-2">
-                              <Icon
-                                d={Icons.bookings}
-                                size={28}
-                                stroke="#d4a0a8"
-                                strokeWidth={1.5}
-                              />
-                              No bookings found
+                          <td colSpan={7} className="text-center py-16">
+                            <div className="flex flex-col items-center gap-3">
+                              <Icon d={Icons.bookings} size={28} stroke="#2a2a2a" strokeWidth={1.5} />
+                              <p className="text-xs font-mono tracking-[2px] uppercase text-[#3a3a3a]">
+                                No bookings found
+                              </p>
                             </div>
                           </td>
                         </tr>
                       ) : (
                         currentBookings.map((b) => (
-                          <tr
-                            key={b.id}
-                            className="border-t transition-colors hover:bg-red-50/40"
-                            style={{ borderColor: "#f5eaec" }}
-                          >
+                          <tr key={b.id} className="border-t border-[#1a1a1a] hover:bg-[#161616] transition-colors group">
+
+                            {/* ID */}
                             <td className="px-6 py-4">
-                              <span
-                                className="font-mono text-xs font-bold px-2 py-1 rounded"
-                                style={{ background: "#FEF0F2", color: "#A30A24" }}
-                              >
-                                {b.id}
+                              <span className="font-mono text-[10px] font-bold px-2 py-1 rounded bg-[#A30A24]/10 text-[#A30A24] tracking-wider">
+                                #{b.id}
                               </span>
                             </td>
+
+                            {/* Customer */}
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-2.5">
-                                <div
-                                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
-                                  style={{ background: "#A30A24" }}
-                                >
-                                  {(b.customer?.name || b.customer || "?")[0]}
+                                <div className="w-8 h-8 rounded-full bg-[#A30A24] flex items-center justify-center text-white text-xs font-bold shrink-0">
+                                  {(b.customer?.name || "?")[0].toUpperCase()}
                                 </div>
                                 <div>
-                                  <p className="font-semibold text-xs" style={{ color: "#1a0a0d" }}>
-                                    {b.customer?.name || b.customer || "Unknown"}
-                                  </p>
-                                  <p className="text-xs" style={{ color: "#9a6a72" }}>
-                                    {b.customer?.email || "-"}
-                                  </p>
+                                  <p className="text-xs font-semibold text-[#F7F5F2]">{b.customer?.name || "Unknown"}</p>
+                                  <p className="text-[10px] text-[#6E6E6E] font-mono">{b.customer?.email || "—"}</p>
                                 </div>
                               </div>
                             </td>
+
+                            {/* Service */}
                             <td className="px-6 py-4">
-                              <p className="font-medium text-xs" style={{ color: "#1a0a0d" }}>
-                                {b.service?.title || "Service"}
-                              </p>
+                              <p className="text-xs font-medium text-[#F7F5F2]">{b.service?.title || "Service"}</p>
                               {b.addons.length > 0 && (
-                                <p className="text-xs mt-0.5" style={{ color: "#9a6a72" }}>
-                                  {b.addons.length} add-on{b.addons.length > 1 ? "s" : ""}
+                                <p className="text-[10px] text-[#6E6E6E] font-mono mt-0.5">
+                                  +{b.addons.length} add-on{b.addons.length > 1 ? "s" : ""}
                                 </p>
                               )}
                             </td>
+
+                            {/* Schedule */}
                             <td className="px-6 py-4">
-                              <p className="text-xs font-medium" style={{ color: "#1a0a0d" }}>
+                              <p className="text-xs font-mono text-[#F7F5F2]">
                                 {formatDateTime(parseLocalDateTime(b.date, b.time))}
                               </p>
                             </td>
+
+                            {/* Total */}
                             <td className="px-6 py-4">
-                              <span
-                                className="font-bold text-xs"
-                                style={{ color: "#A30A24", fontFamily: "'Georgia', serif" }}
-                              >
+                              <span className="text-sm font-bold text-[#A30A24] font-mono">
                                 {fmtPrice(b.totalPrice)}
                               </span>
                             </td>
+
+                            {/* Status */}
                             <td className="px-6 py-4">
-                              <span
-                                className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full font-semibold ${STATUS_STYLES[b.status]}`}
-                              >
+                              <span className={`inline-flex items-center gap-1.5 text-[10px] font-mono tracking-[1px] uppercase px-2.5 py-1 rounded-full font-semibold ${STATUS_STYLES[b.status]}`}>
                                 <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[b.status]}`} />
                                 {b.status}
                               </span>
                             </td>
+
+                            {/* Actions */}
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-1">
                                 <button
                                   onClick={() => setModal({ type: "view", booking: b })}
                                   title="View"
-                                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
-                                  style={{ color: "#A30A24" }}
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[#6E6E6E] hover:bg-[#A30A24]/10 hover:text-[#A30A24] transition-colors"
                                 >
                                   <Icon d={Icons.eye} size={14} />
                                 </button>
                                 <button
                                   onClick={() => setModal({ type: "edit", booking: b })}
                                   title="Edit"
-                                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-blue-50"
-                                  style={{ color: "#2563eb" }}
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[#6E6E6E] hover:bg-blue-900/20 hover:text-blue-400 transition-colors"
                                 >
                                   <Icon d={Icons.edit} size={14} />
                                 </button>
-
-                                {/* ── Confirm / Cancel with confirmation modal ── */}
                                 {b.status !== "Confirmed" && (
                                   <button
-                                    type="button"
                                     onClick={() => promptStatusChange(b, "Confirmed")}
-                                    className="px-3 py-1.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-colors cursor-pointer"
-                                    title="Mark as Confirmed"
+                                    className="px-2.5 py-1 text-[10px] font-mono tracking-[1px] uppercase font-semibold rounded-full
+                                               bg-emerald-950/60 text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
                                   >
                                     Confirm
                                   </button>
                                 )}
                                 {b.status !== "Cancelled" && (
                                   <button
-                                    type="button"
                                     onClick={() => promptStatusChange(b, "Cancelled")}
-                                    className="px-3 py-1.5 text-xs font-semibold rounded-full bg-red-100 text-red-500 hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
-                                    title="Mark as Cancelled"
+                                    className="px-2.5 py-1 text-[10px] font-mono tracking-[1px] uppercase font-semibold rounded-full
+                                               bg-[#A30A24]/10 text-[#A30A24] hover:bg-[#A30A24] hover:text-white transition-colors"
                                   >
                                     Cancel
                                   </button>
@@ -625,56 +495,50 @@ export default function BookingsDashboard() {
                 </div>
               </div>
 
-              {/* Past Bookings Table */}
-              <div
-                className="bg-white rounded-2xl overflow-hidden mt-6"
-                style={{
-                  boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
-                  border: "1px solid #f0e0e3",
-                }}
-              >
-                <div className="px-6 py-4 border-b" style={{ borderColor: "#f5eaec" }}>
-                  <h2 className="text-sm font-bold" style={{ color: "#A30A24" }}>
+              {/* ── Past Bookings ──────────────────────────────────────── */}
+              <div className="bg-[#111111] rounded-2xl border border-[#1e1e1e] overflow-hidden">
+                <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e1e1e]">
+                  <span className="text-[10px] font-mono tracking-[3px] uppercase text-[#6E6E6E]">
                     Past Bookings
-                  </h2>
+                  </span>
+                  <div className="flex-1 border-t border-dashed border-[#1e1e1e]" />
+                  <span className="text-[10px] font-mono text-[#3a3a3a]">
+                    {pastBookings.length} record{pastBookings.length !== 1 ? "s" : ""}
+                  </span>
                 </div>
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr style={{ background: "#fdf5f6" }}>
-                        {["Booking ID", "Customer", "Service", "Schedule", "Total", "Status"].map(
-                          (h) => (
-                            <th
-                              key={h}
-                              className="text-left px-6 py-3.5 text-xs font-bold uppercase tracking-wider"
-                              style={{ color: "#b0707a" }}
-                            >
-                              {h}
-                            </th>
-                          ),
-                        )}
+                      <tr className="border-b border-[#1a1a1a]">
+                        {["Booking ID", "Customer", "Service", "Schedule", "Total", "Status"].map((h) => (
+                          <th key={h} className="text-left px-6 py-3.5 text-[10px] font-mono tracking-[2px] uppercase text-[#3a3a3a]">
+                            {h}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody>
                       {pastBookings.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="text-center py-10 text-xs">
+                          <td colSpan={6} className="text-center py-10 text-[10px] font-mono tracking-[2px] uppercase text-[#3a3a3a]">
                             No past bookings
                           </td>
                         </tr>
                       ) : (
                         pastBookings.map((b) => (
-                          <tr key={b.id} className="border-t text-gray-400" style={{ borderColor: "#f5eaec" }}>
-                            <td className="px-6 py-4">{b.id}</td>
-                            <td className="px-6 py-4">{b.customer?.name || "Unknown"}</td>
-                            <td className="px-6 py-4">{b.service?.title}</td>
-                            <td className="px-6 py-4">
+                          <tr key={b.id} className="border-t border-[#1a1a1a] opacity-50 hover:opacity-70 transition-opacity">
+                            <td className="px-6 py-3.5">
+                              <span className="font-mono text-[10px] text-[#6E6E6E]">#{b.id}</span>
+                            </td>
+                            <td className="px-6 py-3.5 text-xs text-[#6E6E6E]">{b.customer?.name || "Unknown"}</td>
+                            <td className="px-6 py-3.5 text-xs text-[#6E6E6E]">{b.service?.title}</td>
+                            <td className="px-6 py-3.5 text-xs font-mono text-[#6E6E6E]">
                               {formatDateTime(parseLocalDateTime(b.date, b.time))}
                             </td>
-                            <td className="px-6 py-4">{fmtPrice(b.totalPrice)}</td>
-                            <td className="px-6 py-4">
-                              <span className={`px-2 py-1 rounded text-xs ${STATUS_STYLES[b.status]}`}>
+                            <td className="px-6 py-3.5 text-xs font-mono text-[#6E6E6E]">{fmtPrice(b.totalPrice)}</td>
+                            <td className="px-6 py-3.5">
+                              <span className={`px-2 py-1 rounded text-[10px] font-mono tracking-[1px] uppercase ${STATUS_STYLES[b.status]}`}>
                                 {b.status}
                               </span>
                             </td>
@@ -690,7 +554,7 @@ export default function BookingsDashboard() {
         </main>
       </div>
 
-      {/* ── Modals ── */}
+      {/* ── Modals ───────────────────────────────────────────────────────── */}
       {modal?.type === "create" && (
         <Modal title="New Booking" onClose={closeModal}>
           <BookingForm onSave={handleCreate} onCancel={closeModal} />
@@ -708,20 +572,11 @@ export default function BookingsDashboard() {
       )}
       {modal?.type === "delete" && (
         <Modal title="Confirm Deletion" onClose={closeModal}>
-          <DeleteConfirm
-            booking={modal.booking}
-            onConfirm={handleDelete}
-            onCancel={closeModal}
-          />
+          <DeleteConfirm booking={modal.booking} onConfirm={handleDelete} onCancel={closeModal} />
         </Modal>
       )}
-
-      {/* ── Status Confirmation Modal ── */}
       {modal?.type === "statusConfirm" && (
-        <Modal
-          title={modal.newStatus === "Confirmed" ? "Confirm Booking" : "Cancel Booking"}
-          onClose={closeModal}
-        >
+        <Modal title={modal.newStatus === "Confirmed" ? "Confirm Booking" : "Cancel Booking"} onClose={closeModal}>
           <StatusConfirmModal
             booking={modal.booking}
             newStatus={modal.newStatus}

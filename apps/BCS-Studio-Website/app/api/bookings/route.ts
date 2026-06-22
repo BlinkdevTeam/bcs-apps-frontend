@@ -107,6 +107,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const termsAccepted = formData.get("terms_accepted") === "true";
+
+    if (!termsAccepted) {
+      return NextResponse.json(
+        { error: "Terms & Conditions must be accepted" },
+        { status: 400 }
+      );
+    }
+
     // Parse booking safely
     let booking: BookingData;
     try {
@@ -206,9 +215,10 @@ export async function POST(request: NextRequest) {
           addons,
           total_price,
           payment_proof,
+          terms_accepted,
           status
         )
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'Pending')
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'Pending')
         RETURNING id
       `;
 
@@ -223,6 +233,7 @@ export async function POST(request: NextRequest) {
         JSON.stringify(addons ?? []),
         totalPrice, // ✅ server-computed, never 0
         fileUrl,
+        termsAccepted,
       ];
 
       const result = await query(sql, values);

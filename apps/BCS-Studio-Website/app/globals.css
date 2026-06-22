@@ -351,3 +351,58 @@ body {
     padding: 2rem 1.5rem;
   }
 }
+
+.sprocket-rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  background-image: repeating-linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.14) 0px,
+      rgba(255, 255, 255, 0.14) 6px,
+      transparent 6px,
+      transparent 26px);
+  background-position: center;
+  background-repeat: repeat-y;
+}
+
+.iris {
+  clip-path: circle(150% at 50% 42%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .iris {
+    clip-path: circle(0% at 50% 42%);
+    animation: iris-open 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  }
+}
+
+@keyframes iris-open {
+  to {
+    clip-path: circle(85% at 50% 42%);
+  }
+}
+
+.scroll-cue {
+  animation: cue-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes cue-pulse {
+
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue {
+    animation: none;
+  }
+}
