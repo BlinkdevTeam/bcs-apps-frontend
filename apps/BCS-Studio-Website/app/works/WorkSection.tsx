@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect, useMemo } from "react";
 import worksData from "../../data/works.json";
+import Image from "next/image";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type WorkCategory = "event" | "portraits" | "studio" | "graduation";
@@ -36,7 +37,7 @@ type View = "all" | "categories";
 // ── Video/Photo Card ───────────────────────────────────────────────────────────
 function WorkCard({
   work,
-  index,
+  // index,
   onClick,
 }: {
   work: Work;
@@ -101,9 +102,11 @@ function WorkCard({
           style={{ display: "block" }}
         />
       ) : (
-        <img
+        <Image
           src={work.url}
           alt={work.title}
+          width={1200}
+          height={800}
           onContextMenu={(e) => e.preventDefault()}
           className="w-full object-cover block"
         />
@@ -227,12 +230,15 @@ function CategoryCard({
             className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           />
         ) : (
-          <img
-            src={cover.url}
-            alt={CATEGORY_LABEL[category]}
-            onContextMenu={(e) => e.preventDefault()}
-            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-          />
+          <div className="relative w-full h-full overflow-hidden">
+            <Image
+              src={cover.url}
+              alt={CATEGORY_LABEL[category]}
+              fill
+              onContextMenu={(e) => e.preventDefault()}
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            />
+          </div>
         )}
       </div>
       <div className="mt-3 flex items-baseline gap-2">
@@ -422,17 +428,14 @@ function WorkModal({
             }}
           />
         ) : (
-          <img
+          <Image
             key={work.id}
             src={work.url}
             alt={work.title}
+            width={1600}
+            height={1200}
             onContextMenu={(e) => e.preventDefault()}
-            className="rounded-lg shadow-2xl"
-            style={{
-              maxWidth: "100%",
-              maxHeight: "85vh",
-              objectFit: "contain",
-            }}
+            className="rounded-lg shadow-2xl max-w-full max-h-[85vh] w-auto h-auto object-contain"
           />
         )}
 

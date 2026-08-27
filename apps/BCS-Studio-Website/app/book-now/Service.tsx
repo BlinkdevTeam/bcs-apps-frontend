@@ -172,7 +172,7 @@ export default function ServiceSection() {
             <button
               key={filter.value}
               onClick={() => setActiveFilter(filter.value)}
-              className={`relative px-6 py-2.5 font-bold transition-all duration-200 ${
+              className={`relative px-6 py-2.5 font-bold transition-all duration-200 cursor-pointer ${
                 mono.className
               } text-[11px] uppercase tracking-[0.15em] border-2`}
               style={
@@ -457,7 +457,7 @@ export default function ServiceSection() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="relative px-10 py-3 font-bold transition-all duration-200"
+                    className="relative px-10 py-3 font-bold transition-all duration-200 cursor-pointer"
                     style={{
                       background: submitting ? "#C0515A" : "#A30A24",
                       color: "#fff",

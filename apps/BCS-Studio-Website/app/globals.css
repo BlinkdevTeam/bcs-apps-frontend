@@ -13,6 +13,95 @@
   }
 }
 
+[data-theme="dark"] {
+  --bg-base: #0d0d0d;
+  --bg-surface: #111111;
+  --bg-raised: #161616;
+  --bg-input: #0d0d0d;
+  --border: #1e1e1e;
+  --border-subtle: #1a1a1a;
+  --border-input: #2a2a2a;
+  --text-primary: #F7F5F2;
+  --text-muted: #6E6E6E;
+  --text-faint: #3a3a3a;
+  --accent: #A30A24;
+  --accent-bg: rgba(163, 10, 36, 0.10);
+  --accent-border: rgba(163, 10, 36, 0.30);
+  --cal-bg-base: #0d0d0d;
+  --cal-bg-surface: #111111;
+  --cal-bg-raised: #1a1a1a;
+  --cal-border: #1e1e1e;
+  --cal-border-sub: #2a2a2a;
+  --cal-text-primary: #F7F5F2;
+  --cal-text-muted: #6E6E6E;
+  --cal-text-faint: #3a3a3a;
+  --cal-cell-default: #111111;
+  --cal-cell-booked: #1e0a0e;
+  --cal-cell-timeblock: #1a1600;
+  --cal-cell-hover: rgba(163, 10, 36, 0.06);
+  --cal-stripe-soft:
+    /* your STRIPE_SOFT value */
+  ;
+  --cal-inp-bg: #0d0d0d;
+  --cal-inp-color-scheme: dark;
+  --scrollbar-track: #0d0d0d;
+}
+
+[data-theme="light"] {
+  --bg-base: #F7F5F2;
+  --bg-surface: #ffffff;
+  --bg-raised: #f0ede9;
+  --bg-input: #ffffff;
+  --border: #e8e2db;
+  --border-subtle: #ede8e2;
+  --border-input: #d4cdc5;
+  --text-primary: #1a0a0d;
+  --text-muted: #7a6a6e;
+  --text-faint: #b5aaaa;
+  --accent: #A30A24;
+  --accent-bg: rgba(163, 10, 36, 0.07);
+  --accent-border: rgba(163, 10, 36, 0.20);
+  --cal-bg-base: #f4f4f5;
+  --cal-bg-surface: #ffffff;
+  --cal-bg-raised: #f9f9f9;
+  --cal-border: #e4e4e7;
+  --cal-border-sub: #d4d4d8;
+  --cal-text-primary: #18181b;
+  --cal-text-muted: #71717a;
+  --cal-text-faint: #a1a1aa;
+  --cal-cell-default: #ffffff;
+  --cal-cell-booked: #fff1f2;
+  --cal-cell-timeblock: #fefce8;
+  --cal-cell-hover: rgba(163, 10, 36, 0.04);
+  --cal-inp-bg: #ffffff;
+  --cal-inp-color-scheme: light;
+  --scrollbar-track: #e4e4e7;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #A30A24 var(--scrollbar-track);
+}
+
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+  width: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #A30A24;
+  border-radius: 9999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #cc0d2e;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);

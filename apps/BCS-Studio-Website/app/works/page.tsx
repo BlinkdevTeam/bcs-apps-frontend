@@ -211,6 +211,21 @@ export default function WorksPage() {
             style={{ borderColor: "#fff" }}
             aria-hidden="true"
           />
+
+          <button
+            type="button"
+            onClick={toggleMute}
+            aria-label={muted ? "Unmute video" : "Mute video"}
+            className={`${mono.className} absolute bottom-4 right-4 flex items-center gap-2 px-3 py-1.5 text-[10px] uppercase tracking-[0.15em] cursor-pointer transition-colors`}
+            style={{
+              background: "rgba(0,0,0,0.4)",
+              color: "#fff",
+              border: "1px solid rgba(255,255,255,0.3)",
+              borderRadius: "2px",
+            }}
+          >
+            {muted ? "Unmute" : "Mute"}
+          </button>
         </div>
 
         <div

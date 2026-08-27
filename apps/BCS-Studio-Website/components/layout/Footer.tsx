@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { COMPANY_LINKS, LEGAL_LINKS, SOCIAL_LINKS } from "../../data/footer";
+import SkewButton from "../ui/buttons/SkewButton";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -119,6 +120,7 @@ export default function Footer() {
               <p className="text-[10px] font-mono tracking-[3px] text-[#6E6E6E] uppercase">
                 Ready to shoot?
               </p>
+              {/* <SkewButton href="/book-now">Book a Session</SkewButton> */}
               <Link
                 href="/book-now"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-xl

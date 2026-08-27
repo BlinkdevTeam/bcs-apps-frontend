@@ -21,6 +21,16 @@ const TIME_OPTIONS = Array.from({ length: 24 * 2 }, (_, i) => {
 const darkInp = "w-full rounded-lg px-3 py-2 text-xs bg-[#0d0d0d] border border-[#2a2a2a] text-[#F7F5F2] placeholder:text-[#3a3a3a] font-mono focus:outline-none focus:ring-1 focus:ring-[#A30A24] focus:border-[#A30A24] transition";
 const darkInpSty = { colorScheme: "dark" };
 
+// ── Dark input styles → now theme-aware ──────────────────────────────────
+const themedInp = `w-full rounded-lg px-3 py-2 text-xs border font-mono focus:outline-none focus:ring-1 focus:ring-[#A30A24] focus:border-[#A30A24] transition`;
+// Apply via style prop so CSS vars resolve at runtime:
+const themedInpStyle = {
+  background: "var(--cal-inp-bg)",
+  borderColor: "var(--cal-border-sub)",
+  color: "var(--cal-text-primary)",
+  colorScheme: "var(--cal-inp-color-scheme)",
+};
+
 export default function CalendarTab() {
   const now = new Date();
   const [viewYear, setViewYear]     = useState(now.getFullYear());
@@ -240,42 +250,43 @@ export default function CalendarTab() {
 
   // Cell background (adapted for dark theme)
   const getCellBg = (ds, status, sel) => {
-    if (!ds) return null;
-    if (status === "past") return null;
-    if (isBlocked(status)) return null;
+    if (!ds) return undefined;
+    if (status === "past") return undefined;
+    if (isBlocked(status)) return undefined;
     if (sel) return "#A30A24";
-    if (isToday(ds)) return "#1a1a1a";
+    if (isToday(ds)) return "var(--cal-bg-raised)";
     const bks = bookingsByDate[ds] || [];
-    if (bks.length > 0) return "#1e0a0e";
-    if (timeBlocks.some((t) => t.date === ds)) return "#1a1600";
-    return "#111111";
+    if (bks.length > 0) return "var(--cal-cell-booked)";
+    if (timeBlocks.some((t) => t.date === ds)) return "var(--cal-cell-timeblock)";
+    return "var(--cal-cell-default)";
   };
 
   return (
-    <div className="flex h-full overflow-hidden bg-[#0d0d0d]">
+    <div className="flex h-full overflow-hidden" style={{ background: "var(--cal-bg-base)" }}>
 
       {/* ── Calendar column ────────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col overflow-hidden">
 
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4 bg-[#111111] border-b border-[#1e1e1e] shrink-0">
+        <header className="flex items-center justify-between px-6 py-4 shrink-0"
+  style={{ background: "var(--cal-bg-surface)", borderBottom: "1px solid var(--cal-border)" }}>
           <div>
             <p className="text-[10px] font-mono tracking-[3px] text-[#A30A24] uppercase mb-0.5">◳ Availability</p>
-            <h2 className="text-lg font-extrabold text-[#F7F5F2] tracking-tight">Calendar</h2>
+            <h2 className="text-lg font-extrabold tracking-tight" style={{ color: "var(--cal-text-primary)" }}>Calendar</h2>
           </div>
           <div className="flex items-center gap-2">
             <button onClick={goToday}
               className="px-4 py-2 rounded-lg text-[10px] font-mono tracking-[2px] uppercase font-semibold border border-[#A30A24] text-[#A30A24] hover:bg-[#A30A24] hover:text-white transition-colors">
               Today
             </button>
-            <div className="flex items-center bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg overflow-hidden">
-              <button onClick={prevMonth} className="w-9 h-9 flex items-center justify-center text-[#6E6E6E] hover:text-[#A30A24] hover:bg-[#1a1a1a] transition-colors">
+            <div className="flex items-center rounded-lg overflow-hidden" style={{ background: "var(--cal-bg-base)", border: "1px solid var(--cal-border-sub)" }}>
+              <button onClick={prevMonth} className="w-9 h-9 flex items-center justify-center hover:text-[#A30A24] hover:bg-[#1a1a1a] transition-colors" style={{ color: "var(--cal-text-muted)" }}>
                 <Ic d={I.prev} size={14} sw={2.5} />
               </button>
-              <span className="px-3 text-xs font-mono font-bold min-w-[140px] text-center text-[#F7F5F2]">
+              <span className="px-3 text-xs font-mono font-bold min-w-[140px] text-center" style={{ color: "var(--cal-text-primary)" }}>
                 {MONTH_NAMES[viewMonth]} {viewYear}
               </span>
-              <button onClick={nextMonth} className="w-9 h-9 flex items-center justify-center text-[#6E6E6E] hover:text-[#A30A24] hover:bg-[#1a1a1a] transition-colors">
+              <button onClick={nextMonth} className="w-9 h-9 flex items-center justify-center hover:text-[#A30A24] hover:bg-[#1a1a1a] transition-colors" style={{ color: "var(--cal-text-muted)" }}>
                 <Ic d={I.next} size={14} sw={2.5} />
               </button>
             </div>
@@ -283,33 +294,35 @@ export default function CalendarTab() {
         </header>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 px-6 py-2.5 bg-[#111111] border-b border-[#1e1e1e] shrink-0 flex-wrap">
+        <div className="flex items-center gap-4 px-6 py-2.5 shrink-0 flex-wrap"
+        style={{ background: "var(--cal-bg-surface)", borderBottom: "1px solid var(--cal-border)" }}>
           {[
-            { color: "#111111", border: "#2a2a2a", label: "Available" },
-            { color: "#1e0a0e", border: "#3a1a1e", label: "Has Bookings" },
+            { color: "var(--cal-cell-default)", border: "var(--cal-border-sub)", label: "Available" },
+            { color: "var(--cal-cell-booked)", border: "var(--cal-border-sub)", label: "Has Bookings" },
             { gradient: STRIPE_SOFT, label: "Soft Block" },
             { gradient: STRIPE_HARD, label: "Hard Block" },
             { color: "#A30A24", label: "Selected" },
-            { color: "#1a1600", border: "#3a3000", label: "Time Block" },
-            { color: "#0d0d0d", border: "#1e1e1e", label: "Past", opacity: 0.4 },
+            { color: "var(--cal-cell-timeblock)", border: "var(--cal-border-sub)", label: "Time Block" },
+            { color: "var(--cal-bg-base)", border: "var(--cal-border)", label: "Past", opacity: 0.4 },
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-sm flex-shrink-0"
                 style={{ background: item.gradient || item.color, border: `1px solid ${item.border || "rgba(255,255,255,0.1)"}`, opacity: item.opacity || 1 }} />
-              <span className="text-[10px] font-mono text-[#6E6E6E]">{item.label}</span>
+              <span className="text-[10px] font-mono" style={{ color: "var(--cal-text-muted)" }}>{item.label}</span>
             </div>
           ))}
         </div>
 
         {/* Grid */}
         <div className="flex-1 overflow-y-auto p-4">
-          <div className="bg-[#111111] rounded-xl border border-[#1e1e1e] overflow-hidden h-full flex flex-col">
+          <div className="bg-... rounded-xl border ... overflow-hidden h-full flex flex-col"
+  style={{ background: "var(--cal-bg-surface)", border: "1px solid var(--cal-border)" }}>
 
             {/* Day headers */}
-            <div className="grid grid-cols-7 border-b border-[#1e1e1e] bg-[#0d0d0d]">
+            <div className="grid grid-cols-7" style={{ borderBottom: "1px solid var(--cal-border)", background: "var(--cal-bg-base)" }}>
               {DAYS_SHORT.map((d, i) => (
                 <div key={d} className="py-3 text-center text-[10px] font-mono tracking-[2px] uppercase"
-                  style={{ color: (i === 0 || i === 6) ? "#A30A24" : "#6E6E6E" }}>
+                  style={{ color: (i === 0 || i === 6) ? "#A30A24" : "var(--cal-text-muted)" }}>
                   {d}
                 </div>
               ))}
@@ -319,7 +332,7 @@ export default function CalendarTab() {
             <div className="grid grid-cols-7 flex-1" style={{ gridAutoRows: "minmax(80px,1fr)" }}>
               {calDays.map((ds, idx) => {
                 if (!ds) return (
-                  <div key={`b${idx}`} style={{ borderRight: "1px solid #1a1a1a", borderBottom: "1px solid #1a1a1a", background: "#0a0a0a" }} />
+                  <div key={`b${idx}`} style={{ borderRight: "1px solid var(--cal-border)", borderBottom: "1px solid var(--cal-border)", background: "var(--cal-bg-base)" }} />
                 );
 
                 const status    = getStatus(ds);
@@ -335,8 +348,8 @@ export default function CalendarTab() {
                   position: "relative",
                   cursor: isPastDay ? "not-allowed" : "pointer",
                   padding: "8px 8px 24px",
-                  borderRight: "1px solid #1a1a1a",
-                  borderBottom: "1px solid #1a1a1a",
+                  borderRight: "1px solid var(--cal-border)",
+                  borderBottom: "1px solid var(--cal-border)",
                   transition: "all 0.12s",
                   ...(bg ? { background: bg } : {}),
                   ...(status === "blocked-manual" ? { backgroundImage: STRIPE_HARD } : {}),
@@ -347,11 +360,11 @@ export default function CalendarTab() {
                 };
 
                 const numColor = sel ? "#fff"
-                  : isPastDay ? "#3a3a3a"
+                  : isPastDay ? "var(--cal-text-faint)"
                   : isBlocked(status) ? "#5a3a3a"
                   : (dow === 0 || dow === 6) ? "#A30A24"
                   : isToday(ds) ? "#A30A24"
-                  : "#F7F5F2";
+                  : "var(--cal-text-primary)"
 
                 return (
                   <div key={ds} style={cellStyle} onClick={() => handleDayClick(ds)} className="group">
@@ -421,10 +434,11 @@ export default function CalendarTab() {
       </div>
 
       {/* ── Right Panel ────────────────────────────────────────────────────── */}
-      <aside className="w-80 shrink-0 flex flex-col overflow-hidden bg-[#111111] border-l border-[#1e1e1e]">
+      <aside className="w-80 shrink-0 flex flex-col overflow-hidden"
+  style={{ background: "var(--cal-bg-surface)", borderLeft: "1px solid var(--cal-border)" }}>
 
         {/* Tabs */}
-        <div className="flex border-b border-[#1e1e1e] shrink-0">
+        <div className="flex shrink-0" style={{ borderBottom: "1px solid var(--cal-border)" }}>
           {[
             { id: "day",    label: "Day Detail",   ic: I.calendar },
             { id: "manage", label: "Availability", ic: I.settings },
@@ -434,7 +448,7 @@ export default function CalendarTab() {
               style={{
                 borderColor: rightTab === t.id ? "#A30A24" : "transparent",
                 color: rightTab === t.id ? "#A30A24" : "#6E6E6E",
-                background: rightTab === t.id ? "#0d0d0d" : "transparent",
+                background: rightTab === t.id ? "var(--cal-bg-base)" : "transparent",
               }}>
               <Ic d={t.ic} size={13} /> {t.label}
             </button>
@@ -448,17 +462,17 @@ export default function CalendarTab() {
             <div className="p-5 space-y-5">
 
               {/* Date card */}
-              <div className="rounded-xl p-4 bg-[#1a0a0e] border border-[#3a1a1e]">
+              <div className="rounded-xl p-4 --bg-surface border border-[#3a1a1e]">
                 <p className="text-[10px] font-mono tracking-[3px] uppercase text-[#A30A24] mb-1">
                   Selected Date
                 </p>
-                <p className="font-bold text-sm text-[#F7F5F2] font-mono">{displayDate(selectedDate)}</p>
+                <p className="font-bold text-sm font-mono" style={{ color: "var(--cal-text-primary)" }}>{displayDate(selectedDate)}</p>
                 <div className="flex flex-wrap gap-1.5 mt-3">
                   {isToday(selectedDate) && (
                     <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-[#A30A24] text-white">Today</span>
                   )}
                   {selStatus === "past" && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-[#1e1e1e] text-[#6E6E6E]">Past</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-[#1e1e1e]" style={{ color: "var(--cal-text-muted)" }}>Past</span>
                   )}
                   {isBlocked(selStatus) && (
                     <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-[#A30A24]/20 text-[#A30A24]">Blocked</span>
@@ -483,12 +497,12 @@ export default function CalendarTab() {
                         : `Range: ${selRange?.label || "Blocked"}`}
                     </p>
                     {selRange && (
-                      <p className="text-[10px] mt-0.5 font-mono text-[#6E6E6E]">
+                      <p className="text-[10px] mt-0.5 font-mono" style={{ color: "var(--cal-text-muted)" }}>
                         {displayShort(selRange.start)} — {displayShort(selRange.end)}
                       </p>
                     )}
                     {isOverridable(selStatus) && !selIsOpen && (
-                      <p className="text-[10px] mt-1 text-[#6E6E6E]">You can open this day as an exception.</p>
+                      <p className="text-[10px] mt-1" style={{ color: "var(--cal-text-muted)" }}>You can open this day as an exception.</p>
                     )}
                   </div>
                 </div>
@@ -520,21 +534,21 @@ export default function CalendarTab() {
 
               {/* Divider */}
               <div className="flex items-center gap-3">
-                <span className="text-[10px] font-mono tracking-[3px] uppercase text-[#6E6E6E]">Bookings</span>
-                <div className="flex-1 border-t border-dashed border-[#1e1e1e]" />
-                <span className="text-[10px] font-mono text-[#6E6E6E]">{selBookings.length}</span>
+                <span className="text-[10px] font-mono tracking-[3px] uppercase" style={{ color: "var(--cal-text-muted)" }}>Bookings</span>
+                <div className="flex-1 border-t border-dashed" style={{ borderColor: "var(--cal-border)" }} />
+                <span className="text-[10px] font-mono" style={{ color: "var(--cal-text-muted)" }}>{selBookings.length}</span>
               </div>
 
               {/* Booking cards */}
               {selBookings.length === 0 ? (
-                <div className="text-center py-8 rounded-xl bg-[#0d0d0d] border border-dashed border-[#1e1e1e]">
-                  <Ic d={I.calendar} size={22} stroke="#2a2a2a" sw={1.5} />
-                  <p className="text-[10px] font-mono tracking-[2px] uppercase text-[#3a3a3a] mt-2">No bookings this day</p>
+                <div className="text-center py-8 rounded-xl" style={{ background: "var(--cal-bg-base)", border: "1px dashed var(--cal-border)" }}>
+                  <Ic d={I.calendar} size={22} stroke="var(--cal-border-sub)" sw={1.5} />
+                  <p className="text-[10px] font-mono tracking-[2px] uppercase mt-2" style={{ color: "var(--cal-text-faint)" }}>No bookings this day</p>
                 </div>
               ) : (
                 <div className="space-y-2">
                   {selBookings.map((b) => (
-                    <div key={b.id} className="rounded-xl p-3 bg-[#0d0d0d] border border-[#1e1e1e]">
+                    <div key={b.id} className="rounded-xl p-3" style={{ background: "var(--cal-bg-base)", border: "1px dashed var(--cal-border)" }}>
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#A30A24]/10 text-[#A30A24]">
                           #{b.id}
@@ -544,13 +558,13 @@ export default function CalendarTab() {
                           {b.status}
                         </span>
                       </div>
-                      <p className="text-xs font-bold text-[#F7F5F2]">
+                      <p className="text-xs font-bold" style={{ color: "var(--cal-text-primary)" }}>
                         {typeof b.customer === "object" ? b.customer?.name : b.customer}
                       </p>
-                      <p className="text-[10px] font-mono text-[#6E6E6E] mt-0.5">
+                      <p className="text-[10px] font-mono mt-0.5" style={{ color: "var(--cal-text-muted)" }}>
                         {typeof b.service === "object" ? b.service?.title : b.service}
                       </p>
-                      <p className="text-[10px] font-mono text-[#6E6E6E] mt-0.5 flex items-center gap-1">
+                      <p className="text-[10px] font-mono mt-0.5 flex items-center gap-1" style={{ color: "var(--cal-text-muted)" }}>
                         <Ic d={I.clock} size={10} stroke="#6E6E6E" sw={2} /> {b.time}
                       </p>
                     </div>
@@ -562,8 +576,8 @@ export default function CalendarTab() {
               {selTimeBlocks.length > 0 && (
                 <>
                   <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-mono tracking-[3px] uppercase text-[#6E6E6E]">Time Blocks</span>
-                    <div className="flex-1 border-t border-dashed border-[#1e1e1e]" />
+                    <span className="text-[10px] font-mono tracking-[3px] uppercase" style={{ color: "var(--cal-text-muted)" }}>Time Blocks</span>
+                    <div className="flex-1 border-t border-dashed" style={{ borderColor: "var(--cal-border)" }} />
                   </div>
                   <div className="space-y-2">
                     {selTimeBlocks.map((t) => (
@@ -591,10 +605,10 @@ export default function CalendarTab() {
               {/* Working days */}
               <div>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-[10px] font-mono tracking-[3px] uppercase text-[#6E6E6E]">Working Days</span>
-                  <div className="flex-1 border-t border-dashed border-[#1e1e1e]" />
+                  <span className="text-[10px] font-mono tracking-[3px] uppercase" style={{ color: "var(--cal-text-muted)" }}>Working Days</span>
+                  <div className="flex-1 border-t border-dashed" style={{ borderColor: "var(--cal-border)" }} />
                 </div>
-                <p className="text-[10px] text-[#6E6E6E] font-mono mb-3">Tap a day to toggle it as a recurring day off.</p>
+                <p className="text-[10px] font-mono mb-3" style={{ color: "var(--cal-text-muted)" }}>Tap a day to toggle it as a recurring day off.</p>
                 <div className="grid grid-cols-7 gap-1">
                   {DAYS_SHORT.map((day, i) => {
                     const isOff  = dayOffsBlocked.has(i);
@@ -603,9 +617,9 @@ export default function CalendarTab() {
                       <button key={day} onClick={() => toggleDayOff(i)}
                         className="flex flex-col items-center py-1.5 rounded-lg text-[10px] font-mono font-bold transition-all"
                         style={{
-                          background: isOff ? "#A30A24" : isWknd ? "#1a0a0e" : "#0d0d0d",
-                          color:      isOff ? "#fff"    : isWknd ? "#A30A24" : "#6E6E6E",
-                          border:     `1px solid ${isOff ? "#A30A24" : "#2a2a2a"}`,
+                          background: isOff ? "#A30A24" : isWknd ? "var(--cal-cell-booked)" : "var(--cal-bg-base)",
+                          color:      isOff ? "#fff"    : isWknd ? "#A30A24" : "var(--cal-text-muted)",
+                          border: `1px solid ${isOff ? "#A30A24" : "var(--cal-border-sub)"}`,
                         }}>
                         {day}
                       </button>
@@ -614,24 +628,24 @@ export default function CalendarTab() {
                 </div>
               </div>
 
-              <div className="border-t border-dashed border-[#1e1e1e]" />
+              <div className="border-t border-dashed" style={{ borderColor: "var(--cal-border)" }} />
 
               {/* Weekend toggle */}
-              <div className="flex items-center justify-between rounded-xl p-4 bg-[#0d0d0d] border border-[#2a2a2a]">
+              <div className="flex items-center justify-between rounded-xl p-4" style={{ background: "var(--cal-bg-base)", border: "1px solid var(--cal-border-sub)" }}>
                 <div>
-                  <p className="text-xs font-bold text-[#F7F5F2]">Block Weekends</p>
-                  <p className="text-[10px] font-mono text-[#6E6E6E] mt-0.5">Sat &amp; Sun closed by default</p>
+                  <p className="text-xs font-bold" style={{ color: "var(--cal-text-primary)" }}>Block Weekends</p>
+                  <p className="text-[10px] font-mono mt-0.5" style={{ color: "var(--cal-text-muted)" }}>Sat &amp; Sun closed by default</p>
                 </div>
                 <Toggle on={weekendsBlocked} onChange={() => setWeekendsBlocked((v) => !v)} />
               </div>
 
-              <div className="border-t border-dashed border-[#1e1e1e]" />
+              <div className="border-t border-dashed" style={{ borderColor: "var(--cal-border)" }} />
 
               {/* Add Block */}
               <div>
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-[10px] font-mono tracking-[3px] uppercase text-[#6E6E6E]">Add Block</span>
-                  <div className="flex-1 border-t border-dashed border-[#1e1e1e]" />
+                  <span className="text-[10px] font-mono tracking-[3px] uppercase" style={{ color: "var(--cal-text-muted)" }}>Add Block</span>
+                  <div className="flex-1 border-t border-dashed" style={{ borderColor: "var(--cal-border)" }} />
                 </div>
 
                 {/* Mode tabs */}
@@ -640,8 +654,8 @@ export default function CalendarTab() {
                     <button key={mode} onClick={() => { setBlockMode(mode); setMsg({ text: "", ok: true }); }}
                       className="flex-1 py-2 text-[10px] font-mono tracking-[1px] uppercase font-bold transition-all"
                       style={{
-                        background: blockMode === mode ? "#A30A24" : "#0d0d0d",
-                        color:      blockMode === mode ? "#fff"    : "#6E6E6E",
+                        background: blockMode === mode ? "#A30A24" : "var(--cal-bg-base)",
+                        color:      blockMode === mode ? "#fff"    : "var(--cal-text-muted)",
                       }}>
                       {label}
                     </button>
@@ -652,8 +666,8 @@ export default function CalendarTab() {
                 {blockMode === "date" && (
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E] mb-1.5">Select Date *</label>
-                      <input type="date" className={darkInp} style={darkInpSty} value={blockDate} min={TODAY} onChange={(e) => setBlockDate(e.target.value)} />
+                      <label className="block text-[10px] font-mono tracking-[2px] uppercase mb-1.5" style={{ color: "var(--cal-text-muted)" }}>Select Date *</label>
+                      <input type="date" className={themedInp} style={themedInpStyle} value={blockDate} min={TODAY} onChange={(e) => setBlockDate(e.target.value)} />
                     </div>
                     <button onClick={addBlockDate}
                       className="w-full py-2.5 rounded-lg text-[10px] font-mono tracking-[2px] uppercase font-bold text-white flex items-center justify-center gap-2 bg-[#A30A24] hover:bg-[#8a0820] transition-colors">
@@ -667,17 +681,17 @@ export default function CalendarTab() {
                   <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E] mb-1.5">From *</label>
-                        <input type="date" className={darkInp} style={darkInpSty} value={rangeStart} min={TODAY} onChange={(e) => setRangeStart(e.target.value)} />
+                        <label className="block text-[10px] font-mono tracking-[2px] uppercase mb-1.5" style={{ color: "var(--cal-text-muted)" }}>From *</label>
+                        <input type="date" className={themedInp} style={themedInpStyle} value={rangeStart} min={TODAY} onChange={(e) => setRangeStart(e.target.value)} />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E] mb-1.5">To *</label>
-                        <input type="date" className={darkInp} style={darkInpSty} value={rangeEnd} min={rangeStart || TODAY} onChange={(e) => setRangeEnd(e.target.value)} />
+                        <label className="block text-[10px] font-mono tracking-[2px] uppercase mb-1.5" style={{ color: "var(--cal-text-muted)" }}>To *</label>
+                        <input type="date" className={themedInp} style={themedInpStyle} value={rangeEnd} min={rangeStart || TODAY} onChange={(e) => setRangeEnd(e.target.value)} />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E] mb-1.5">Label</label>
-                      <input className={darkInp} placeholder="e.g. Vacation, Holiday" value={rangeLabel} onChange={(e) => setRangeLabel(e.target.value)} />
+                      <label className="block text-[10px] font-mono tracking-[2px] uppercase mb-1.5" style={{ color: "var(--cal-text-muted)" }}>Label</label>
+                      <input className={themedInp} style={themedInpStyle} placeholder="e.g. Vacation, Holiday" value={rangeLabel} onChange={(e) => setRangeLabel(e.target.value)} />
                     </div>
                     <button onClick={addBlockRange}
                       className="w-full py-2.5 rounded-lg text-[10px] font-mono tracking-[2px] uppercase font-bold text-white flex items-center justify-center gap-2 bg-[#A30A24] hover:bg-[#8a0820] transition-colors">
@@ -690,26 +704,26 @@ export default function CalendarTab() {
                 {blockMode === "time" && (
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E] mb-1.5">Date *</label>
-                      <input type="date" className={darkInp} style={darkInpSty} value={timeDate} min={TODAY} onChange={(e) => setTimeDate(e.target.value)} />
+                      <label className="block text-[10px] font-mono tracking-[2px] uppercase mb-1.5" style={{ color: "var(--cal-text-muted)" }}>Date *</label>
+                      <input type="date" className={themedInp} style={themedInpStyle} value={timeDate} min={TODAY} onChange={(e) => setTimeDate(e.target.value)} />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E] mb-1.5">From</label>
-                        <select className={darkInp} value={timeStart} onChange={(e) => setTimeStart(e.target.value)}>
+                        <label className="block text-[10px] font-mono tracking-[2px] uppercase mb-1.5" style={{ color: "var(--cal-text-muted)" }}>From</label>
+                        <select className={themedInp} style={themedInpStyle} value={timeStart} onChange={(e) => setTimeStart(e.target.value)}>
                           {TIME_OPTIONS.map((t) => <option key={t}>{t}</option>)}
                         </select>
                       </div>
                       <div>
-                        <label className="block text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E] mb-1.5">To</label>
-                        <select className={darkInp} value={timeEnd} onChange={(e) => setTimeEnd(e.target.value)}>
+                        <label className="block text-[10px] font-mono tracking-[2px] uppercase mb-1.5" style={{ color: "var(--cal-text-muted)" }}>To</label>
+                        <select className={themedInp} style={themedInpStyle} value={timeEnd} onChange={(e) => setTimeEnd(e.target.value)}>
                           {TIME_OPTIONS.map((t) => <option key={t}>{t}</option>)}
                         </select>
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-mono tracking-[2px] uppercase text-[#6E6E6E] mb-1.5">Label</label>
-                      <input className={darkInp} placeholder="e.g. Lunch Break, Reserved" value={timeLabel} onChange={(e) => setTimeLabel(e.target.value)} />
+                      <label className="block text-[10px] font-mono tracking-[2px] uppercase mb-1.5" style={{ color: "var(--cal-text-muted)" }}>Label</label>
+                      <input className={themedInp} style={themedInpStyle} placeholder="e.g. Lunch Break, Reserved" value={timeLabel} onChange={(e) => setTimeLabel(e.target.value)} />
                     </div>
                     <button onClick={handleAddTimeBlock}
                       className="w-full py-2.5 rounded-lg text-[10px] font-mono tracking-[2px] uppercase font-bold text-white flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-500 transition-colors">
@@ -729,20 +743,20 @@ export default function CalendarTab() {
                 )}
               </div>
 
-              <div className="border-t border-dashed border-[#1e1e1e]" />
+              <div className="border-t border-dashed" style={{ borderColor: "var(--cal-border)" }} />
 
               {/* Active blocks list */}
               <div>
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="text-[10px] font-mono tracking-[3px] uppercase text-[#6E6E6E]">Active Blocks</span>
-                  <div className="flex-1 border-t border-dashed border-[#1e1e1e]" />
-                  <span className="text-[10px] font-mono text-[#6E6E6E]">
+                  <span className="text-[10px] font-mono tracking-[3px] uppercase" style={{ color: "var(--cal-text-muted)" }}>Active Blocks</span>
+                  <div className="flex-1 border-t border-dashed" style={{ borderColor: "var(--cal-border)" }} />
+                  <span className="text-[10px] font-mono" style={{ color: "var(--cal-text-muted)" }}>
                     {blockedDates.size + blockedRanges.length + timeBlocks.length + openDates.size}
                   </span>
                 </div>
 
                 {blockedDates.size === 0 && blockedRanges.length === 0 && timeBlocks.length === 0 && openDates.size === 0 ? (
-                  <p className="text-[10px] font-mono text-center py-4 text-[#3a3a3a]">No active blocks or exceptions</p>
+                  <p className="text-[10px] font-mono text-center py-4" style={{ color: "var(--cal-text-faint)" }}>No active blocks or exceptions</p>
                 ) : (
                   <div className="space-y-2">
                     {[...blockedDates].sort().map((d) => (
@@ -751,7 +765,7 @@ export default function CalendarTab() {
                           <div className="w-2 h-2 rounded-full bg-[#A30A24] flex-shrink-0" />
                           <div>
                             <p className="text-[10px] font-mono font-bold text-[#A30A24]">Manual Block</p>
-                            <p className="text-[10px] font-mono text-[#6E6E6E]">{displayShort(d)}</p>
+                            <p className="text-[10px] font-mono" style={{ color: "var(--cal-text-muted)" }}>{displayShort(d)}</p>
                           </div>
                         </div>
                       </div>
@@ -763,7 +777,7 @@ export default function CalendarTab() {
                           <div className="w-2 h-6 rounded-full bg-[#A30A24] flex-shrink-0" />
                           <div>
                             <p className="text-[10px] font-mono font-bold text-[#A30A24]">{r.label}</p>
-                            <p className="text-[10px] font-mono text-[#6E6E6E]">{displayShort(r.start)} → {displayShort(r.end)}</p>
+                            <p className="text-[10px] font-mono" style={{ color: "var(--cal-text-muted)" }}>{displayShort(r.start)} → {displayShort(r.end)}</p>
                           </div>
                         </div>
                         <button onClick={() => removeRange(r.id)}

@@ -106,14 +106,14 @@ export default function Header() {
         <Link
           href="/"
           aria-label="Blink Creative Studio — home"
-          className={`group flex items-center rounded-sm transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A30A24] ${
+          className={`group flex items-center rounded-sm transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A30A24] ${
             scrolled ? "gap-0" : "gap-3"
           }`}
         >
           <BlinkMark className="h-9 w-auto shrink-0 transition-transform duration-300 group-hover:-rotate-[4deg] md:h-10" />
           <div
             className={`hidden sm:flex flex-col leading-none overflow-hidden transition-all duration-300 ${
-              scrolled ? "max-w-0 opacity-0" : "max-w-[160px] opacity-100"
+              scrolled ? "max-w-0 opacity-0" : "max-w-40 opacity-100"
             }`}
           >
             <span className="whitespace-nowrap font-black tracking-tight text-[18px] text-[#A30A24]">
@@ -136,7 +136,7 @@ export default function Header() {
                 <li key={item.href} className="relative">
                   <Link
                     href={item.href}
-                    className="group flex items-center gap-2 rounded-sm py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A30A24]"
+                    className="group flex items-center gap-2 rounded-sm py-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A30A24]"
                   >
                     <span
                       className={`${mono.className} text-[10px] tracking-widest`}
@@ -156,7 +156,7 @@ export default function Header() {
                       {item.label}
                     </span>
                     <span
-                      className={`absolute left-0 -bottom-[1px] h-[2px] w-full origin-left bg-[#A30A24] transition-transform duration-300 ${
+                      className={`absolute left-0 -bottom-px h-0.5 w-full origin-left bg-[#A30A24] transition-transform duration-300 ${
                         isActive
                           ? "scale-x-100"
                           : "scale-x-0 group-hover:scale-x-100"
@@ -178,7 +178,7 @@ export default function Header() {
             aria-label="Open menu"
             aria-expanded={sidebarOpen}
             aria-controls="mobile-sidebar"
-            className="rounded-sm text-[32px] text-[#161616] transition-colors hover:text-[#A30A24] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24] md:text-[40px]"
+            className="rounded-sm text-[32px] text-[#161616] transition-colors hover:text-[#A30A24] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24] md:text-[40px]"
           >
             <HiMenu />
           </button>
@@ -201,7 +201,7 @@ export default function Header() {
               <button
                 onClick={() => setSidebarOpen(false)}
                 aria-label="Close menu"
-                className="rounded-sm text-2xl text-[#161616] transition-colors hover:text-[#A30A24] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24]"
+                className="rounded-sm text-2xl text-[#161616] transition-colors hover:text-[#A30A24] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24]"
               >
                 <HiX />
               </button>
@@ -219,7 +219,7 @@ export default function Header() {
                     <Link
                       href={item.href}
                       onClick={() => setSidebarOpen(false)}
-                      className="flex items-center gap-3 rounded-sm py-4 transition-transform duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24] hover:translate-x-1"
+                      className="flex items-center gap-3 rounded-sm py-4 transition-transform duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24] hover:translate-x-1"
                     >
                       <span
                         className={`${mono.className} text-[10px] tracking-widest`}

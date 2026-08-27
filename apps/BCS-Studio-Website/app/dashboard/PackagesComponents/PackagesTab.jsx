@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import {
   Ic,
   I,
-  durLabel,
+  // durLabel,
   EMPTY_PKG,
 } from "../data/compData";
 
@@ -139,10 +139,10 @@ export default function PackagesTab() {
         <div
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl text-xs font-bold flex items-center gap-2.5"
           style={{
-            background: "#161616",
+            background: "var(--bg-surface)",
             border: `1px solid ${toast.ok ? "#064e3b" : "#7f1d1d"}`,
             color: toast.ok ? "#34d399" : "#f87171",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
           }}
         >
           <span
@@ -170,32 +170,37 @@ export default function PackagesTab() {
         {/* ── Stat cards ── */}
         <div className="grid grid-cols-3 gap-4 pb-5">
           {[
-            { label: "Total Packages", value: packages.length,  sub: "All packages",         red: true  },
-            { label: "Active",         value: activeCount,       sub: "Currently listed",     red: false },
-            { label: "Inactive",       value: inactiveCount,     sub: "Hidden from clients",  red: false },
+            { label: "Total Packages", value: packages.length,  sub: "All packages",        red: true  },
+            { label: "Active",         value: activeCount,       sub: "Currently listed",    red: false },
+            { label: "Inactive",       value: inactiveCount,     sub: "Hidden from clients", red: false },
           ].map(({ label, value, sub, red }) => (
             <div
               key={label}
               className="rounded-xl p-5 flex items-start justify-between"
               style={{
-                background:  red ? "rgba(163,10,36,0.1)" : "#161616",
-                border:      `1px solid ${red ? "rgba(163,10,36,0.3)" : "#1e1e1e"}`,
+                background: red ? "var(--accent-bg)"    : "var(--bg-raised)",
+                border:     `1px solid ${red ? "var(--accent-border)" : "var(--border)"}`,
               }}
             >
               <div>
-                <p className="text-[10px] font-mono tracking-[2px] uppercase mb-1" style={{ color: "#6E6E6E" }}>
+                <p className="text-[10px] font-mono tracking-[2px] uppercase mb-1"
+                  style={{ color: "var(--text-muted)" }}>
                   {label}
                 </p>
-                <p className="text-2xl font-extrabold tracking-tight" style={{ color: red ? "#A30A24" : "#F7F5F2" }}>
+                <p className="text-2xl font-extrabold tracking-tight"
+                  style={{ color: red ? "#A30A24" : "var(--text-primary)" }}>
                   {value}
                 </p>
-                <p className="text-[10px] font-mono mt-1" style={{ color: "#6E6E6E" }}>{sub}</p>
+                <p className="text-[10px] font-mono mt-1"
+                  style={{ color: "var(--text-muted)" }}>
+                  {sub}
+                </p>
               </div>
               <div
                 className="w-9 h-9 rounded-lg flex items-center justify-center"
-                style={{ background: red ? "rgba(163,10,36,0.2)" : "#1e1e1e" }}
+                style={{ background: red ? "var(--accent-bg)" : "var(--border)" }}
               >
-                <Ic d={I.pkg} size={16} stroke={red ? "#A30A24" : "#6E6E6E"} sw={2} />
+                <Ic d={I.pkg} size={16} stroke={red ? "#A30A24" : "var(--text-muted)"} sw={2} />
               </div>
             </div>
           ))}
@@ -203,17 +208,18 @@ export default function PackagesTab() {
 
         {/* ── Table panel ── */}
         <div
-          className="flex-1 flex flex-col overflow-hidden rounded-2xl border"
-          style={{ background: "#111111", borderColor: "#1e1e1e" }}
+          className="flex-1 flex flex-col overflow-hidden rounded-2xl"
+          style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
         >
           {/* ── Filter bar ── */}
           <div
-            className="flex flex-wrap items-center gap-3 px-6 py-4 border-b shrink-0"
-            style={{ borderColor: "#1e1e1e" }}
+            className="flex flex-wrap items-center gap-3 px-6 py-4 shrink-0"
+            style={{ borderBottom: "1px solid var(--border)" }}
           >
             {/* Search */}
-            <div className="relative flex-1 min-w-[200px] max-w-xs">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#6E6E6E" }}>
+            <div className="relative flex-1 min-w-50 max-w-xs">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                style={{ color: "var(--text-muted)" }}>
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                   <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
                 </svg>
@@ -221,9 +227,9 @@ export default function PackagesTab() {
               <input
                 className="w-full pl-9 pr-4 py-2 rounded-lg text-xs border transition-all"
                 style={{
-                  background:  "#0d0d0d",
-                  borderColor: "#2a2a2a",
-                  color:       "#F7F5F2",
+                  background:  "var(--bg-input)",
+                  borderColor: "var(--border-input)",
+                  color:       "var(--text-primary)",
                   fontFamily:  "monospace",
                   outline:     "none",
                 }}
@@ -235,7 +241,7 @@ export default function PackagesTab() {
                   e.target.style.boxShadow   = "0 0 0 1px #A30A24";
                 }}
                 onBlur={e => {
-                  e.target.style.borderColor = "#2a2a2a";
+                  e.target.style.borderColor = "var(--border-input)";
                   e.target.style.boxShadow   = "none";
                 }}
               />
@@ -253,8 +259,8 @@ export default function PackagesTab() {
                   onClick={() => setFilterActive(key)}
                   className="px-3.5 py-1.5 rounded-lg text-[10px] font-mono tracking-[2px] uppercase font-semibold transition-all"
                   style={filterActive === key
-                    ? { background: "#A30A24", color: "#fff",    border: "1px solid #A30A24" }
-                    : { background: "#0d0d0d", color: "#6E6E6E", border: "1px solid #2a2a2a" }
+                    ? { background: "#A30A24", color: "#fff",                   border: "1px solid #A30A24" }
+                    : { background: "var(--bg-input)", color: "var(--text-muted)", border: "1px solid var(--border-input)" }
                   }
                   onMouseEnter={e => {
                     if (filterActive !== key) {
@@ -264,8 +270,8 @@ export default function PackagesTab() {
                   }}
                   onMouseLeave={e => {
                     if (filterActive !== key) {
-                      e.currentTarget.style.borderColor = "#2a2a2a";
-                      e.currentTarget.style.color       = "#6E6E6E";
+                      e.currentTarget.style.borderColor = "var(--border-input)";
+                      e.currentTarget.style.color       = "var(--text-muted)";
                     }
                   }}
                 >
@@ -273,8 +279,8 @@ export default function PackagesTab() {
                   <span
                     className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded text-[9px]"
                     style={{
-                      background: filterActive === key ? "rgba(255,255,255,0.2)" : "#1e1e1e",
-                      color:      filterActive === key ? "#fff" : "#6E6E6E",
+                      background: filterActive === key ? "rgba(255,255,255,0.2)" : "var(--border)",
+                      color:      filterActive === key ? "#fff" : "var(--text-muted)",
                     }}
                   >
                     {count}
@@ -285,7 +291,8 @@ export default function PackagesTab() {
 
             {/* Count + New button */}
             <div className="ml-auto flex items-center gap-3">
-              <span className="text-[10px] font-mono tracking-[2px] uppercase hidden md:block" style={{ color: "#6E6E6E" }}>
+              <span className="text-[10px] font-mono tracking-[2px] uppercase hidden md:block"
+                style={{ color: "var(--text-muted)" }}>
                 {filtered.length} record{filtered.length !== 1 ? "s" : ""}
               </span>
               <button
@@ -300,23 +307,22 @@ export default function PackagesTab() {
           </div>
 
           {/* ── Package list ── */}
-          <div
-            className="flex justify-center overflow-y-auto mb-4"
-            style={{ scrollbarWidth: "thin", scrollbarColor: "#2a2a2a #0d0d0d" }}
-          >
+          <div className="flex justify-center overflow-y-auto mb-4">
             {filtered.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full gap-4 py-20">
                 <div
                   className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                  style={{ background: "#161616", border: "1px solid #2a2a2a" }}
+                  style={{ background: "var(--bg-raised)", border: "1px solid var(--border-input)" }}
                 >
-                  <Ic d={I.pkg} size={26} stroke="#2a2a2a" sw={1.5} />
+                  <Ic d={I.pkg} size={26} stroke="var(--border-input)" sw={1.5} />
                 </div>
                 <div className="text-center">
-                  <p className="text-xs font-mono tracking-[2px] uppercase mb-1" style={{ color: "#3a3a3a" }}>
+                  <p className="text-xs font-mono tracking-[2px] uppercase mb-1"
+                    style={{ color: "var(--text-muted)" }}>
                     {search ? "No matching packages" : "No packages yet"}
                   </p>
-                  <p className="text-[10px] font-mono" style={{ color: "#2a2a2a" }}>
+                  <p className="text-[10px] font-mono"
+                    style={{ color: "var(--text-faint)" }}>
                     {search ? "Try a different search term" : `Click "New Package" to get started`}
                   </p>
                 </div>
@@ -328,11 +334,14 @@ export default function PackagesTab() {
                     {/* Group header */}
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                      <span className="text-[10px] font-mono tracking-[3px] uppercase" style={{ color: "#6E6E6E" }}>
+                      <span className="text-[10px] font-mono tracking-[3px] uppercase"
+                        style={{ color: "var(--text-muted)" }}>
                         {pkgs[0].color}
                       </span>
-                      <div className="flex-1 border-t border-dashed" style={{ borderColor: "#1e1e1e" }} />
-                      <span className="text-[10px] font-mono" style={{ color: "#3a3a3a" }}>
+                      <div className="flex-1 border-t border-dashed"
+                        style={{ borderColor: "var(--border)" }} />
+                      <span className="text-[10px] font-mono"
+                        style={{ color: "var(--text-faint)" }}>
                         {pkgs.length} {pkgs.length === 1 ? "package" : "packages"}
                       </span>
                     </div>
@@ -361,23 +370,26 @@ export default function PackagesTab() {
       {/* ── Right panel: Edit / Create form ── */}
       {editing !== null && (
         <aside
-          className="w-[380px] shrink-0 flex flex-col overflow-hidden border-l"
-          style={{ background: "#111111", borderColor: "#1e1e1e" }}
+          className="w-95 shrink-0 flex flex-col overflow-hidden"
+          style={{ background: "var(--bg-surface)", borderLeft: "1px solid var(--border)" }}
         >
           {/* Panel header */}
           <div
-            className="flex items-center justify-between px-6 py-4 border-b shrink-0"
-            style={{ borderColor: "#1e1e1e", background: "#0d0d0d" }}
+            className="flex items-center justify-between px-6 py-4 shrink-0"
+            style={{ borderBottom: "1px solid var(--border)", background: "var(--bg-base)" }}
           >
             <div>
-              <p className="text-[10px] font-mono tracking-[3px] uppercase mb-0.5" style={{ color: "#A30A24" }}>
+              <p className="text-[10px] font-mono tracking-[3px] uppercase mb-0.5"
+                style={{ color: "#A30A24" }}>
                 ◳ {editing.id ? "Edit" : "New"}
               </p>
-              <h2 className="text-sm font-extrabold tracking-tight" style={{ color: "#F7F5F2" }}>
+              <h2 className="text-sm font-extrabold tracking-tight"
+                style={{ color: "var(--text-primary)" }}>
                 {editing.id ? "Edit Package" : "New Package"}
               </h2>
               {editing.id && (
-                <p className="text-[10px] font-mono mt-0.5" style={{ color: "#6E6E6E" }}>
+                <p className="text-[10px] font-mono mt-0.5"
+                  style={{ color: "var(--text-muted)" }}>
                   {editing.title}
                 </p>
               )}
@@ -385,14 +397,14 @@ export default function PackagesTab() {
             <button
               onClick={() => setEditing(null)}
               className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
-              style={{ color: "#6E6E6E", border: "1px solid #2a2a2a", background: "#161616" }}
+              style={{ color: "var(--text-muted)", border: "1px solid var(--border-input)", background: "var(--bg-raised)" }}
               onMouseEnter={e => {
                 e.currentTarget.style.borderColor = "#A30A24";
                 e.currentTarget.style.color       = "#A30A24";
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = "#2a2a2a";
-                e.currentTarget.style.color       = "#6E6E6E";
+                e.currentTarget.style.borderColor = "var(--border-input)";
+                e.currentTarget.style.color       = "var(--text-muted)";
               }}
             >
               <Ic d={I.close} size={14} sw={2.2} />

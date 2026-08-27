@@ -69,13 +69,13 @@ function StatusConfirmModal({ booking, newStatus, onConfirm, onCancel }) {
         <button
           onClick={onCancel}
           className="flex-1 py-2.5 rounded-lg text-sm font-medium border border-[#2a2a2a]
-                     text-[#6E6E6E] hover:bg-[#1e1e1e] transition-colors"
+                     text-[#6E6E6E] hover:bg-[#1e1e1e] transition-colors cursor-pointer"
         >
           Go Back
         </button>
         <button
           onClick={onConfirm}
-          className={`flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 ${
+          className={`flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 cursor-pointer ${
             isConfirm ? "bg-emerald-600" : "bg-[#A30A24]"
           }`}
         >
@@ -122,7 +122,7 @@ export default function BookingsDashboard() {
         const safe = Array.isArray(data) ? data : [];
         setBookings(safe.map((b) => ({
           ...b,
-          customer: { name: b.customer?.name || "Unknown", email: b.customer?.email || "", phone: b.customer?.phone || "" },
+          customer: { name: b.customer?.name || "Unknown", email: b.customer?.email || "", phone: b.customer?.phone || "", description: b.customer?.description, },
           service:  { id: b.service?.id || 0, title: b.service?.title || "Service", price: b.service?.price || 0 },
           addons:   Array.isArray(b.addons) ? b.addons : [],
         })));
@@ -354,7 +354,7 @@ const pastBookings    = filtered.filter((b) =>  isPastBooking(b)).sort(byDateAsc
                       <button
                         key={s}
                         onClick={() => setStatusFilter(s)}
-                        className={`px-3.5 py-1.5 rounded-lg text-[10px] font-mono tracking-[2px] uppercase font-semibold transition-all ${
+                        className={`px-3.5 py-1.5 rounded-lg text-[10px] font-mono tracking-[2px] uppercase font-semibold transition-all cursor-pointer ${
                           statusFilter === s
                             ? "bg-[#A30A24] text-white"
                             : "bg-[#0d0d0d] border border-[#2a2a2a] text-[#6E6E6E] hover:border-[#A30A24] hover:text-[#A30A24]"
@@ -456,14 +456,14 @@ const pastBookings    = filtered.filter((b) =>  isPastBooking(b)).sort(byDateAsc
                                 <button
                                   onClick={() => setModal({ type: "view", booking: b })}
                                   title="View"
-                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[#6E6E6E] hover:bg-[#A30A24]/10 hover:text-[#A30A24] transition-colors"
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[#6E6E6E] hover:bg-[#A30A24]/10 hover:text-[#A30A24] transition-colors cursor-pointer"
                                 >
                                   <Icon d={Icons.eye} size={14} />
                                 </button>
                                 <button
                                   onClick={() => setModal({ type: "edit", booking: b })}
                                   title="Edit"
-                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[#6E6E6E] hover:bg-blue-900/20 hover:text-blue-400 transition-colors"
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[#6E6E6E] hover:bg-blue-900/20 hover:text-blue-400 transition-colors cursor-pointer"
                                 >
                                   <Icon d={Icons.edit} size={14} />
                                 </button>
@@ -471,7 +471,7 @@ const pastBookings    = filtered.filter((b) =>  isPastBooking(b)).sort(byDateAsc
                                   <button
                                     onClick={() => promptStatusChange(b, "Confirmed")}
                                     className="px-2.5 py-1 text-[10px] font-mono tracking-[1px] uppercase font-semibold rounded-full
-                                               bg-emerald-950/60 text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors"
+                                               bg-emerald-950/60 text-emerald-400 hover:bg-emerald-600 hover:text-white transition-colors cursor-pointer"
                                   >
                                     Confirm
                                   </button>
@@ -480,7 +480,7 @@ const pastBookings    = filtered.filter((b) =>  isPastBooking(b)).sort(byDateAsc
                                   <button
                                     onClick={() => promptStatusChange(b, "Cancelled")}
                                     className="px-2.5 py-1 text-[10px] font-mono tracking-[1px] uppercase font-semibold rounded-full
-                                               bg-[#A30A24]/10 text-[#A30A24] hover:bg-[#A30A24] hover:text-white transition-colors"
+                                               bg-[#A30A24]/10 text-[#A30A24] hover:bg-[#A30A24] hover:text-white transition-colors cursor-pointer"
                                   >
                                     Cancel
                                   </button>

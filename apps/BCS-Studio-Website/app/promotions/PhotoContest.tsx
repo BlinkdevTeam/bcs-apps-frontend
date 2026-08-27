@@ -82,7 +82,7 @@ export default function PhotoContest() {
         </motion.div>
 
         <motion.div
-          className="flex flex-col md:flex-row justify-center items-center gap-4"
+          className="flex flex-col md:flex-col justify-center items-center gap-4"
           variants={fadeUp}
         >
           <div
