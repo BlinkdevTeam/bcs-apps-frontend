@@ -136,26 +136,34 @@ function AddonPicker({
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-      style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+      style={{ background: "rgba(26,10,13,0.45)", backdropFilter: "blur(4px)" }}
     >
-      <div className="bg-[#141414] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-[#2a2a2a] max-h-[85vh] flex flex-col">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1e1e1e]">
+      <div
+        className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border max-h-[85vh] flex flex-col shadow-2xl"
+        style={{ borderColor: "#f0e0e3" }}
+      >
+        <div
+          className="flex items-center justify-between px-6 py-4 border-b"
+          style={{ borderColor: "#f0e0e3" }}
+        >
           <div>
             <p
-              className={`${mono.className} text-[10px] tracking-[2px] uppercase text-[#A30A24]`}
+              className={`${mono.className} text-[10px] tracking-[2px] uppercase`}
+              style={{ color: "#A30A24" }}
             >
               Add-ons
             </p>
             <h3
-              className="text-lg font-bold text-[#F7F5F2]"
-              style={{ fontFamily: "Georgia, serif" }}
+              className="text-lg font-bold"
+              style={{ color: "#1a0a0d", fontFamily: "Georgia, serif" }}
             >
               {pkg.title}
             </h3>
           </div>
           <button
             onClick={onCancel}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#6E6E6E] hover:bg-[#1e1e1e]"
+            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
+            style={{ color: "#A30A24" }}
           >
             <Icon d={I.close} size={16} />
           </button>
@@ -163,7 +171,7 @@ function AddonPicker({
 
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
           {pkg.addons.length === 0 ? (
-            <p className="text-sm text-[#6E6E6E]">
+            <p className="text-sm" style={{ color: "#9a6a72" }}>
               No add-ons for this package.
             </p>
           ) : (
@@ -173,25 +181,31 @@ function AddonPicker({
                 <button
                   key={a.id}
                   onClick={() => toggle(a.id)}
-                  className="w-full flex items-center gap-3 p-3 rounded-xl text-left transition-colors"
+                  className="w-full flex items-center gap-3 p-3.5 rounded-xl text-left transition-colors"
                   style={{
-                    background: on ? "rgba(163,10,36,0.12)" : "#0d0d0d",
-                    border: `1.5px solid ${on ? "#A30A24" : "#1e1e1e"}`,
+                    background: on ? "#FEF0F2" : "#fdfafa",
+                    border: `1.5px solid ${on ? "#A30A24" : "#e5d5d8"}`,
                   }}
                 >
                   <span
                     className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0"
                     style={{
-                      borderColor: on ? "#A30A24" : "#3a3a3a",
+                      borderColor: on ? "#A30A24" : "#d4c4c8",
                       background: on ? "#A30A24" : "transparent",
                     }}
                   >
                     {on && <Icon d={I.check} size={12} stroke="#fff" sw={3} />}
                   </span>
-                  <span className="flex-1 text-sm text-[#F7F5F2]">
+                  <span
+                    className="flex-1 text-sm font-medium"
+                    style={{ color: "#1a0a0d" }}
+                  >
                     {a.label}
                   </span>
-                  <span className={`${mono.className} text-xs text-[#A30A24]`}>
+                  <span
+                    className={`${mono.className} text-xs font-semibold`}
+                    style={{ color: "#A30A24" }}
+                  >
                     +{peso(a.price)}
                   </span>
                 </button>
@@ -200,24 +214,32 @@ function AddonPicker({
           )}
         </div>
 
-        <div className="px-6 py-4 border-t border-[#1e1e1e] flex items-center gap-3">
+        <div
+          className="px-6 py-4 border-t flex items-center gap-3"
+          style={{ borderColor: "#f0e0e3" }}
+        >
           <div className="flex-1">
             <p
-              className={`${mono.className} text-[9px] uppercase tracking-[2px] text-[#6E6E6E]`}
+              className={`${mono.className} text-[9px] uppercase tracking-[2px]`}
+              style={{ color: "#9a6a72" }}
             >
               Total
             </p>
-            <p className="text-xl font-bold text-[#F7F5F2]">{peso(total)}</p>
+            <p className="text-xl font-bold" style={{ color: "#1a0a0d" }}>
+              {peso(total)}
+            </p>
           </div>
           <button
             onClick={onCancel}
-            className="px-4 py-2.5 rounded-lg text-sm font-semibold text-[#6E6E6E] border border-[#2a2a2a] hover:bg-[#1e1e1e]"
+            className="px-4 py-2.5 rounded-lg text-sm font-semibold border transition-colors hover:bg-red-50"
+            style={{ borderColor: "#e5d5d8", color: "#7a4a50" }}
           >
             Cancel
           </button>
           <button
             onClick={() => onConfirm(chosen)}
-            className="px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-[#A30A24] hover:bg-[#8a0820]"
+            className="px-5 py-2.5 rounded-lg text-sm font-bold text-white hover:opacity-90 transition-opacity"
+            style={{ background: "#A30A24" }}
           >
             Add to Order
           </button>
@@ -393,43 +415,52 @@ export default function WalkInPage() {
     return (
       <div
         className="min-h-screen flex items-center justify-center px-4"
-        style={{ background: "#0d0d0d" }}
+        style={{ background: "#F7F5F2" }}
       >
         <div className="w-full max-w-md text-center">
           <div
             className="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center"
-            style={{ background: "rgba(163,10,36,0.15)" }}
+            style={{ background: "#FEF0F2", border: "1.5px solid #fcd4d8" }}
           >
             <Icon d={I.check} size={30} stroke="#A30A24" sw={2.5} />
           </div>
           <p
-            className={`${mono.className} text-[10px] uppercase tracking-[3px] text-[#A30A24] mb-2`}
+            className={`${mono.className} text-[10px] uppercase tracking-[3px] mb-2`}
+            style={{ color: "#A30A24" }}
           >
             Order Confirmed
           </p>
-          <h1 className="text-3xl font-extrabold text-[#F7F5F2] mb-2">
+          <h1
+            className="text-3xl font-extrabold mb-2"
+            style={{ color: "#1a0a0d" }}
+          >
             You&apos;re all set.
           </h1>
-          <p className="text-sm text-[#6E6E6E] mb-8">
-            {cart.length ? "" : ""}Booking recorded for today, {dateLabel}.
+          <p className="text-sm mb-8" style={{ color: "#7a5560" }}>
+            Booking recorded for today, {dateLabel}.
           </p>
 
           <div
-            className="rounded-2xl p-5 mb-6 text-left"
-            style={{ background: "#141414", border: "1px solid #1e1e1e" }}
+            className="rounded-2xl p-5 mb-6 text-left bg-white"
+            style={{ border: "1px solid #f0e0e3" }}
           >
-            <div className="flex justify-between items-center pb-3 mb-3 border-b border-[#1e1e1e]">
+            <div
+              className="flex justify-between items-center pb-3 mb-3 border-b"
+              style={{ borderColor: "#f0e0e3" }}
+            >
               <span
-                className={`${mono.className} text-[10px] uppercase tracking-[2px] text-[#6E6E6E]`}
+                className={`${mono.className} text-[10px] uppercase tracking-[2px]`}
+                style={{ color: "#9a6a72" }}
               >
                 Total Paid
               </span>
-              <span className="text-2xl font-bold text-[#A30A24]">
+              <span className="text-2xl font-bold" style={{ color: "#A30A24" }}>
                 {peso(successInfo.total)}
               </span>
             </div>
             <p
-              className={`${mono.className} text-[10px] uppercase tracking-[2px] text-[#6E6E6E]`}
+              className={`${mono.className} text-[10px] uppercase tracking-[2px]`}
+              style={{ color: "#9a6a72" }}
             >
               Reference{successInfo.ids.length > 1 ? "s" : ""}:{" "}
               {successInfo.ids.map((id) => `#${id}`).join(", ")}
@@ -438,7 +469,7 @@ export default function WalkInPage() {
 
           <button
             onClick={startNewOrder}
-            className="w-full py-3.5 rounded-xl text-sm font-bold text-white"
+            className="w-full py-3.5 rounded-xl text-sm font-bold text-white hover:opacity-90 transition-opacity"
             style={{ background: "#A30A24" }}
           >
             Start New Order
@@ -450,35 +481,40 @@ export default function WalkInPage() {
 
   return (
     <div
-      className="min-h-screen flex flex-col lg:flex-row"
-      style={{ background: "#0d0d0d" }}
+      className="h-screen overflow-hidden flex flex-col lg:flex-row"
+      style={{ background: "#F7F5F2" }}
     >
       {/* ── Main ── */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header
-          className="flex items-center justify-between px-6 lg:px-10 py-5 border-b shrink-0"
-          style={{ borderColor: "#1e1e1e" }}
+          className="flex items-center justify-between px-6 lg:px-10 py-5 border-b shrink-0 bg-white"
+          style={{ borderColor: "#ede0e2" }}
         >
           <div>
             <p
-              className={`${mono.className} text-[10px] uppercase tracking-[3px] text-[#A30A24] mb-1`}
+              className={`${mono.className} text-[10px] uppercase tracking-[3px] mb-1`}
+              style={{ color: "#A30A24" }}
             >
               ◳ Front Desk
             </p>
             <h1
-              className="text-2xl font-extrabold text-[#F7F5F2] tracking-tight"
-              style={{ fontFamily: "Georgia, serif" }}
+              className="text-2xl font-extrabold tracking-tight"
+              style={{ color: "#1a0a0d", fontFamily: "Georgia, serif" }}
             >
               Walk-in Booking
             </h1>
           </div>
           <div className="text-right hidden sm:block">
-            <p className={`${mono.className} text-xs text-[#F7F5F2]`}>
+            <p
+              className={`${mono.className} text-xs`}
+              style={{ color: "#1a0a0d" }}
+            >
               {dateLabel}
             </p>
             <p
-              className={`${mono.className} text-[11px] text-[#A30A24] tabular-nums`}
+              className={`${mono.className} text-[11px] tabular-nums`}
+              style={{ color: "#A30A24" }}
             >
               {timeLabel}
             </p>
@@ -487,8 +523,8 @@ export default function WalkInPage() {
 
         {/* Filters */}
         <div
-          className="flex items-center gap-2 px-6 lg:px-10 py-4 border-b shrink-0"
-          style={{ borderColor: "#1e1e1e" }}
+          className="flex items-center gap-2 px-6 lg:px-10 py-4 border-b shrink-0 bg-white"
+          style={{ borderColor: "#ede0e2" }}
         >
           {[
             { key: "all", label: "All Services" },
@@ -503,9 +539,9 @@ export default function WalkInPage() {
                 filter === f.key
                   ? { background: "#A30A24", color: "#fff" }
                   : {
-                      background: "#141414",
-                      color: "#6E6E6E",
-                      border: "1px solid #1e1e1e",
+                      background: "#fdfafa",
+                      color: "#7a5560",
+                      border: "1px solid #e5d5d8",
                     }
               }
             >
@@ -522,22 +558,19 @@ export default function WalkInPage() {
                 <div
                   key={i}
                   className="rounded-2xl animate-pulse"
-                  style={{ background: "#141414", height: 160 }}
+                  style={{ background: "#eee6e7", height: 160 }}
                 />
               ))}
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
-              <Icon d={I.cam} size={32} stroke="#3a3a3a" />
-              <p className="text-sm text-[#6E6E6E]">
+              <Icon d={I.cam} size={32} stroke="#c8b0b4" />
+              <p className="text-sm" style={{ color: "#9a6a72" }}>
                 No services available in this category yet.
               </p>
             </div>
           ) : (
-            <div
-              className="grid grid-cols-2 lg:grid-cols-4 gap-4"
-            //   style={{ gridAutoRows: "150px", gridAutoFlow: "dense" }}
-            >
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {filtered.map((pkg, i) => {
                 const span = SPAN_PATTERN[i % SPAN_PATTERN.length];
                 const color = pkg.color || "#A30A24";
@@ -548,15 +581,15 @@ export default function WalkInPage() {
                   <button
                     key={pkg.id}
                     onClick={() => handleCardClick(pkg)}
-                    className={`relative overflow-hidden rounded-2xl p-5 text-left flex flex-col justify-between transition-transform hover:-translate-y-0.5 ${span}`}
+                    className={`relative overflow-hidden rounded-2xl p-5 text-left flex flex-col justify-between transition-transform hover:-translate-y-0.5 bg-white ${span}`}
                     style={{
-                      background: "#141414",
-                      border: `1px solid ${color}30`,
+                      border: `1.5px solid ${color}30`,
+                      boxShadow: "0 2px 12px rgba(163,10,36,0.06)",
                     }}
                   >
                     {/* accent glow */}
                     <div
-                      className="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-20"
+                      className="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-10"
                       style={{ background: color }}
                     />
 
@@ -573,15 +606,16 @@ export default function WalkInPage() {
                       <div
                         className="w-9 h-9 rounded-xl flex items-center justify-center mb-3"
                         style={{
-                          background: `${color}20`,
-                          border: `1px solid ${color}40`,
+                          background: `${color}15`,
+                          border: `1px solid ${color}35`,
                         }}
                       >
                         <Icon d={I.cam} size={16} stroke={color} sw={1.8} />
                       </div>
                       <h3
-                        className="font-bold text-[#F7F5F2] leading-snug"
+                        className="font-bold leading-snug"
                         style={{
+                          color: "#1a0a0d",
                           fontFamily: "Georgia, serif",
                           fontSize: "clamp(15px, 1.4vw, 19px)",
                         }}
@@ -589,7 +623,10 @@ export default function WalkInPage() {
                         {pkg.title}
                       </h3>
                       {pkg.description && (
-                        <p className="text-xs text-[#6E6E6E] mt-1.5 line-clamp-2">
+                        <p
+                          className="text-xs mt-1.5 line-clamp-2"
+                          style={{ color: "#8a6a70" }}
+                        >
                           {pkg.description}
                         </p>
                       )}
@@ -598,7 +635,8 @@ export default function WalkInPage() {
                     <div className="relative z-10 flex items-end justify-between mt-3">
                       <div>
                         <p
-                          className={`${mono.className} text-[10px] text-[#6E6E6E] uppercase tracking-wide`}
+                          className={`${mono.className} text-[10px] uppercase tracking-wide`}
+                          style={{ color: "#9a7a80" }}
                         >
                           {durLabel(pkg.duration)}
                         </p>
@@ -623,8 +661,8 @@ export default function WalkInPage() {
 
       {/* ── Cart — desktop sidebar ── */}
       <aside
-        className="hidden lg:flex w-96 shrink-0 flex-col border-l"
-        style={{ background: "#111111", borderColor: "#1e1e1e" }}
+        className="hidden lg:flex w-96 shrink-0 flex-col border-l bg-white"
+        style={{ borderColor: "#ede0e2" }}
       >
         <CartPanel
           cart={cart}
@@ -648,7 +686,7 @@ export default function WalkInPage() {
         {!cartOpenMobile && cart.length > 0 && (
           <button
             onClick={() => setCartOpenMobile(true)}
-            className="w-full flex items-center justify-between px-6 py-4"
+            className="w-full flex items-center justify-between px-6 py-4 shadow-lg"
             style={{ background: "#A30A24" }}
           >
             <span className="flex items-center gap-2 text-white text-sm font-bold">
@@ -661,23 +699,23 @@ export default function WalkInPage() {
           </button>
         )}
         {cartOpenMobile && (
-          <div
-            className="fixed inset-0 z-50 flex flex-col"
-            style={{ background: "#111111" }}
-          >
+          <div className="fixed inset-0 z-50 flex flex-col bg-white">
             <div
               className="flex items-center justify-between px-5 py-4 border-b shrink-0"
-              style={{ borderColor: "#1e1e1e" }}
+              style={{ borderColor: "#ede0e2" }}
             >
-              <span className="font-bold text-[#F7F5F2]">Your Order</span>
+              <span className="font-bold" style={{ color: "#1a0a0d" }}>
+                Your Order
+              </span>
               <button
                 onClick={() => setCartOpenMobile(false)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-[#6E6E6E]"
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
+                style={{ color: "#A30A24" }}
               >
                 <Icon d={I.close} size={16} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto flex flex-col">
+            <div className="flex-1 flex flex-col">
               <CartPanel
                 cart={cart}
                 total={total}
@@ -743,27 +781,31 @@ function CartPanel({
   onSubmit: () => void;
 }) {
   const inputCls =
-    "w-full px-3.5 py-2.5 rounded-lg text-sm bg-[#0d0d0d] border border-[#2a2a2a] text-[#F7F5F2] placeholder:text-[#3a3a3a] focus:outline-none focus:ring-1 focus:ring-[#A30A24] focus:border-[#A30A24]";
+    "w-full px-3.5 py-2.5 rounded-lg text-sm bg-white border border-[#e5d5d8] text-[#1a0a0d] placeholder:text-[#b9a0a5] focus:outline-none focus:ring-2 focus:ring-[#A30A24]/20 focus:border-[#A30A24] transition-colors";
 
   if (view === "checkout") {
     return (
       <div className="flex-1 flex flex-col">
         <div
           className="px-6 py-4 border-b shrink-0"
-          style={{ borderColor: "#1e1e1e" }}
+          style={{ borderColor: "#ede0e2" }}
         >
           <button
             onClick={() => setView("grid")}
-            className={`${mono.className} text-[10px] uppercase tracking-[2px] text-[#6E6E6E] hover:text-[#A30A24]`}
+            className={`${mono.className} text-[10px] uppercase tracking-[2px] transition-colors`}
+            style={{ color: "#9a6a72" }}
           >
             ← Back to Order
           </button>
-          <p className="font-bold text-[#F7F5F2] mt-1.5">Checkout</p>
+          <p className="font-bold mt-1.5" style={{ color: "#1a0a0d" }}>
+            Checkout
+          </p>
         </div>
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="p-6 space-y-4">
           <div>
             <label
-              className={`${mono.className} block text-[10px] uppercase tracking-[2px] text-[#6E6E6E] mb-1.5`}
+              className={`${mono.className} block text-[10px] uppercase tracking-[2px] mb-1.5`}
+              style={{ color: "#9a6a72" }}
             >
               Customer Name
             </label>
@@ -776,7 +818,8 @@ function CartPanel({
           </div>
           <div>
             <label
-              className={`${mono.className} block text-[10px] uppercase tracking-[2px] text-[#6E6E6E] mb-1.5`}
+              className={`${mono.className} block text-[10px] uppercase tracking-[2px] mb-1.5`}
+              style={{ color: "#9a6a72" }}
             >
               Phone (optional)
             </label>
@@ -791,29 +834,30 @@ function CartPanel({
           </div>
 
           {submitError && (
-            <div className="text-xs text-[#f87171] bg-[#1a0a0a] border border-[#3a1e1e] rounded-lg px-3 py-2.5">
+            <div className="text-xs text-[#A30A24] bg-[#fff5f5] border border-[#fcd4d8] rounded-lg px-3 py-2.5">
               {submitError}
             </div>
           )}
         </div>
         <div
           className="p-6 border-t shrink-0"
-          style={{ borderColor: "#1e1e1e" }}
+          style={{ borderColor: "#ede0e2" }}
         >
           <div className="flex items-center justify-between mb-3">
             <span
-              className={`${mono.className} text-[10px] uppercase tracking-[2px] text-[#6E6E6E]`}
+              className={`${mono.className} text-[10px] uppercase tracking-[2px]`}
+              style={{ color: "#9a6a72" }}
             >
               Total
             </span>
-            <span className="text-2xl font-bold text-[#A30A24]">
+            <span className="text-2xl font-bold" style={{ color: "#A30A24" }}>
               {peso(total)}
             </span>
           </div>
           <button
             onClick={onSubmit}
             disabled={submitting || cart.length === 0}
-            className="w-full py-3.5 rounded-xl text-sm font-bold text-white disabled:opacity-50"
+            className="w-full py-3.5 rounded-xl text-sm font-bold text-white disabled:opacity-50 hover:opacity-90 transition-opacity"
             style={{ background: "#A30A24" }}
           >
             {submitting ? "Confirming…" : "Confirm Order"}
@@ -827,22 +871,25 @@ function CartPanel({
     <div className="flex-1 flex flex-col">
       <div
         className="px-6 py-4 border-b shrink-0 flex items-center gap-2"
-        style={{ borderColor: "#1e1e1e" }}
+        style={{ borderColor: "#ede0e2" }}
       >
         <Icon d={I.cart} size={16} stroke="#A30A24" />
-        <span className="font-bold text-[#F7F5F2]">Current Order</span>
+        <span className="font-bold" style={{ color: "#1a0a0d" }}>
+          Current Order
+        </span>
         <span
-          className={`${mono.className} ml-auto text-[10px] text-[#6E6E6E]`}
+          className={`${mono.className} ml-auto text-[10px]`}
+          style={{ color: "#9a6a72" }}
         >
           {cart.length} line{cart.length !== 1 ? "s" : ""}
         </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
+      <div className="px-5 py-4 space-y-3">
         {cart.length === 0 ? (
           <div className="text-center py-16">
-            <Icon d={I.cart} size={26} stroke="#2a2a2a" />
-            <p className="text-xs text-[#3a3a3a] mt-3">
+            <Icon d={I.cart} size={26} stroke="#e0d0d2" />
+            <p className="text-xs mt-3" style={{ color: "#b9a0a5" }}>
               Tap a service to add it here.
             </p>
           </div>
@@ -851,22 +898,29 @@ function CartPanel({
             <div
               key={item.cartId}
               className="rounded-xl p-3.5"
-              style={{ background: "#0d0d0d", border: "1px solid #1e1e1e" }}
+              style={{ background: "#fdfafa", border: "1px solid #f0e0e3" }}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-[#F7F5F2] truncate">
+                  <p
+                    className="text-sm font-semibold truncate"
+                    style={{ color: "#1a0a0d" }}
+                  >
                     {item.title}
                   </p>
                   {item.addons.length > 0 && (
-                    <p className="text-[11px] text-[#6E6E6E] mt-0.5">
+                    <p
+                      className="text-[11px] mt-0.5"
+                      style={{ color: "#9a6a72" }}
+                    >
                       {item.addons.map((a) => a.label).join(", ")}
                     </p>
                   )}
                 </div>
                 <button
                   onClick={() => onRemove(item.cartId)}
-                  className="text-[#6E6E6E] hover:text-[#A30A24] shrink-0"
+                  className="shrink-0 transition-colors"
+                  style={{ color: "#c48088" }}
                 >
                   <Icon d={I.trash} size={14} />
                 </button>
@@ -875,23 +929,29 @@ function CartPanel({
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => onQty(item.cartId, -1)}
-                    className="w-6 h-6 rounded flex items-center justify-center border border-[#2a2a2a] text-[#F7F5F2] hover:border-[#A30A24]"
+                    className="w-7 h-7 rounded flex items-center justify-center border transition-colors hover:border-[#A30A24]"
+                    style={{ borderColor: "#e5d5d8", color: "#1a0a0d" }}
                   >
                     <Icon d={I.minus} size={11} sw={2.5} />
                   </button>
                   <span
-                    className={`${mono.className} text-sm text-[#F7F5F2] w-4 text-center`}
+                    className={`${mono.className} text-sm w-4 text-center`}
+                    style={{ color: "#1a0a0d" }}
                   >
                     {item.qty}
                   </span>
                   <button
                     onClick={() => onQty(item.cartId, 1)}
-                    className="w-6 h-6 rounded flex items-center justify-center border border-[#2a2a2a] text-[#F7F5F2] hover:border-[#A30A24]"
+                    className="w-7 h-7 rounded flex items-center justify-center border transition-colors hover:border-[#A30A24]"
+                    style={{ borderColor: "#e5d5d8", color: "#1a0a0d" }}
                   >
                     <Icon d={I.plus} size={11} sw={2.5} />
                   </button>
                 </div>
-                <span className="text-sm font-bold text-[#A30A24]">
+                <span
+                  className="text-sm font-bold"
+                  style={{ color: "#A30A24" }}
+                >
                   {peso(item.unitPrice * item.qty)}
                 </span>
               </div>
@@ -900,21 +960,22 @@ function CartPanel({
         )}
       </div>
 
-      <div className="p-6 border-t shrink-0" style={{ borderColor: "#1e1e1e" }}>
+      <div className="p-6 border-t shrink-0" style={{ borderColor: "#ede0e2" }}>
         <div className="flex items-center justify-between mb-4">
           <span
-            className={`${mono.className} text-[10px] uppercase tracking-[2px] text-[#6E6E6E]`}
+            className={`${mono.className} text-[10px] uppercase tracking-[2px]`}
+            style={{ color: "#9a6a72" }}
           >
             Total
           </span>
-          <span className="text-2xl font-bold text-[#F7F5F2]">
+          <span className="text-2xl font-bold" style={{ color: "#1a0a0d" }}>
             {peso(total)}
           </span>
         </div>
         <button
           onClick={() => setView("checkout")}
           disabled={cart.length === 0}
-          className="w-full py-3.5 rounded-xl text-sm font-bold text-white disabled:opacity-40"
+          className="w-full py-3.5 rounded-xl text-sm font-bold text-white disabled:opacity-40 hover:opacity-90 transition-opacity"
           style={{ background: "#A30A24" }}
         >
           Checkout
