@@ -1,3 +1,4 @@
+// app/api/walk-in-booking/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/postgres/db";
 
@@ -35,8 +36,6 @@ export async function POST(req: NextRequest) {
 
     const customerName = body.customerName?.trim() || "Walk-in Customer";
     const customerPhone = body.customerPhone?.trim() || null;
-    // Walk-ins don't provide an email; generate a placeholder so NOT NULL
-    // constraints (mirroring the online booking flow) don't reject the row.
     const customerEmail = `walkin+${Date.now()}@onsite.blinkcreativestudio.local`;
 
     const now = new Date();
@@ -54,27 +53,27 @@ export async function POST(req: NextRequest) {
 
       for (let i = 0; i < qty; i++) {
         const result = await query<{ id: string }>(
-          `INSERT INTO booking_appointments (
-            full_name, email, phone, description,
-            booking_date, booking_time, service_id, addons,
-            total_price, payment_proof, terms_accepted, status
-          )
-          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'Confirmed')
-          RETURNING id`,
-          [
-            customerName,
-            customerEmail,
-            customerPhone,
-            "Walk-in booking (front desk)",
-            bookingDate,
-            bookingTime,
-            item.serviceId,
-            JSON.stringify(addons),
-            totalPrice,
-            null,
-            true,
-          ]
-        );
+  `INSERT INTO booking_appointments (
+    full_name, email, phone, description,
+    booking_date, booking_time, service_id, addons,
+    total_price, payment_proof, payment_proof_type, status, created_at
+  )
+  VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'Confirmed',NOW())
+  RETURNING id`,
+  [
+    customerName,
+    customerEmail,
+    customerPhone,
+    "Walk-in booking (front desk)",
+    bookingDate,
+    bookingTime,
+    item.serviceId,
+    JSON.stringify(addons),
+    totalPrice,
+    "Walk-in (no proof required)",
+    "walk-in",
+  ]
+);
         bookingIds.push(String(result.rows[0].id));
       }
     }

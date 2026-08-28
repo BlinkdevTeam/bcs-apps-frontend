@@ -869,105 +869,158 @@ function CartPanel({
 
   return (
     <div className="flex-1 flex flex-col">
+      {/* Header */}
       <div
         className="px-6 py-4 border-b shrink-0 flex items-center gap-2"
         style={{ borderColor: "#ede0e2" }}
       >
-        <Icon d={I.cart} size={16} stroke="#A30A24" />
+        <span
+          className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+          style={{ background: "#FEF0F2" }}
+        >
+          <Icon d={I.cart} size={14} stroke="#A30A24" />
+        </span>
         <span className="font-bold" style={{ color: "#1a0a0d" }}>
           Current Order
         </span>
-        <span
-          className={`${mono.className} ml-auto text-[10px]`}
-          style={{ color: "#9a6a72" }}
-        >
-          {cart.length} line{cart.length !== 1 ? "s" : ""}
-        </span>
+        {cart.length > 0 && (
+          <span
+            className={`${mono.className} ml-auto text-[10px] px-2 py-1 rounded-full font-semibold`}
+            style={{ background: "#FEF0F2", color: "#A30A24" }}
+          >
+            {cart.length} line{cart.length !== 1 ? "s" : ""}
+          </span>
+        )}
       </div>
 
-      <div className="px-5 py-4 space-y-3">
+      {/* Items */}
+      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-2.5">
         {cart.length === 0 ? (
-          <div className="text-center py-16">
-            <Icon d={I.cart} size={26} stroke="#e0d0d2" />
-            <p className="text-xs mt-3" style={{ color: "#b9a0a5" }}>
-              Tap a service to add it here.
+          <div className="flex flex-col items-center justify-center h-full text-center py-10">
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
+              style={{ background: "#fdfafa", border: "1.5px dashed #e5d5d8" }}
+            >
+              <Icon d={I.cart} size={22} stroke="#d4a0a8" sw={1.5} />
+            </div>
+            <p className="text-sm font-semibold" style={{ color: "#7a5560" }}>
+              Your order is empty
+            </p>
+            <p
+              className="text-xs mt-1 max-w-[180px]"
+              style={{ color: "#b9a0a5" }}
+            >
+              Tap a service card to add it to this order.
             </p>
           </div>
         ) : (
           cart.map((item) => (
             <div
               key={item.cartId}
-              className="rounded-xl p-3.5"
+              className="group relative rounded-xl p-3.5 transition-all duration-150 hover:shadow-sm"
               style={{ background: "#fdfafa", border: "1px solid #f0e0e3" }}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
                   <p
-                    className="text-sm font-semibold truncate"
+                    className="text-sm font-semibold truncate leading-snug"
                     style={{ color: "#1a0a0d" }}
                   >
                     {item.title}
                   </p>
                   {item.addons.length > 0 && (
                     <p
-                      className="text-[11px] mt-0.5"
+                      className="text-[11px] mt-0.5 leading-relaxed line-clamp-2"
                       style={{ color: "#9a6a72" }}
                     >
-                      {item.addons.map((a) => a.label).join(", ")}
+                      {item.addons.map((a) => a.label).join(" · ")}
                     </p>
                   )}
                 </div>
                 <button
                   onClick={() => onRemove(item.cartId)}
-                  className="shrink-0 transition-colors"
-                  style={{ color: "#c48088" }}
+                  aria-label={`Remove ${item.title} from order`}
+                  title="Remove item"
+                  className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center
+                           text-[#c48088] opacity-60 group-hover:opacity-100
+                           hover:bg-[#A30A24]/10 hover:text-[#A30A24] transition-all"
                 >
-                  <Icon d={I.trash} size={14} />
+                  <Icon d={I.trash} size={13} />
                 </button>
               </div>
-              <div className="flex items-center justify-between mt-2.5">
-                <div className="flex items-center gap-2">
+
+              <div className="flex items-center justify-between mt-3">
+                {/* Quantity stepper */}
+                <div
+                  className="flex items-center gap-0.5 rounded-full p-0.5"
+                  style={{ background: "#fff", border: "1px solid #e5d5d8" }}
+                >
                   <button
                     onClick={() => onQty(item.cartId, -1)}
-                    className="w-7 h-7 rounded flex items-center justify-center border transition-colors hover:border-[#A30A24]"
-                    style={{ borderColor: "#e5d5d8", color: "#1a0a0d" }}
+                    aria-label="Decrease quantity"
+                    className="w-6 h-6 rounded-full flex items-center justify-center
+                             transition-colors hover:bg-[#A30A24] hover:text-white"
+                    style={{ color: "#1a0a0d" }}
                   >
-                    <Icon d={I.minus} size={11} sw={2.5} />
+                    <Icon d={I.minus} size={10} sw={2.5} />
                   </button>
                   <span
-                    className={`${mono.className} text-sm w-4 text-center`}
+                    className={`${mono.className} text-xs w-5 text-center font-semibold`}
                     style={{ color: "#1a0a0d" }}
                   >
                     {item.qty}
                   </span>
                   <button
                     onClick={() => onQty(item.cartId, 1)}
-                    className="w-7 h-7 rounded flex items-center justify-center border transition-colors hover:border-[#A30A24]"
-                    style={{ borderColor: "#e5d5d8", color: "#1a0a0d" }}
+                    aria-label="Increase quantity"
+                    className="w-6 h-6 rounded-full flex items-center justify-center
+                             transition-colors hover:bg-[#A30A24] hover:text-white"
+                    style={{ color: "#1a0a0d" }}
                   >
-                    <Icon d={I.plus} size={11} sw={2.5} />
+                    <Icon d={I.plus} size={10} sw={2.5} />
                   </button>
                 </div>
-                <span
-                  className="text-sm font-bold"
-                  style={{ color: "#A30A24" }}
-                >
-                  {peso(item.unitPrice * item.qty)}
-                </span>
+
+                <div className="text-right">
+                  {item.qty > 1 && (
+                    <p
+                      className="text-[10px] leading-none mb-0.5"
+                      style={{ color: "#b9a0a5" }}
+                    >
+                      {peso(item.unitPrice)} each
+                    </p>
+                  )}
+                  <span
+                    className="text-sm font-bold"
+                    style={{ color: "#A30A24" }}
+                  >
+                    {peso(item.unitPrice * item.qty)}
+                  </span>
+                </div>
               </div>
             </div>
           ))
         )}
       </div>
 
-      <div className="p-6 border-t shrink-0" style={{ borderColor: "#ede0e2" }}>
-        <div className="flex items-center justify-between mb-4">
+      {/* Footer / summary */}
+      <div
+        className="p-6 border-t shrink-0"
+        style={{
+          borderColor: "#ede0e2",
+          background: cart.length ? "#fdfafa" : "transparent",
+        }}
+      >
+        <div className="flex items-center justify-between mb-1">
           <span
             className={`${mono.className} text-[10px] uppercase tracking-[2px]`}
             style={{ color: "#9a6a72" }}
           >
-            Total
+            {cart.reduce((s, c) => s + c.qty, 0)} item
+            {cart.reduce((s, c) => s + c.qty, 0) !== 1 ? "s" : ""} · Total
           </span>
+        </div>
+        <div className="flex items-end justify-between mb-4">
           <span className="text-2xl font-bold" style={{ color: "#1a0a0d" }}>
             {peso(total)}
           </span>
@@ -975,10 +1028,12 @@ function CartPanel({
         <button
           onClick={() => setView("checkout")}
           disabled={cart.length === 0}
-          className="w-full py-3.5 rounded-xl text-sm font-bold text-white disabled:opacity-40 hover:opacity-90 transition-opacity"
+          className="w-full py-3.5 rounded-xl text-sm font-bold text-white
+                   disabled:opacity-40 disabled:cursor-not-allowed
+                   hover:opacity-90 active:scale-[0.99] transition-all"
           style={{ background: "#A30A24" }}
         >
-          Checkout
+          {cart.length === 0 ? "Add items to continue" : "Checkout →"}
         </button>
       </div>
     </div>
