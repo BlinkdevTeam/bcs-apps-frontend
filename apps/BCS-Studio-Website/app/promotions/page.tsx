@@ -3,83 +3,132 @@
 import CurrentPromo from "./CurrentPromo";
 import PhotoContest from "./PhotoContest";
 import ValentinesPromo from "./ValentinesPromo";
-import { motion, Variants } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
 
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"] });
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
-  },
-};
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+});
 
 export default function Promotions() {
   return (
     <section className="bg-white flex flex-col overflow-hidden">
-      {/* Hero */}
-      <div className="relative bg-[#161616] text-white py-32 px-6 overflow-hidden">
-        <span
-          className="absolute inset-y-0 left-0 w-[14px] sprocket-rail"
-          aria-hidden="true"
-        />
-        <span
-          className="absolute inset-y-0 right-0 w-[14px] sprocket-rail"
-          aria-hidden="true"
-        />
+      {/* ── FRAME 01 — HERO ── */}
+      <div
+        className="relative overflow-hidden"
+        style={{ background: "#161616" }}
+      >
+        <span className="sprocket-rail left-0" aria-hidden="true" />
+        <span className="sprocket-rail right-0" aria-hidden="true" />
 
-        <motion.div
-          className="max-w-4xl w-full flex flex-col justify-center items-center mx-auto text-center gap-6"
-          initial="hidden"
-          animate="visible"
-          variants={{ visible: { transition: { staggerChildren: 0.12 } } }}
-        >
-          <motion.span
-            className={`${mono.className} text-[10px] uppercase tracking-[0.25em]`}
+        <div className="relative flex items-center justify-between px-6 lg:px-16 pt-8">
+          <span
+            className={`${mono.className} text-[10px] sm:text-[11px] uppercase tracking-[0.2em]`}
+            style={{ color: "rgba(255,255,255,0.4)" }}
+          >
+            Blink Creative Studio
+          </span>
+          <span
+            className={`${mono.className} text-[10px] sm:text-[11px] uppercase tracking-[0.2em]`}
             style={{ color: "#A30A24" }}
-            variants={fadeUp}
           >
-            Limited Time
-          </motion.span>
-          <motion.h1
-            className="font-black"
-            style={{
-              fontSize: "clamp(48px, 8vw, 96px)",
-              letterSpacing: "-0.02em",
-              lineHeight: 1,
-            }}
-            variants={fadeUp}
+            Frame 01 / 04
+          </span>
+        </div>
+
+        <div className="relative px-6 lg:px-16 py-32 md:py-44">
+          <div className="iris max-w-4xl mx-auto text-center">
+            <p
+              className="text-xs uppercase tracking-[0.25em] font-bold mb-5"
+              style={{ color: "#A30A24" }}
+            >
+              Limited Time
+            </p>
+            <h1
+              className="font-black leading-[0.95]"
+              style={{
+                color: "#fff",
+                fontSize: "clamp(56px, 9vw, 140px)",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Special Offers
+            </h1>
+            <p
+              className="mt-6 mx-auto max-w-md text-base md:text-lg leading-relaxed"
+              style={{ color: "rgba(255,255,255,0.55)" }}
+            >
+              Exclusive deals, exciting events, and amazing contests — curated
+              for you.
+            </p>
+          </div>
+        </div>
+
+        <div className="scroll-cue relative flex flex-col items-center gap-2 pb-10">
+          <span
+            className={`${mono.className} text-[10px] uppercase tracking-[0.2em]`}
+            style={{ color: "rgba(255,255,255,0.3)" }}
           >
-            Special Offers
-          </motion.h1>
-          <motion.p
-            className="text-[18px] md:text-[24px] max-w-xl"
-            style={{ color: "rgba(255,255,255,0.55)" }}
-            variants={fadeUp}
-          >
-            Exclusive deals, exciting events, and amazing contests — curated for
-            you.
-          </motion.p>
-          <motion.span
-            className="block w-12 h-[3px] mt-2"
-            style={{ background: "#A30A24" }}
-            variants={fadeUp}
+            Scroll
+          </span>
+          <span
+            className="w-px h-8"
+            style={{ background: "rgba(255,255,255,0.25)" }}
+            aria-hidden="true"
           />
-        </motion.div>
+        </div>
 
         <style jsx>{`
           .sprocket-rail {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 14px;
             background-image: repeating-linear-gradient(
               to bottom,
-              rgba(255, 255, 255, 0.1) 0px,
-              rgba(255, 255, 255, 0.1) 6px,
+              rgba(255, 255, 255, 0.14) 0px,
+              rgba(255, 255, 255, 0.14) 6px,
               transparent 6px,
               transparent 26px
             );
+            background-position: center;
             background-repeat: repeat-y;
+          }
+
+          .iris {
+            clip-path: circle(150% at 50% 42%);
+          }
+          @media (prefers-reduced-motion: no-preference) {
+            .iris {
+              clip-path: circle(0% at 50% 42%);
+              animation: iris-open 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s
+                forwards;
+            }
+          }
+          @keyframes iris-open {
+            to {
+              clip-path: circle(85% at 50% 42%);
+            }
+          }
+
+          .scroll-cue {
+            animation: cue-pulse 2.2s ease-in-out infinite;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .scroll-cue {
+              animation: none;
+            }
+          }
+          @keyframes cue-pulse {
+            0%,
+            100% {
+              opacity: 0.25;
+              transform: translateY(0);
+            }
+            50% {
+              opacity: 1;
+              transform: translateY(6px);
+            }
           }
         `}</style>
       </div>
