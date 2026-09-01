@@ -110,7 +110,146 @@ function useNow() {
 }
 
 // ── Add-on picker modal ──────────────────────────────────────────────────
-function AddonPicker({
+// function AddonPicker({
+//   pkg,
+//   onCancel,
+//   onConfirm,
+// }: {
+//   pkg: Package;
+//   onCancel: () => void;
+//   onConfirm: (addons: PkgAddon[]) => void;
+// }) {
+//   const [selected, setSelected] = useState<Set<string>>(new Set());
+//   const toggle = (id: string) =>
+//     setSelected((p) => {
+//       const s = new Set(p);
+//       if (s.has(id)) {
+//         s.delete(id);
+//       } else {
+//         s.add(id);
+//       }
+//       return s;
+//     });
+//   const chosen = pkg.addons.filter((a) => selected.has(a.id));
+//   const total = pkg.price + chosen.reduce((s, a) => s + Number(a.price), 0);
+
+//   return (
+//     <div
+//       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+//       style={{ background: "rgba(26,10,13,0.45)", backdropFilter: "blur(4px)" }}
+//     >
+//       <div
+//         className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border max-h-[85vh] flex flex-col shadow-2xl"
+//         style={{ borderColor: "#f0e0e3" }}
+//       >
+//         <div
+//           className="flex items-center justify-between px-6 py-4 border-b"
+//           style={{ borderColor: "#f0e0e3" }}
+//         >
+//           <div>
+//             <p
+//               className={`${mono.className} text-[10px] tracking-[2px] uppercase`}
+//               style={{ color: "#A30A24" }}
+//             >
+//               Add-ons
+//             </p>
+//             <h3
+//               className="text-lg font-bold"
+//               style={{ color: "#1a0a0d", fontFamily: "Georgia, serif" }}
+//             >
+//               {pkg.title}
+//             </h3>
+//           </div>
+//           <button
+//             onClick={onCancel}
+//             className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
+//             style={{ color: "#A30A24" }}
+//           >
+//             <Icon d={I.close} size={16} />
+//           </button>
+//         </div>
+
+//         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
+//           {pkg.addons.length === 0 ? (
+//             <p className="text-sm" style={{ color: "#9a6a72" }}>
+//               No add-ons for this package.
+//             </p>
+//           ) : (
+//             pkg.addons.map((a) => {
+//               const on = selected.has(a.id);
+//               return (
+//                 <button
+//                   key={a.id}
+//                   onClick={() => toggle(a.id)}
+//                   className="w-full flex items-center gap-3 p-3.5 rounded-xl text-left transition-colors"
+//                   style={{
+//                     background: on ? "#FEF0F2" : "#fdfafa",
+//                     border: `1.5px solid ${on ? "#A30A24" : "#e5d5d8"}`,
+//                   }}
+//                 >
+//                   <span
+//                     className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0"
+//                     style={{
+//                       borderColor: on ? "#A30A24" : "#d4c4c8",
+//                       background: on ? "#A30A24" : "transparent",
+//                     }}
+//                   >
+//                     {on && <Icon d={I.check} size={12} stroke="#fff" sw={3} />}
+//                   </span>
+//                   <span
+//                     className="flex-1 text-sm font-medium"
+//                     style={{ color: "#1a0a0d" }}
+//                   >
+//                     {a.label}
+//                   </span>
+//                   <span
+//                     className={`${mono.className} text-xs font-semibold`}
+//                     style={{ color: "#A30A24" }}
+//                   >
+//                     +{peso(a.price)}
+//                   </span>
+//                 </button>
+//               );
+//             })
+//           )}
+//         </div>
+
+//         <div
+//           className="px-6 py-4 border-t flex items-center gap-3"
+//           style={{ borderColor: "#f0e0e3" }}
+//         >
+//           <div className="flex-1">
+//             <p
+//               className={`${mono.className} text-[9px] uppercase tracking-[2px]`}
+//               style={{ color: "#9a6a72" }}
+//             >
+//               Total
+//             </p>
+//             <p className="text-xl font-bold" style={{ color: "#1a0a0d" }}>
+//               {peso(total)}
+//             </p>
+//           </div>
+//           <button
+//             onClick={onCancel}
+//             className="px-4 py-2.5 rounded-lg text-sm font-semibold border transition-colors hover:bg-red-50"
+//             style={{ borderColor: "#e5d5d8", color: "#7a4a50" }}
+//           >
+//             Cancel
+//           </button>
+//           <button
+//             onClick={() => onConfirm(chosen)}
+//             className="px-5 py-2.5 rounded-lg text-sm font-bold text-white hover:opacity-90 transition-opacity"
+//             style={{ background: "#A30A24" }}
+//           >
+//             Add to Order
+//           </button>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+function PackageDetailModal({
   pkg,
   onCancel,
   onConfirm,
@@ -142,8 +281,9 @@ function AddonPicker({
         className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border max-h-[85vh] flex flex-col shadow-2xl"
         style={{ borderColor: "#f0e0e3" }}
       >
+        {/* Header */}
         <div
-          className="flex items-center justify-between px-6 py-4 border-b"
+          className="flex items-start justify-between px-6 py-4 border-b"
           style={{ borderColor: "#f0e0e3" }}
         >
           <div>
@@ -151,69 +291,124 @@ function AddonPicker({
               className={`${mono.className} text-[10px] tracking-[2px] uppercase`}
               style={{ color: "#A30A24" }}
             >
-              Add-ons
+              Package Details
             </p>
             <h3
-              className="text-lg font-bold"
+              className="text-lg font-bold mt-0.5"
               style={{ color: "#1a0a0d", fontFamily: "Georgia, serif" }}
             >
               {pkg.title}
             </h3>
+            <p
+              className={`${mono.className} text-[11px] mt-1`}
+              style={{ color: "#9a6a72" }}
+            >
+              {durLabel(pkg.duration)} · {peso(pkg.price)}
+            </p>
           </div>
           <button
             onClick={onCancel}
-            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
+            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50 shrink-0"
             style={{ color: "#A30A24" }}
           >
             <Icon d={I.close} size={16} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
-          {pkg.addons.length === 0 ? (
-            <p className="text-sm" style={{ color: "#9a6a72" }}>
-              No add-ons for this package.
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-5">
+          {/* Description */}
+          {pkg.description && (
+            <p className="text-sm leading-relaxed" style={{ color: "#5a3a42" }}>
+              {pkg.description}
             </p>
-          ) : (
-            pkg.addons.map((a) => {
-              const on = selected.has(a.id);
-              return (
-                <button
-                  key={a.id}
-                  onClick={() => toggle(a.id)}
-                  className="w-full flex items-center gap-3 p-3.5 rounded-xl text-left transition-colors"
-                  style={{
-                    background: on ? "#FEF0F2" : "#fdfafa",
-                    border: `1.5px solid ${on ? "#A30A24" : "#e5d5d8"}`,
-                  }}
-                >
-                  <span
-                    className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0"
-                    style={{
-                      borderColor: on ? "#A30A24" : "#d4c4c8",
-                      background: on ? "#A30A24" : "transparent",
-                    }}
+          )}
+
+          {/* Inclusions */}
+          {pkg.inclusions.length > 0 && (
+            <div>
+              <p
+                className={`${mono.className} text-[10px] uppercase tracking-[2px] mb-2`}
+                style={{ color: "#7a4a50" }}
+              >
+                Inclusions
+              </p>
+              <ul className="space-y-1.5">
+                {pkg.inclusions.map((inc) => (
+                  <li
+                    key={inc.id}
+                    className="flex items-start gap-2 text-sm"
+                    style={{ color: "#5a3a42" }}
                   >
-                    {on && <Icon d={I.check} size={12} stroke="#fff" sw={3} />}
-                  </span>
-                  <span
-                    className="flex-1 text-sm font-medium"
-                    style={{ color: "#1a0a0d" }}
-                  >
-                    {a.label}
-                  </span>
-                  <span
-                    className={`${mono.className} text-xs font-semibold`}
-                    style={{ color: "#A30A24" }}
-                  >
-                    +{peso(a.price)}
-                  </span>
-                </button>
-              );
-            })
+                    <span
+                      className="mt-0.5 flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center"
+                      style={{
+                        background: "#d1fae5",
+                        border: "1px solid #6ee7b7",
+                      }}
+                    >
+                      <Icon d={I.check} size={9} stroke="#059669" sw={2.5} />
+                    </span>
+                    {inc.text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Add-ons */}
+          {pkg.addons.length > 0 && (
+            <div>
+              <p
+                className={`${mono.className} text-[10px] uppercase tracking-[2px] mb-2`}
+                style={{ color: "#7a4a50" }}
+              >
+                Add-ons (optional)
+              </p>
+              <div className="space-y-2">
+                {pkg.addons.map((a) => {
+                  const on = selected.has(a.id);
+                  return (
+                    <button
+                      key={a.id}
+                      onClick={() => toggle(a.id)}
+                      className="w-full flex items-center gap-3 p-3.5 rounded-xl text-left transition-colors"
+                      style={{
+                        background: on ? "#FEF0F2" : "#fdfafa",
+                        border: `1.5px solid ${on ? "#A30A24" : "#e5d5d8"}`,
+                      }}
+                    >
+                      <span
+                        className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0"
+                        style={{
+                          borderColor: on ? "#A30A24" : "#d4c4c8",
+                          background: on ? "#A30A24" : "transparent",
+                        }}
+                      >
+                        {on && (
+                          <Icon d={I.check} size={12} stroke="#fff" sw={3} />
+                        )}
+                      </span>
+                      <span
+                        className="flex-1 text-sm font-medium"
+                        style={{ color: "#1a0a0d" }}
+                      >
+                        {a.label}
+                      </span>
+                      <span
+                        className={`${mono.className} text-xs font-semibold`}
+                        style={{ color: "#A30A24" }}
+                      >
+                        +{peso(a.price)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           )}
         </div>
 
+        {/* Footer */}
         <div
           className="px-6 py-4 border-t flex items-center gap-3"
           style={{ borderColor: "#f0e0e3" }}
@@ -332,12 +527,16 @@ export default function WalkInPage() {
     setCartOpenMobile(true);
   };
 
+  // const handleCardClick = (pkg: Package) => {
+  //   if (pkg.addons.length > 0) {
+  //     setPickerPkg(pkg);
+  //   } else {
+  //     addToCart(pkg, []);
+  //   }
+  // };
+
   const handleCardClick = (pkg: Package) => {
-    if (pkg.addons.length > 0) {
-      setPickerPkg(pkg);
-    } else {
-      addToCart(pkg, []);
-    }
+    setPickerPkg(pkg); // always show details modal first, regardless of add-ons
   };
 
   const updateQty = (cartId: string, delta: number) => {
@@ -736,8 +935,19 @@ export default function WalkInPage() {
         )}
       </div>
 
-      {pickerPkg && (
+      {/* {pickerPkg && (
         <AddonPicker
+          pkg={pickerPkg}
+          onCancel={() => setPickerPkg(null)}
+          onConfirm={(addons) => {
+            addToCart(pickerPkg, addons);
+            setPickerPkg(null);
+          }}
+        />
+      )} */}
+
+      {pickerPkg && (
+        <PackageDetailModal
           pkg={pickerPkg}
           onCancel={() => setPickerPkg(null)}
           onConfirm={(addons) => {
