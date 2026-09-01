@@ -173,7 +173,7 @@ function PackageDetailModal({
           </div>
           <button
             onClick={onCancel}
-            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50 shrink-0"
+            className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50 shrink-0 cursor-pointer"
             style={{ color: "#A30A24" }}
           >
             <Icon d={I.close} size={16} />
@@ -291,14 +291,14 @@ function PackageDetailModal({
           </div>
           <button
             onClick={onCancel}
-            className="px-4 py-2.5 rounded-lg text-sm font-semibold border transition-colors hover:bg-red-50"
+            className="px-4 py-2.5 rounded-lg text-sm font-semibold border transition-colors hover:bg-red-50 cursor-pointer"
             style={{ borderColor: "#e5d5d8", color: "#7a4a50" }}
           >
             Cancel
           </button>
           <button
             onClick={() => onConfirm(chosen)}
-            className="px-5 py-2.5 rounded-lg text-sm font-bold text-white hover:opacity-90 transition-opacity"
+            className="px-5 py-2.5 rounded-lg text-sm font-bold text-white hover:opacity-90 transition-opacity cursor-pointer"
             style={{ background: "#A30A24" }}
           >
             Add to Order
@@ -633,7 +633,7 @@ export default function WalkInPage() {
             <button
               key={f.key}
               onClick={() => setFilter(f.key as typeof filter)}
-              className={`${mono.className} px-4 py-2 rounded-lg text-[11px] uppercase tracking-[1px] font-semibold transition-colors`}
+              className={`${mono.className} px-4 py-2 rounded-lg text-[11px] uppercase tracking-[1px] font-semibold transition-colors cursor-pointer`}
               style={
                 filter === f.key
                   ? { background: "#A30A24", color: "#fff" }
@@ -651,7 +651,7 @@ export default function WalkInPage() {
           {hiddenPackages.length > 0 && (
             <button
               onClick={() => setShowHiddenPanel(true)}
-              className={`${mono.className} ml-auto px-4 py-2 rounded-lg text-[11px] uppercase tracking-[1px] font-semibold transition-colors`}
+              className={`${mono.className} ml-auto px-4 py-2 rounded-lg text-[11px] uppercase tracking-[1px] font-semibold transition-colors cursor-pointer`}
               style={{
                 background: "#fdfafa",
                 color: "#7a5560",
@@ -706,15 +706,7 @@ export default function WalkInPage() {
                       style={{ background: color }}
                     />
 
-                    {inCart > 0 && (
-                      <span
-                        className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full text-white z-10"
-                        style={{ background: color }}
-                      >
-                        ×{inCart}
-                      </span>
-                    )}
-
+                    {/* Hide-from-walk-in toggle — top LEFT so it never collides with the cart badge or the add button */}
                     <span
                       role="button"
                       tabIndex={0}
@@ -740,6 +732,16 @@ export default function WalkInPage() {
                     >
                       <Icon d={I.eyeOff} size={13} sw={2} />
                     </span>
+
+                    {/* Cart count badge — stays top RIGHT, now with no competitor */}
+                    {inCart > 0 && (
+                      <span
+                        className="absolute bottom-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full text-white z-10"
+                        style={{ background: color }}
+                      >
+                        ×{inCart}
+                      </span>
+                    )}
 
                     <div className="relative z-10">
                       <div
@@ -783,12 +785,12 @@ export default function WalkInPage() {
                           {peso(pkg.price)}
                         </p>
                       </div>
-                      <span
+                      {/* <span
                         className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
                         style={{ background: color }}
                       >
                         <Icon d={I.plus} size={15} stroke="#fff" sw={2.5} />
-                      </span>
+                      </span> */}
                     </div>
                   </button>
                 );
@@ -850,7 +852,7 @@ export default function WalkInPage() {
               </span>
               <button
                 onClick={() => setCartOpenMobile(false)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
+                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50 cursor-pointer"
                 style={{ color: "#A30A24" }}
               >
                 <Icon d={I.close} size={16} />
@@ -903,7 +905,7 @@ export default function WalkInPage() {
               </h3>
               <button
                 onClick={() => setShowHiddenPanel(false)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors"
+                className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors cursor-pointer"
                 style={{ color: "#A30A24" }}
               >
                 <Icon d={I.close} size={15} />
@@ -941,7 +943,7 @@ export default function WalkInPage() {
                     <button
                       onClick={() => toggleWalkinVisibility(pkg)}
                       disabled={togglingId === pkg.id}
-                      className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
+                      className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer"
                       style={{ background: "#A30A24" }}
                     >
                       Unhide
