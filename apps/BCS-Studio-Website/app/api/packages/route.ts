@@ -11,6 +11,7 @@ interface PackageRow {
   price: number;
   is_active: boolean;
   color: string | null;
+  hidden_from_walkin: boolean; // ← add
   created_at: string;
 }
 
@@ -85,6 +86,7 @@ export async function GET(req: Request) {
     const packages = packagesRes.rows.map((pkg) => ({
       ...pkg,
       isActive: pkg.is_active,
+      hiddenFromWalkin: pkg.hidden_from_walkin,
       inclusions: inclusionsRes.rows
         .filter((i) => i.package_id === pkg.id)
         .map((i) => ({ id: i.id, text: i.text })),

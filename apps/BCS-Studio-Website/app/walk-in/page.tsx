@@ -27,6 +27,7 @@ interface Package {
   type?: "portrait" | "rental";
   color?: string;
   isActive?: boolean;
+  hiddenFromWalkin?: boolean;
   inclusions: PkgInclusion[];
   addons: PkgAddon[];
 }
@@ -93,6 +94,9 @@ const I = {
   check: "M20 6L9 17l-5-5",
   cart: "M6 6h15l-1.5 9h-13z M6 6L4.5 3H2 M9 20a1 1 0 100-2 1 1 0 000 2zM18 20a1 1 0 100-2 1 1 0 000 2z",
   cam: "M4 8a2 2 0 012-2h1l1.5-2h7L17 6h1a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V8zM12 17a4 4 0 100-8 4 4 0 000 8z",
+  eye: "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 100 6 3 3 0 000-6z",
+  eyeOff:
+    "M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24 M1 1l22 22",
 };
 
 // ── Live clock ─────────────────────────────────────────────────────────────
@@ -109,146 +113,7 @@ function useNow() {
   return now;
 }
 
-// ── Add-on picker modal ──────────────────────────────────────────────────
-// function AddonPicker({
-//   pkg,
-//   onCancel,
-//   onConfirm,
-// }: {
-//   pkg: Package;
-//   onCancel: () => void;
-//   onConfirm: (addons: PkgAddon[]) => void;
-// }) {
-//   const [selected, setSelected] = useState<Set<string>>(new Set());
-//   const toggle = (id: string) =>
-//     setSelected((p) => {
-//       const s = new Set(p);
-//       if (s.has(id)) {
-//         s.delete(id);
-//       } else {
-//         s.add(id);
-//       }
-//       return s;
-//     });
-//   const chosen = pkg.addons.filter((a) => selected.has(a.id));
-//   const total = pkg.price + chosen.reduce((s, a) => s + Number(a.price), 0);
-
-//   return (
-//     <div
-//       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-//       style={{ background: "rgba(26,10,13,0.45)", backdropFilter: "blur(4px)" }}
-//     >
-//       <div
-//         className="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border max-h-[85vh] flex flex-col shadow-2xl"
-//         style={{ borderColor: "#f0e0e3" }}
-//       >
-//         <div
-//           className="flex items-center justify-between px-6 py-4 border-b"
-//           style={{ borderColor: "#f0e0e3" }}
-//         >
-//           <div>
-//             <p
-//               className={`${mono.className} text-[10px] tracking-[2px] uppercase`}
-//               style={{ color: "#A30A24" }}
-//             >
-//               Add-ons
-//             </p>
-//             <h3
-//               className="text-lg font-bold"
-//               style={{ color: "#1a0a0d", fontFamily: "Georgia, serif" }}
-//             >
-//               {pkg.title}
-//             </h3>
-//           </div>
-//           <button
-//             onClick={onCancel}
-//             className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50"
-//             style={{ color: "#A30A24" }}
-//           >
-//             <Icon d={I.close} size={16} />
-//           </button>
-//         </div>
-
-//         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
-//           {pkg.addons.length === 0 ? (
-//             <p className="text-sm" style={{ color: "#9a6a72" }}>
-//               No add-ons for this package.
-//             </p>
-//           ) : (
-//             pkg.addons.map((a) => {
-//               const on = selected.has(a.id);
-//               return (
-//                 <button
-//                   key={a.id}
-//                   onClick={() => toggle(a.id)}
-//                   className="w-full flex items-center gap-3 p-3.5 rounded-xl text-left transition-colors"
-//                   style={{
-//                     background: on ? "#FEF0F2" : "#fdfafa",
-//                     border: `1.5px solid ${on ? "#A30A24" : "#e5d5d8"}`,
-//                   }}
-//                 >
-//                   <span
-//                     className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0"
-//                     style={{
-//                       borderColor: on ? "#A30A24" : "#d4c4c8",
-//                       background: on ? "#A30A24" : "transparent",
-//                     }}
-//                   >
-//                     {on && <Icon d={I.check} size={12} stroke="#fff" sw={3} />}
-//                   </span>
-//                   <span
-//                     className="flex-1 text-sm font-medium"
-//                     style={{ color: "#1a0a0d" }}
-//                   >
-//                     {a.label}
-//                   </span>
-//                   <span
-//                     className={`${mono.className} text-xs font-semibold`}
-//                     style={{ color: "#A30A24" }}
-//                   >
-//                     +{peso(a.price)}
-//                   </span>
-//                 </button>
-//               );
-//             })
-//           )}
-//         </div>
-
-//         <div
-//           className="px-6 py-4 border-t flex items-center gap-3"
-//           style={{ borderColor: "#f0e0e3" }}
-//         >
-//           <div className="flex-1">
-//             <p
-//               className={`${mono.className} text-[9px] uppercase tracking-[2px]`}
-//               style={{ color: "#9a6a72" }}
-//             >
-//               Total
-//             </p>
-//             <p className="text-xl font-bold" style={{ color: "#1a0a0d" }}>
-//               {peso(total)}
-//             </p>
-//           </div>
-//           <button
-//             onClick={onCancel}
-//             className="px-4 py-2.5 rounded-lg text-sm font-semibold border transition-colors hover:bg-red-50"
-//             style={{ borderColor: "#e5d5d8", color: "#7a4a50" }}
-//           >
-//             Cancel
-//           </button>
-//           <button
-//             onClick={() => onConfirm(chosen)}
-//             className="px-5 py-2.5 rounded-lg text-sm font-bold text-white hover:opacity-90 transition-opacity"
-//             style={{ background: "#A30A24" }}
-//           >
-//             Add to Order
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
+// ── Package detail modal ──────────────────────────────────────────────────
 function PackageDetailModal({
   pkg,
   onCancel,
@@ -456,12 +321,15 @@ export default function WalkInPage() {
   const [view, setView] = useState<"grid" | "checkout" | "success">("grid");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [successInfo, setSuccessInfo] = useState<{
     ids: string[];
     total: number;
   } | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [showHiddenPanel, setShowHiddenPanel] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -487,6 +355,16 @@ export default function WalkInPage() {
         ? packages
         : packages.filter((p) => (p.type || "portrait") === filter),
     [packages, filter],
+  );
+
+  const visiblePackages = useMemo(
+    () => filtered.filter((p) => !p.hiddenFromWalkin),
+    [filtered],
+  );
+
+  const hiddenPackages = useMemo(
+    () => filtered.filter((p) => p.hiddenFromWalkin),
+    [filtered],
   );
 
   const addToCart = (pkg: Package, addons: PkgAddon[]) => {
@@ -527,16 +405,36 @@ export default function WalkInPage() {
     setCartOpenMobile(true);
   };
 
-  // const handleCardClick = (pkg: Package) => {
-  //   if (pkg.addons.length > 0) {
-  //     setPickerPkg(pkg);
-  //   } else {
-  //     addToCart(pkg, []);
-  //   }
-  // };
-
   const handleCardClick = (pkg: Package) => {
     setPickerPkg(pkg); // always show details modal first, regardless of add-ons
+  };
+
+  const toggleWalkinVisibility = async (pkg: Package) => {
+    const nextHidden = !pkg.hiddenFromWalkin;
+    setTogglingId(pkg.id);
+    // optimistic update
+    setPackages((prev) =>
+      prev.map((p) =>
+        p.id === pkg.id ? { ...p, hiddenFromWalkin: nextHidden } : p,
+      ),
+    );
+    try {
+      const res = await fetch(`/api/packages/${pkg.id}/walkin-visibility`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hidden: nextHidden }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      // revert on failure
+      setPackages((prev) =>
+        prev.map((p) =>
+          p.id === pkg.id ? { ...p, hiddenFromWalkin: !nextHidden } : p,
+        ),
+      );
+    } finally {
+      setTogglingId(null);
+    }
   };
 
   const updateQty = (cartId: string, delta: number) => {
@@ -563,6 +461,7 @@ export default function WalkInPage() {
         body: JSON.stringify({
           customerName,
           customerPhone,
+          customerEmail,
           items: cart.map((c) => ({
             serviceId: c.pkgId,
             addons: c.addons,
@@ -588,6 +487,7 @@ export default function WalkInPage() {
     setCart([]);
     setCustomerName("");
     setCustomerPhone("");
+    setCustomerEmail("");
     setSuccessInfo(null);
     setSubmitError("");
     setView("grid");
@@ -747,6 +647,20 @@ export default function WalkInPage() {
               {f.label}
             </button>
           ))}
+
+          {hiddenPackages.length > 0 && (
+            <button
+              onClick={() => setShowHiddenPanel(true)}
+              className={`${mono.className} ml-auto px-4 py-2 rounded-lg text-[11px] uppercase tracking-[1px] font-semibold transition-colors`}
+              style={{
+                background: "#fdfafa",
+                color: "#7a5560",
+                border: "1px solid #e5d5d8",
+              }}
+            >
+              Hidden ({hiddenPackages.length})
+            </button>
+          )}
         </div>
 
         {/* Bento grid */}
@@ -761,7 +675,7 @@ export default function WalkInPage() {
                 />
               ))}
             </div>
-          ) : filtered.length === 0 ? (
+          ) : visiblePackages.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
               <Icon d={I.cam} size={32} stroke="#c8b0b4" />
               <p className="text-sm" style={{ color: "#9a6a72" }}>
@@ -770,7 +684,7 @@ export default function WalkInPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {filtered.map((pkg, i) => {
+              {visiblePackages.map((pkg, i) => {
                 const span = SPAN_PATTERN[i % SPAN_PATTERN.length];
                 const color = pkg.color || "#A30A24";
                 const inCart = cart
@@ -800,6 +714,32 @@ export default function WalkInPage() {
                         ×{inCart}
                       </span>
                     )}
+
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWalkinVisibility(pkg);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          toggleWalkinVisibility(pkg);
+                        }
+                      }}
+                      title="Hide from walk-in grid"
+                      className="absolute top-3 right-3 w-7 h-7 rounded-full flex items-center justify-center z-10 transition-colors cursor-pointer"
+                      style={{
+                        background: "rgba(255,255,255,0.9)",
+                        color: "#7a5560",
+                        border: "1px solid #e5d5d8",
+                        opacity: togglingId === pkg.id ? 0.5 : 1,
+                      }}
+                    >
+                      <Icon d={I.eyeOff} size={13} sw={2} />
+                    </span>
 
                     <div className="relative z-10">
                       <div
@@ -874,6 +814,8 @@ export default function WalkInPage() {
           setCustomerName={setCustomerName}
           customerPhone={customerPhone}
           setCustomerPhone={setCustomerPhone}
+          customerEmail={customerEmail}
+          setCustomerEmail={setCustomerEmail}
           submitting={submitting}
           submitError={submitError}
           onSubmit={submitOrder}
@@ -926,6 +868,8 @@ export default function WalkInPage() {
                 setCustomerName={setCustomerName}
                 customerPhone={customerPhone}
                 setCustomerPhone={setCustomerPhone}
+                customerEmail={customerEmail}
+                setCustomerEmail={setCustomerEmail}
                 submitting={submitting}
                 submitError={submitError}
                 onSubmit={submitOrder}
@@ -935,16 +879,80 @@ export default function WalkInPage() {
         )}
       </div>
 
-      {/* {pickerPkg && (
-        <AddonPicker
-          pkg={pickerPkg}
-          onCancel={() => setPickerPkg(null)}
-          onConfirm={(addons) => {
-            addToCart(pickerPkg, addons);
-            setPickerPkg(null);
+      {showHiddenPanel && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{
+            background: "rgba(26,10,13,0.45)",
+            backdropFilter: "blur(4px)",
           }}
-        />
-      )} */}
+        >
+          <div
+            className="bg-white w-full max-w-md rounded-2xl border max-h-[80vh] flex flex-col shadow-2xl"
+            style={{ borderColor: "#f0e0e3" }}
+          >
+            <div
+              className="flex items-center justify-between px-6 py-4 border-b"
+              style={{ borderColor: "#f0e0e3" }}
+            >
+              <h3
+                className="text-lg font-bold"
+                style={{ color: "#1a0a0d", fontFamily: "Georgia, serif" }}
+              >
+                Hidden Services
+              </h3>
+              <button
+                onClick={() => setShowHiddenPanel(false)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors"
+                style={{ color: "#A30A24" }}
+              >
+                <Icon d={I.close} size={15} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {hiddenPackages.length === 0 ? (
+                <p
+                  className="text-sm text-center py-6"
+                  style={{ color: "#9a6a72" }}
+                >
+                  No hidden services.
+                </p>
+              ) : (
+                hiddenPackages.map((pkg) => (
+                  <div
+                    key={pkg.id}
+                    className="flex items-center justify-between p-3 rounded-xl"
+                    style={{
+                      background: "#fdfafa",
+                      border: "1px solid #e5d5d8",
+                    }}
+                  >
+                    <div className="min-w-0">
+                      <p
+                        className="text-sm font-semibold truncate"
+                        style={{ color: "#1a0a0d" }}
+                      >
+                        {pkg.title}
+                      </p>
+                      <p className="text-xs" style={{ color: "#9a6a72" }}>
+                        {peso(pkg.price)}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => toggleWalkinVisibility(pkg)}
+                      disabled={togglingId === pkg.id}
+                      className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
+                      style={{ background: "#A30A24" }}
+                    >
+                      Unhide
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {pickerPkg && (
         <PackageDetailModal
@@ -972,6 +980,8 @@ function CartPanel({
   setCustomerName,
   customerPhone,
   setCustomerPhone,
+  customerEmail,
+  setCustomerEmail,
   submitting,
   submitError,
   onSubmit,
@@ -986,6 +996,8 @@ function CartPanel({
   setCustomerName: (v: string) => void;
   customerPhone: string;
   setCustomerPhone: (v: string) => void;
+  customerEmail: string;
+  setCustomerEmail: (v: string) => void;
   submitting: boolean;
   submitError: string;
   onSubmit: () => void;
@@ -1024,6 +1036,21 @@ function CartPanel({
               placeholder="Walk-in Customer"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
+            />
+          </div>
+          <div>
+            <label
+              className={`${mono.className} block text-[10px] uppercase tracking-[2px] mb-1.5`}
+              style={{ color: "#9a6a72" }}
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              className={inputCls}
+              placeholder="customer@example.com"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
             />
           </div>
           <div>

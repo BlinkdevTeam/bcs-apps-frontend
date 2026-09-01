@@ -18,6 +18,7 @@ interface WalkInItem {
 interface WalkInRequestBody {
   customerName?: string;
   customerPhone?: string;
+  customerEmail?: string;
   items: WalkInItem[];
 }
 
@@ -36,7 +37,9 @@ export async function POST(req: NextRequest) {
 
     const customerName = body.customerName?.trim() || "Walk-in Customer";
     const customerPhone = body.customerPhone?.trim() || null;
-    const customerEmail = `walkin+${Date.now()}@onsite.blinkcreativestudio.local`;
+    const customerEmail =
+      body.customerEmail?.trim() ||
+      `walkin+${Date.now()}@onsite.blinkcreativestudio.local`;
 
     const now = new Date();
     const bookingDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
