@@ -5,9 +5,11 @@ import { useEffect } from "react";
 export default function ServiceWorkerRegister() {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch((err) => {
-        console.error("SW registration failed:", err);
-      });
+      navigator.serviceWorker
+        .register("/sw.js", { scope: "/walk-in" })
+        .catch((err) => {
+          console.error("SW registration failed:", err);
+        });
     }
   }, []);
 
