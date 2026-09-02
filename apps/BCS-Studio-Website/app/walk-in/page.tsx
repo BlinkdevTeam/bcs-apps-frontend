@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { JetBrains_Mono } from "next/font/google";
 
+import ServiceWorkerRegister from "./ServiceWorkerRegister";
+
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -805,289 +807,297 @@ export default function WalkInPage() {
   }
 
   return (
-    <div
-      className="h-screen overflow-hidden flex flex-col lg:flex-row"
-      style={{ background: "#F7F5F2" }}
-    >
-      {/* ── Main ── */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header
-          className="flex items-center justify-between px-6 lg:px-10 py-5 border-b shrink-0 bg-white"
-          style={{ borderColor: "#ede0e2" }}
-        >
-          <div>
-            <p
-              className={`${mono.className} text-[10px] uppercase tracking-[3px] mb-1`}
-              style={{ color: "#A30A24" }}
-            >
-              ◳ Front Desk
-            </p>
-            <h1
-              className="text-2xl font-extrabold tracking-tight"
-              style={{ color: "#1a0a0d", fontFamily: "Georgia, serif" }}
-            >
-              Walk-in Booking
-            </h1>
-          </div>
-          <div className="text-right hidden sm:block">
-            <p
-              className={`${mono.className} text-xs`}
-              style={{ color: "#1a0a0d" }}
-            >
-              {dateLabel}
-            </p>
-            <p
-              className={`${mono.className} text-[11px] tabular-nums`}
-              style={{ color: "#A30A24" }}
-            >
-              {timeLabel}
-            </p>
-          </div>
-        </header>
-
-        {/* Filters */}
-        <div
-          className="flex items-center gap-2 px-6 lg:px-10 py-4 border-b shrink-0 bg-white"
-          style={{ borderColor: "#ede0e2" }}
-        >
-          {[
-            { key: "all", label: "All Services" },
-            { key: "portrait", label: "Portraits" },
-            { key: "rental", label: "Studio Rental" },
-          ].map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setFilter(f.key as typeof filter)}
-              className={`${mono.className} px-4 py-2 rounded-lg text-[11px] uppercase tracking-[1px] font-semibold transition-colors cursor-pointer`}
-              style={
-                filter === f.key
-                  ? { background: "#A30A24", color: "#fff" }
-                  : {
-                      background: "#fdfafa",
-                      color: "#7a5560",
-                      border: "1px solid #e5d5d8",
-                    }
-              }
-            >
-              {f.label}
-            </button>
-          ))}
-
-          {hiddenPackages.length > 0 && (
-            <button
-              onClick={() => setShowHiddenPanel(true)}
-              className={`${mono.className} ml-auto px-4 py-2 rounded-lg text-[11px] uppercase tracking-[1px] font-semibold transition-colors cursor-pointer`}
-              style={{
-                background: "#fdfafa",
-                color: "#7a5560",
-                border: "1px solid #e5d5d8",
-              }}
-            >
-              Hidden ({hiddenPackages.length})
-            </button>
-          )}
-        </div>
-
-        {/* Bento grid */}
-        <div className="flex-1 overflow-y-auto px-6 lg:px-10 py-6 pb-28 lg:pb-6">
-          {loading ? (
-            <LoadingState />
-          ) : visiblePackages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
-              <Icon d={I.cam} size={32} stroke="#c8b0b4" />
-              <p className="text-sm" style={{ color: "#9a6a72" }}>
-                No services available in this category yet.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {visiblePackages.map((pkg, i) => (
-                <ServiceCard
-                  key={pkg.id}
-                  pkg={pkg}
-                  index={i}
-                  span={SPAN_PATTERN[i % SPAN_PATTERN.length]}
-                  inCart={cart
-                    .filter((c) => c.pkgId === pkg.id)
-                    .reduce((s, c) => s + c.qty, 0)}
-                  togglingId={togglingId}
-                  onOpen={handleCardClick}
-                  onToggleHidden={toggleWalkinVisibility}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── Cart — desktop sidebar ── */}
-      <aside
-        className="hidden lg:flex w-96 shrink-0 flex-col border-l bg-white"
-        style={{ borderColor: "#ede0e2" }}
+    <>
+      <ServiceWorkerRegister />
+      <div
+        className="h-screen overflow-hidden flex flex-col lg:flex-row"
+        style={{ background: "#F7F5F2" }}
       >
-        <CartPanel
-          cart={cart}
-          total={total}
-          onQty={updateQty}
-          onRemove={removeItem}
-          view={view}
-          setView={setView}
-          customerName={customerName}
-          setCustomerName={setCustomerName}
-          customerPhone={customerPhone}
-          setCustomerPhone={setCustomerPhone}
-          customerEmail={customerEmail}
-          setCustomerEmail={setCustomerEmail}
-          submitting={submitting}
-          submitError={submitError}
-          onSubmit={submitOrder}
-        />
-      </aside>
-
-      {/* ── Cart — mobile bottom sheet ── */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
-        {!cartOpenMobile && cart.length > 0 && (
-          <button
-            onClick={() => setCartOpenMobile(true)}
-            className="w-full flex items-center justify-between px-6 py-4 shadow-lg"
-            style={{ background: "#A30A24" }}
-          >
-            <span className="flex items-center gap-2 text-white text-sm font-bold">
-              <Icon d={I.cart} size={16} stroke="#fff" />
-              {cartCount} item{cartCount !== 1 ? "s" : ""}
-            </span>
-            <span className="text-white text-sm font-bold">
-              {peso(total)} · View Order
-            </span>
-          </button>
-        )}
-        {cartOpenMobile && (
-          <div className="fixed inset-0 z-50 flex flex-col bg-white">
-            <div
-              className="flex items-center justify-between px-5 py-4 border-b shrink-0"
+        <div
+          className="h-screen overflow-hidden flex flex-col lg:flex-row"
+          style={{ background: "#F7F5F2" }}
+        >
+          {/* ── Main ── */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Header */}
+            <header
+              className="flex items-center justify-between px-6 lg:px-10 py-5 border-b shrink-0 bg-white"
               style={{ borderColor: "#ede0e2" }}
             >
-              <span className="font-bold" style={{ color: "#1a0a0d" }}>
-                Your Order
-              </span>
-              <button
-                onClick={() => setCartOpenMobile(false)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50 cursor-pointer"
-                style={{ color: "#A30A24" }}
-              >
-                <Icon d={I.close} size={16} />
-              </button>
-            </div>
-            <div className="flex-1 flex flex-col">
-              <CartPanel
-                cart={cart}
-                total={total}
-                onQty={updateQty}
-                onRemove={removeItem}
-                view={view}
-                setView={setView}
-                customerName={customerName}
-                setCustomerName={setCustomerName}
-                customerPhone={customerPhone}
-                setCustomerPhone={setCustomerPhone}
-                customerEmail={customerEmail}
-                setCustomerEmail={setCustomerEmail}
-                submitting={submitting}
-                submitError={submitError}
-                onSubmit={submitOrder}
-              />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {showHiddenPanel && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{
-            background: "rgba(26,10,13,0.45)",
-            backdropFilter: "blur(4px)",
-          }}
-        >
-          <div
-            className="bg-white w-full max-w-md rounded-2xl border max-h-[80vh] flex flex-col shadow-2xl"
-            style={{ borderColor: "#f0e0e3" }}
-          >
-            <div
-              className="flex items-center justify-between px-6 py-4 border-b"
-              style={{ borderColor: "#f0e0e3" }}
-            >
-              <h3
-                className="text-lg font-bold"
-                style={{ color: "#1a0a0d", fontFamily: "Georgia, serif" }}
-              >
-                Hidden Services
-              </h3>
-              <button
-                onClick={() => setShowHiddenPanel(false)}
-                className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors cursor-pointer"
-                style={{ color: "#A30A24" }}
-              >
-                <Icon d={I.close} size={15} />
-              </button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
-              {hiddenPackages.length === 0 ? (
+              <div>
                 <p
-                  className="text-sm text-center py-6"
-                  style={{ color: "#9a6a72" }}
+                  className={`${mono.className} text-[10px] uppercase tracking-[3px] mb-1`}
+                  style={{ color: "#A30A24" }}
                 >
-                  No hidden services.
+                  ◳ Front Desk
                 </p>
+                <h1
+                  className="text-2xl font-extrabold tracking-tight"
+                  style={{ color: "#1a0a0d", fontFamily: "Georgia, serif" }}
+                >
+                  Walk-in Booking
+                </h1>
+              </div>
+              <div className="text-right hidden sm:block">
+                <p
+                  className={`${mono.className} text-xs`}
+                  style={{ color: "#1a0a0d" }}
+                >
+                  {dateLabel}
+                </p>
+                <p
+                  className={`${mono.className} text-[11px] tabular-nums`}
+                  style={{ color: "#A30A24" }}
+                >
+                  {timeLabel}
+                </p>
+              </div>
+            </header>
+
+            {/* Filters */}
+            <div
+              className="flex items-center gap-2 px-6 lg:px-10 py-4 border-b shrink-0 bg-white"
+              style={{ borderColor: "#ede0e2" }}
+            >
+              {[
+                { key: "all", label: "All Services" },
+                { key: "portrait", label: "Portraits" },
+                { key: "rental", label: "Studio Rental" },
+              ].map((f) => (
+                <button
+                  key={f.key}
+                  onClick={() => setFilter(f.key as typeof filter)}
+                  className={`${mono.className} px-4 py-2 rounded-lg text-[11px] uppercase tracking-[1px] font-semibold transition-colors cursor-pointer`}
+                  style={
+                    filter === f.key
+                      ? { background: "#A30A24", color: "#fff" }
+                      : {
+                          background: "#fdfafa",
+                          color: "#7a5560",
+                          border: "1px solid #e5d5d8",
+                        }
+                  }
+                >
+                  {f.label}
+                </button>
+              ))}
+
+              {hiddenPackages.length > 0 && (
+                <button
+                  onClick={() => setShowHiddenPanel(true)}
+                  className={`${mono.className} ml-auto px-4 py-2 rounded-lg text-[11px] uppercase tracking-[1px] font-semibold transition-colors cursor-pointer`}
+                  style={{
+                    background: "#fdfafa",
+                    color: "#7a5560",
+                    border: "1px solid #e5d5d8",
+                  }}
+                >
+                  Hidden ({hiddenPackages.length})
+                </button>
+              )}
+            </div>
+
+            {/* Bento grid */}
+            <div className="flex-1 overflow-y-auto px-6 lg:px-10 py-6 pb-28 lg:pb-6">
+              {loading ? (
+                <LoadingState />
+              ) : visiblePackages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
+                  <Icon d={I.cam} size={32} stroke="#c8b0b4" />
+                  <p className="text-sm" style={{ color: "#9a6a72" }}>
+                    No services available in this category yet.
+                  </p>
+                </div>
               ) : (
-                hiddenPackages.map((pkg) => (
-                  <div
-                    key={pkg.id}
-                    className="flex items-center justify-between p-3 rounded-xl"
-                    style={{
-                      background: "#fdfafa",
-                      border: "1px solid #e5d5d8",
-                    }}
-                  >
-                    <div className="min-w-0">
-                      <p
-                        className="text-sm font-semibold truncate"
-                        style={{ color: "#1a0a0d" }}
-                      >
-                        {pkg.title}
-                      </p>
-                      <p className="text-xs" style={{ color: "#9a6a72" }}>
-                        {peso(pkg.price)}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => toggleWalkinVisibility(pkg)}
-                      disabled={togglingId === pkg.id}
-                      className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer"
-                      style={{ background: "#A30A24" }}
-                    >
-                      Unhide
-                    </button>
-                  </div>
-                ))
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  {visiblePackages.map((pkg, i) => (
+                    <ServiceCard
+                      key={pkg.id}
+                      pkg={pkg}
+                      index={i}
+                      span={SPAN_PATTERN[i % SPAN_PATTERN.length]}
+                      inCart={cart
+                        .filter((c) => c.pkgId === pkg.id)
+                        .reduce((s, c) => s + c.qty, 0)}
+                      togglingId={togglingId}
+                      onOpen={handleCardClick}
+                      onToggleHidden={toggleWalkinVisibility}
+                    />
+                  ))}
+                </div>
               )}
             </div>
           </div>
-        </div>
-      )}
 
-      {pickerPkg && (
-        <PackageDetailModal
-          pkg={pickerPkg}
-          onCancel={() => setPickerPkg(null)}
-          onConfirm={(addons) => {
-            addToCart(pickerPkg, addons);
-            setPickerPkg(null);
-          }}
-        />
-      )}
-    </div>
+          {/* ── Cart — desktop sidebar ── */}
+          <aside
+            className="hidden lg:flex w-96 shrink-0 flex-col border-l bg-white"
+            style={{ borderColor: "#ede0e2" }}
+          >
+            <CartPanel
+              cart={cart}
+              total={total}
+              onQty={updateQty}
+              onRemove={removeItem}
+              view={view}
+              setView={setView}
+              customerName={customerName}
+              setCustomerName={setCustomerName}
+              customerPhone={customerPhone}
+              setCustomerPhone={setCustomerPhone}
+              customerEmail={customerEmail}
+              setCustomerEmail={setCustomerEmail}
+              submitting={submitting}
+              submitError={submitError}
+              onSubmit={submitOrder}
+            />
+          </aside>
+
+          {/* ── Cart — mobile bottom sheet ── */}
+          <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
+            {!cartOpenMobile && cart.length > 0 && (
+              <button
+                onClick={() => setCartOpenMobile(true)}
+                className="w-full flex items-center justify-between px-6 py-4 shadow-lg"
+                style={{ background: "#A30A24" }}
+              >
+                <span className="flex items-center gap-2 text-white text-sm font-bold">
+                  <Icon d={I.cart} size={16} stroke="#fff" />
+                  {cartCount} item{cartCount !== 1 ? "s" : ""}
+                </span>
+                <span className="text-white text-sm font-bold">
+                  {peso(total)} · View Order
+                </span>
+              </button>
+            )}
+            {cartOpenMobile && (
+              <div className="fixed inset-0 z-50 flex flex-col bg-white">
+                <div
+                  className="flex items-center justify-between px-5 py-4 border-b shrink-0"
+                  style={{ borderColor: "#ede0e2" }}
+                >
+                  <span className="font-bold" style={{ color: "#1a0a0d" }}>
+                    Your Order
+                  </span>
+                  <button
+                    onClick={() => setCartOpenMobile(false)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-red-50 cursor-pointer"
+                    style={{ color: "#A30A24" }}
+                  >
+                    <Icon d={I.close} size={16} />
+                  </button>
+                </div>
+                <div className="flex-1 flex flex-col">
+                  <CartPanel
+                    cart={cart}
+                    total={total}
+                    onQty={updateQty}
+                    onRemove={removeItem}
+                    view={view}
+                    setView={setView}
+                    customerName={customerName}
+                    setCustomerName={setCustomerName}
+                    customerPhone={customerPhone}
+                    setCustomerPhone={setCustomerPhone}
+                    customerEmail={customerEmail}
+                    setCustomerEmail={setCustomerEmail}
+                    submitting={submitting}
+                    submitError={submitError}
+                    onSubmit={submitOrder}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {showHiddenPanel && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              style={{
+                background: "rgba(26,10,13,0.45)",
+                backdropFilter: "blur(4px)",
+              }}
+            >
+              <div
+                className="bg-white w-full max-w-md rounded-2xl border max-h-[80vh] flex flex-col shadow-2xl"
+                style={{ borderColor: "#f0e0e3" }}
+              >
+                <div
+                  className="flex items-center justify-between px-6 py-4 border-b"
+                  style={{ borderColor: "#f0e0e3" }}
+                >
+                  <h3
+                    className="text-lg font-bold"
+                    style={{ color: "#1a0a0d", fontFamily: "Georgia, serif" }}
+                  >
+                    Hidden Services
+                  </h3>
+                  <button
+                    onClick={() => setShowHiddenPanel(false)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-red-50 transition-colors cursor-pointer"
+                    style={{ color: "#A30A24" }}
+                  >
+                    <Icon d={I.close} size={15} />
+                  </button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                  {hiddenPackages.length === 0 ? (
+                    <p
+                      className="text-sm text-center py-6"
+                      style={{ color: "#9a6a72" }}
+                    >
+                      No hidden services.
+                    </p>
+                  ) : (
+                    hiddenPackages.map((pkg) => (
+                      <div
+                        key={pkg.id}
+                        className="flex items-center justify-between p-3 rounded-xl"
+                        style={{
+                          background: "#fdfafa",
+                          border: "1px solid #e5d5d8",
+                        }}
+                      >
+                        <div className="min-w-0">
+                          <p
+                            className="text-sm font-semibold truncate"
+                            style={{ color: "#1a0a0d" }}
+                          >
+                            {pkg.title}
+                          </p>
+                          <p className="text-xs" style={{ color: "#9a6a72" }}>
+                            {peso(pkg.price)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => toggleWalkinVisibility(pkg)}
+                          disabled={togglingId === pkg.id}
+                          className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer"
+                          style={{ background: "#A30A24" }}
+                        >
+                          Unhide
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {pickerPkg && (
+            <PackageDetailModal
+              pkg={pickerPkg}
+              onCancel={() => setPickerPkg(null)}
+              onConfirm={(addons) => {
+                addToCart(pickerPkg, addons);
+                setPickerPkg(null);
+              }}
+            />
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 
