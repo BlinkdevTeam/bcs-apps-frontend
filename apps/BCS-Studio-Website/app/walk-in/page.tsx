@@ -50,6 +50,11 @@ const durLabel = (mins: number) =>
       ? `${mins / 60} hr${mins / 60 > 1 ? "s" : ""}`
       : `${(mins / 60).toFixed(1)} hrs`
     : `${mins} min`;
+const timecode = (mins: number) => {
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+};
 
 // Bento span pattern (desktop only) — deterministic, not random
 const SPAN_PATTERN = [
@@ -111,6 +116,227 @@ function useNow() {
     };
   }, []);
   return now;
+}
+
+// ── Sprocket strip (top edge of each card, quiet, reveals on hover/focus) ──
+function SprocketStrip({ color }: { color: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute top-0 left-0 right-0 h-2 flex items-center justify-around px-3 opacity-0 group-hover:opacity-60 group-focus-within:opacity-60 transition-opacity duration-200 pointer-events-none z-10"
+    >
+      {[...Array(10)].map((_, i) => (
+        <span
+          key={i}
+          className="w-1 h-1 rounded-[1px]"
+          style={{ background: color }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ── Corner viewfinder brackets (same motif as WorkModal / hero sections) ───
+function ViewfinderCorners({ color }: { color: string }) {
+  const corners = ["tl", "tr", "bl", "br"] as const;
+  return (
+    <>
+      {corners.map((corner) => (
+        <span
+          key={corner}
+          aria-hidden="true"
+          className="absolute w-3.5 h-3.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200 pointer-events-none z-20"
+          style={{
+            borderColor: color,
+            top: corner.startsWith("t") ? 8 : undefined,
+            bottom: corner.startsWith("b") ? 8 : undefined,
+            left: corner.endsWith("l") ? 8 : undefined,
+            right: corner.endsWith("r") ? 8 : undefined,
+            borderTopWidth: corner.startsWith("t") ? 2 : 0,
+            borderBottomWidth: corner.startsWith("b") ? 2 : 0,
+            borderLeftWidth: corner.endsWith("l") ? 2 : 0,
+            borderRightWidth: corner.endsWith("r") ? 2 : 0,
+          }}
+        />
+      ))}
+    </>
+  );
+}
+
+// ── Service card ─────────────────────────────────────────────────────────
+function ServiceCard({
+  pkg,
+  index,
+  span,
+  inCart,
+  togglingId,
+  onOpen,
+  onToggleHidden,
+}: {
+  pkg: Package;
+  index: number;
+  span: string;
+  inCart: number;
+  togglingId: string | null;
+  onOpen: (pkg: Package) => void;
+  onToggleHidden: (pkg: Package) => void;
+}) {
+  const color = pkg.color || "#A30A24";
+  const typeLabel =
+    (pkg.type || "portrait") === "rental" ? "Rental" : "Portrait";
+
+  return (
+    <div
+      className={`group relative rounded-2xl bg-white overflow-hidden transition-shadow duration-200 hover:shadow-lg focus-within:shadow-lg ${span}`}
+      style={{
+        border: `1.5px solid ${color}30`,
+        boxShadow: "0 2px 12px rgba(163,10,36,0.06)",
+      }}
+    >
+      <SprocketStrip color={color} />
+      <ViewfinderCorners color={color} />
+
+      {/* Main tap target — opens the detail modal */}
+      <button
+        onClick={() => onOpen(pkg)}
+        className="w-full h-full text-left flex flex-col justify-between p-5 pt-6 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        style={{ ["--tw-ring-color" as string]: color }}
+      >
+        {/* accent glow */}
+        <div
+          aria-hidden="true"
+          className="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-10 pointer-events-none"
+          style={{ background: color }}
+        />
+
+        <div className="relative z-10">
+          {/* Type slate — film-can label */}
+          <span
+            className={`${mono.className} inline-block text-[9px] font-bold uppercase tracking-[1.5px] px-2 py-0.5 rounded-sm mb-2.5`}
+            style={{ background: color, color: "#fff" }}
+          >
+            {typeLabel}
+          </span>
+
+          <h3
+            className="font-bold leading-snug"
+            style={{
+              color: "#1a0a0d",
+              fontFamily: "Georgia, serif",
+              fontSize: "clamp(15px, 1.4vw, 19px)",
+            }}
+          >
+            {pkg.title}
+          </h3>
+          {pkg.description && (
+            <p
+              className="text-xs mt-1.5 line-clamp-2"
+              style={{ color: "#8a6a70" }}
+            >
+              {pkg.description}
+            </p>
+          )}
+        </div>
+
+        <div className="relative z-10 flex items-end justify-between mt-4">
+          <div>
+            <p
+              className={`${mono.className} text-[9px] uppercase tracking-[1.5px]`}
+              style={{ color: "#b09096" }}
+            >
+              No. {String(index + 1).padStart(2, "0")} ·{" "}
+              {timecode(pkg.duration)}
+            </p>
+            <p
+              className="font-bold tabular-nums mt-0.5"
+              style={{ color, fontSize: "clamp(19px, 1.8vw, 24px)" }}
+            >
+              {peso(pkg.price)}
+            </p>
+          </div>
+        </div>
+      </button>
+
+      {/* Hide-from-walk-in toggle — ghost, top-right, hover/focus only */}
+      <span
+        role="button"
+        tabIndex={0}
+        aria-label={`Hide ${pkg.title} from walk-in grid`}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleHidden(pkg);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.stopPropagation();
+            e.preventDefault();
+            onToggleHidden(pkg);
+          }
+        }}
+        title="Hide from walk-in grid"
+        className="absolute top-3 right-3 w-7 h-7 rounded-full flex items-center justify-center z-20 transition-all duration-150 cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100"
+        style={{
+          background: "rgba(255,255,255,0.92)",
+          color: "#7a5560",
+          border: "1px solid #e5d5d8",
+          opacity: togglingId === pkg.id ? 0.5 : undefined,
+        }}
+      >
+        <Icon d={I.eyeOff} size={13} sw={2} />
+      </span>
+
+      {/* Cart count — sits above the Add button, never overlaps it */}
+      {inCart > 0 && (
+        <span
+          className={`${mono.className} absolute bottom-14 right-3 z-20 text-[10px] font-bold px-2 py-0.5 rounded-full text-white tabular-nums`}
+          style={{ background: color }}
+        >
+          ×{inCart}
+        </span>
+      )}
+
+      {/* Add-to-order — explicit button, separate gesture from the card tap */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpen(pkg);
+        }}
+        aria-label={`Add ${pkg.title} to order`}
+        className="absolute bottom-3 right-3 z-20 w-9 h-9 rounded-full flex items-center justify-center shadow-sm transition-transform duration-150 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        style={{ background: color, ["--tw-ring-color" as string]: color }}
+      >
+        <Icon d={I.plus} size={15} stroke="#fff" sw={2.5} />
+      </button>
+    </div>
+  );
+}
+
+// ── Loading state (sprocket-dot motif instead of a generic pulse grid) ────
+function LoadingState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-24 gap-4">
+      <div className="flex gap-1.5">
+        {[...Array(5)].map((_, i) => (
+          <span
+            key={i}
+            className="w-2 h-2 rounded-full motion-safe:animate-pulse"
+            style={{
+              background: "#A30A24",
+              opacity: 0.25 + (i % 3) * 0.25,
+              animationDelay: `${i * 120}ms`,
+            }}
+          />
+        ))}
+      </div>
+      <p
+        className={`${mono.className} text-[10px] uppercase tracking-[2px]`}
+        style={{ color: "#9a6a72" }}
+      >
+        Loading services…
+      </p>
+    </div>
+  );
 }
 
 // ── Package detail modal ──────────────────────────────────────────────────
@@ -666,15 +892,7 @@ export default function WalkInPage() {
         {/* Bento grid */}
         <div className="flex-1 overflow-y-auto px-6 lg:px-10 py-6 pb-28 lg:pb-6">
           {loading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {[...Array(6)].map((_, i) => (
-                <div
-                  key={i}
-                  className="rounded-2xl animate-pulse"
-                  style={{ background: "#eee6e7", height: 160 }}
-                />
-              ))}
-            </div>
+            <LoadingState />
           ) : visiblePackages.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 gap-3 text-center">
               <Icon d={I.cam} size={32} stroke="#c8b0b4" />
@@ -684,117 +902,20 @@ export default function WalkInPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {visiblePackages.map((pkg, i) => {
-                const span = SPAN_PATTERN[i % SPAN_PATTERN.length];
-                const color = pkg.color || "#A30A24";
-                const inCart = cart
-                  .filter((c) => c.pkgId === pkg.id)
-                  .reduce((s, c) => s + c.qty, 0);
-                return (
-                  <button
-                    key={pkg.id}
-                    onClick={() => handleCardClick(pkg)}
-                    className={`relative overflow-hidden rounded-2xl p-5 text-left flex flex-col justify-between transition-transform hover:-translate-y-0.5 bg-white ${span}`}
-                    style={{
-                      border: `1.5px solid ${color}30`,
-                      boxShadow: "0 2px 12px rgba(163,10,36,0.06)",
-                    }}
-                  >
-                    {/* accent glow */}
-                    <div
-                      className="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-10"
-                      style={{ background: color }}
-                    />
-
-                    {/* Hide-from-walk-in toggle — top LEFT so it never collides with the cart badge or the add button */}
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleWalkinVisibility(pkg);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          toggleWalkinVisibility(pkg);
-                        }
-                      }}
-                      title="Hide from walk-in grid"
-                      className="absolute top-3 right-3 w-7 h-7 rounded-full flex items-center justify-center z-10 transition-colors cursor-pointer"
-                      style={{
-                        background: "rgba(255,255,255,0.9)",
-                        color: "#7a5560",
-                        border: "1px solid #e5d5d8",
-                        opacity: togglingId === pkg.id ? 0.5 : 1,
-                      }}
-                    >
-                      <Icon d={I.eyeOff} size={13} sw={2} />
-                    </span>
-
-                    {/* Cart count badge — stays top RIGHT, now with no competitor */}
-                    {inCart > 0 && (
-                      <span
-                        className="absolute bottom-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full text-white z-10"
-                        style={{ background: color }}
-                      >
-                        ×{inCart}
-                      </span>
-                    )}
-
-                    <div className="relative z-10">
-                      <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center mb-3"
-                        style={{
-                          background: `${color}15`,
-                          border: `1px solid ${color}35`,
-                        }}
-                      >
-                        <Icon d={I.cam} size={16} stroke={color} sw={1.8} />
-                      </div>
-                      <h3
-                        className="font-bold leading-snug"
-                        style={{
-                          color: "#1a0a0d",
-                          fontFamily: "Georgia, serif",
-                          fontSize: "clamp(15px, 1.4vw, 19px)",
-                        }}
-                      >
-                        {pkg.title}
-                      </h3>
-                      {pkg.description && (
-                        <p
-                          className="text-xs mt-1.5 line-clamp-2"
-                          style={{ color: "#8a6a70" }}
-                        >
-                          {pkg.description}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="relative z-10 flex items-end justify-between mt-3">
-                      <div>
-                        <p
-                          className={`${mono.className} text-[10px] uppercase tracking-wide`}
-                          style={{ color: "#9a7a80" }}
-                        >
-                          {durLabel(pkg.duration)}
-                        </p>
-                        <p className="text-lg font-bold" style={{ color }}>
-                          {peso(pkg.price)}
-                        </p>
-                      </div>
-                      {/* <span
-                        className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
-                        style={{ background: color }}
-                      >
-                        <Icon d={I.plus} size={15} stroke="#fff" sw={2.5} />
-                      </span> */}
-                    </div>
-                  </button>
-                );
-              })}
+              {visiblePackages.map((pkg, i) => (
+                <ServiceCard
+                  key={pkg.id}
+                  pkg={pkg}
+                  index={i}
+                  span={SPAN_PATTERN[i % SPAN_PATTERN.length]}
+                  inCart={cart
+                    .filter((c) => c.pkgId === pkg.id)
+                    .reduce((s, c) => s + c.qty, 0)}
+                  togglingId={togglingId}
+                  onOpen={handleCardClick}
+                  onToggleHidden={toggleWalkinVisibility}
+                />
+              ))}
             </div>
           )}
         </div>

@@ -1,0 +1,9 @@
+{
+  "name": "Blink Walk-in Booking",
+  "short_name": "Walk-in",
+  "start_url": "/walk-in",
+  "display": "standalone",
+  "background_color": "#F7F5F2",
+  "theme_color": "#A30A24",
+  "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+}
