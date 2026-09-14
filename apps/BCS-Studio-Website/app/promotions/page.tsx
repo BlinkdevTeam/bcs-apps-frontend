@@ -4,6 +4,7 @@ import CurrentPromo from "./CurrentPromo";
 import PhotoContest from "./PhotoContest";
 import ValentinesPromo from "./ValentinesPromo";
 import { JetBrains_Mono } from "next/font/google";
+import IrisReveal from "@/components/animations/IrisReveal";
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
@@ -37,7 +38,7 @@ export default function Promotions() {
         </div>
 
         <div className="relative px-6 lg:px-16 py-32 md:py-44">
-          <div className="iris max-w-4xl mx-auto text-center">
+          <IrisReveal className="max-w-4xl mx-auto text-center">
             <p
               className="text-xs uppercase tracking-[0.25em] font-bold mb-5"
               style={{ color: "#A30A24" }}
@@ -61,7 +62,7 @@ export default function Promotions() {
               Exclusive deals, exciting events, and amazing contests — curated
               for you.
             </p>
-          </div>
+          </IrisReveal>
         </div>
 
         <div className="scroll-cue relative flex flex-col items-center gap-2 pb-10">
@@ -93,22 +94,6 @@ export default function Promotions() {
             );
             background-position: center;
             background-repeat: repeat-y;
-          }
-
-          .iris {
-            clip-path: circle(150% at 50% 42%);
-          }
-          @media (prefers-reduced-motion: no-preference) {
-            .iris {
-              clip-path: circle(0% at 50% 42%);
-              animation: iris-open 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s
-                forwards;
-            }
-          }
-          @keyframes iris-open {
-            to {
-              clip-path: circle(85% at 50% 42%);
-            }
           }
 
           .scroll-cue {

@@ -4,6 +4,7 @@
 import { Suspense } from "react";
 import ServiceSection from "./Service";
 import { JetBrains_Mono } from "next/font/google";
+import IrisReveal from "@/components/animations/IrisReveal";
 
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"] });
 
@@ -32,7 +33,7 @@ export default function BookNow() {
           aria-hidden="true"
         />
 
-        <div className="relative max-w-4xl w-full flex flex-col justify-center items-center mx-auto text-center gap-5">
+        <IrisReveal className="relative max-w-4xl w-full flex flex-col justify-center items-center mx-auto text-center gap-5">
           <span
             className={`${mono.className} text-[10px] uppercase tracking-[0.25em]`}
             style={{ color: "rgba(255,255,255,0.6)" }}
@@ -56,7 +57,7 @@ export default function BookNow() {
             Choose your service and reserve your perfect time slot.
           </p>
           <span className="block w-12 h-[3px] mt-1 bg-white/30" />
-        </div>
+        </IrisReveal>
 
         <style jsx>{`
           .sprocket-rail {

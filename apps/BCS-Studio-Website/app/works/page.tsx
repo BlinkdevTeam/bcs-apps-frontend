@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import WorksSection from "./WorkSection";
+import IrisReveal from "@/components/animations/IrisReveal";
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
@@ -48,7 +49,7 @@ export default function WorksPage() {
         </div>
 
         <div className="relative px-6 lg:px-16 py-32 md:py-44">
-          <div className="iris max-w-4xl mx-auto text-center">
+          <IrisReveal className="max-w-4xl mx-auto text-center">
             <p
               className="text-xs uppercase tracking-[0.25em] font-bold mb-5"
               style={{ color: "#A30A24" }}
@@ -72,7 +73,7 @@ export default function WorksPage() {
               A collection of moments captured, stories told, and visions
               brought to life.
             </p>
-          </div>
+          </IrisReveal>
         </div>
 
         <div className="scroll-cue relative flex flex-col items-center gap-2 pb-10">
@@ -272,22 +273,6 @@ export default function WorksPage() {
           );
           background-position: center;
           background-repeat: repeat-y;
-        }
-
-        .iris {
-          clip-path: circle(150% at 50% 42%);
-        }
-        @media (prefers-reduced-motion: no-preference) {
-          .iris {
-            clip-path: circle(0% at 50% 42%);
-            animation: iris-open 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s
-              forwards;
-          }
-        }
-        @keyframes iris-open {
-          to {
-            clip-path: circle(85% at 50% 42%);
-          }
         }
 
         .scroll-cue {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { JetBrains_Mono } from "next/font/google";
+import IrisReveal from "@/components/animations/IrisReveal";
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
@@ -107,7 +108,7 @@ export default function FAQPage() {
         </div>
 
         <div className="relative px-6 lg:px-16 py-28 md:py-40">
-          <div className="iris max-w-4xl mx-auto text-center">
+          <IrisReveal className="max-w-4xl mx-auto text-center">
             <p
               className="text-xs uppercase tracking-[0.25em] font-bold mb-5"
               style={{ color: "#A30A24" }}
@@ -131,7 +132,7 @@ export default function FAQPage() {
               Answers to the questions we hear most, from booking to delivery
               day.
             </p>
-          </div>
+          </IrisReveal>
         </div>
       </section>
 
@@ -262,22 +263,6 @@ export default function FAQPage() {
           );
           background-position: center;
           background-repeat: repeat-y;
-        }
-
-        .iris {
-          clip-path: circle(150% at 50% 42%);
-        }
-        @media (prefers-reduced-motion: no-preference) {
-          .iris {
-            clip-path: circle(0% at 50% 42%);
-            animation: iris-open 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s
-              forwards;
-          }
-        }
-        @keyframes iris-open {
-          to {
-            clip-path: circle(85% at 50% 42%);
-          }
         }
       `}</style>
     </div>

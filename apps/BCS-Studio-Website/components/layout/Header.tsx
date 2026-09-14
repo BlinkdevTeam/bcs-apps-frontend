@@ -92,6 +92,19 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // If the clicked link points to the page we're already on, Next.js
+  // won't perform a navigation (so it won't auto-scroll to top).
+  // Manually scroll to top in that case.
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    if (pathname === href) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 motion-reduce:transition-none ${
@@ -106,11 +119,12 @@ export default function Header() {
         <Link
           href="/"
           aria-label="Blink Creative Studio — home"
+          onClick={(e) => handleNavClick(e, "/")}
           className={`group flex items-center rounded-sm transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A30A24] ${
             scrolled ? "gap-0" : "gap-3"
           }`}
         >
-          <BlinkMark className="h-9 w-auto shrink-0 transition-transform duration-300 group-hover:-rotate-[4deg] md:h-10" />
+          <BlinkMark className="h-9 w-auto shrink-0 transition-transform duration-300 group-hover:scale-105 md:h-10" />
           <div
             className={`hidden sm:flex flex-col leading-none overflow-hidden transition-all duration-300 ${
               scrolled ? "max-w-0 opacity-0" : "max-w-40 opacity-100"
@@ -136,6 +150,7 @@ export default function Header() {
                 <li key={item.href} className="relative">
                   <Link
                     href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
                     className="group flex items-center gap-2 rounded-sm py-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A30A24]"
                   >
                     <span
@@ -218,7 +233,10 @@ export default function Header() {
                   >
                     <Link
                       href={item.href}
-                      onClick={() => setSidebarOpen(false)}
+                      onClick={(e) => {
+                        setSidebarOpen(false);
+                        handleNavClick(e, item.href);
+                      }}
                       className="flex items-center gap-3 rounded-sm py-4 transition-transform duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24] hover:translate-x-1"
                     >
                       <span
