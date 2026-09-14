@@ -43,7 +43,7 @@ export default function WorksPage() {
         >
           <ShaderGradient
             animate="on"
-            axesHelper="off"
+            // axesHelper="off"
             brightness={1}
             cAzimuthAngle={1091}
             cDistance={4.79}
@@ -52,16 +52,16 @@ export default function WorksPage() {
             color1="#191919"
             color2="#a30a24"
             color3="#a30a24"
-            destination="onCanvas"
-            embedMode="off"
+            // destination="onCanvas"
+            // embedMode="off"
             envPreset="lobby"
-            format="gif"
-            fov={45}
-            frameRate={10}
-            gizmoHelper="hide"
+            // format="gif"
+            // fov={45}
+            // frameRate={10}
+            // gizmoHelper="hide"
             grain="off"
             lightType="3d"
-            pixelDensity={1}
+            // pixelDensity={1}
             positionX={-1.4}
             positionY={0}
             positionZ={0}
