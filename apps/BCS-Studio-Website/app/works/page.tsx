@@ -82,6 +82,7 @@ export default function WorksPage() {
               opacity: shaderVisible ? 1 : 0,
               transition: "opacity 2s ease",
               pointerEvents: "none",
+              zIndex: 2,
             }}
           >
             <ShaderGradientCanvas
@@ -113,7 +114,7 @@ export default function WorksPage() {
                 lightType="3d"
                 // pixelDensity={1}
                 positionX={-1.4}
-                positionY={0}
+                positionY={-3}
                 positionZ={0}
                 range="disabled"
                 rangeEnd={40}
@@ -139,7 +140,10 @@ export default function WorksPage() {
         <span className="sprocket-rail left-0" aria-hidden="true" />
         <span className="sprocket-rail right-0" aria-hidden="true" />
 
-        <div className="relative flex items-center justify-between px-6 lg:px-16 pt-8">
+        <div
+          className="relative flex items-center justify-between px-6 lg:px-16 pt-8"
+          style={{ zIndex: 3 }}
+        >
           <span
             className={`${mono.className} text-[10px] sm:text-[11px] uppercase tracking-[0.2em]`}
             style={{ color: "rgba(255,255,255,0.4)" }}
@@ -157,32 +161,39 @@ export default function WorksPage() {
         <div className="relative px-6 lg:px-16 py-32 md:py-44">
           <IrisReveal className="max-w-4xl mx-auto text-center">
             <p
-              className="text-xs uppercase tracking-[0.25em] font-bold mb-5"
-              style={{ color: "#A30A24" }}
+              className="relative text-xs uppercase tracking-[0.25em] font-bold mb-5"
+              style={{ color: "#A30A24", zIndex: 3 }}
             >
               Portfolio
             </p>
+
             <h1
-              className="font-black leading-[0.95]"
+              className="relative font-black leading-[0.95]"
               style={{
                 color: "#fff",
                 fontSize: "clamp(56px, 9vw, 140px)",
                 letterSpacing: "-0.02em",
+                zIndex: 1,
               }}
             >
               Our Works
             </h1>
-            <p
-              className="mt-6 mx-auto max-w-md text-base md:text-lg leading-relaxed"
-              style={{ color: "rgba(255,255,255,0.55)" }}
-            >
-              A collection of moments captured, stories told, and visions
-              brought to life.
-            </p>
           </IrisReveal>
+
+          {/* Moved outside IrisReveal so it isn't affected by the clip-path circle mask */}
+          <p
+            className="relative mt-6 mx-auto max-w-md text-base md:text-lg leading-relaxed"
+            style={{ color: "rgba(255,255,255,0.55)", zIndex: 3 }}
+          >
+            A collection of moments captured, stories told, and visions brought
+            to life.
+          </p>
         </div>
 
-        <div className="scroll-cue relative flex flex-col items-center gap-2 pb-10">
+        <div
+          className="scroll-cue relative flex flex-col items-center gap-2 pb-10"
+          style={{ zIndex: 2 }}
+        >
           <span
             className={`${mono.className} text-[10px] uppercase tracking-[0.2em]`}
             style={{ color: "rgba(255,255,255,0.3)" }}

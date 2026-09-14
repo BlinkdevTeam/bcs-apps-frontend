@@ -1,6 +1,7 @@
 // HeroSection.tsx
 "use client";
 
+import { useRef, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
 
@@ -16,6 +17,15 @@ const fadeUp: Variants = {
 };
 
 export default function HeroSection() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [muted, setMuted] = useState(true);
+
+  const toggleMute = () => {
+    const next = !muted;
+    setMuted(next);
+    if (videoRef.current) videoRef.current.muted = next;
+  };
+
   return (
     <section className="w-full bg-white">
       {/* Background video */}
@@ -28,14 +38,15 @@ export default function HeroSection() {
         viewport={{ once: true, amount: 0.3 }}
       >
         <video
+          ref={videoRef}
           autoPlay
-          muted
+          muted={muted}
           loop
           playsInline
           className="w-full h-full object-cover"
         >
           <source
-            src="https://blinkassets.sgp1.cdn.digitaloceanspaces.com/studio/works/bcs_ad_10_things.mp4"
+            src="https://blinkassets.sgp1.cdn.digitaloceanspaces.com/studio/works/BCS_THE%20ABCS%20OF%20BLINK_STUDIO%20SHOWREELS_2026.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.
@@ -62,6 +73,20 @@ export default function HeroSection() {
           style={{ borderColor: "#fff" }}
           aria-hidden="true"
         />
+        <button
+          type="button"
+          onClick={toggleMute}
+          aria-label={muted ? "Unmute video" : "Mute video"}
+          className={`${mono.className} absolute bottom-4 right-4 flex items-center gap-2 px-3 py-1.5 text-[10px] uppercase tracking-[0.15em] cursor-pointer transition-colors`}
+          style={{
+            background: "rgba(0,0,0,0.4)",
+            color: "#fff",
+            border: "1px solid rgba(255,255,255,0.3)",
+            borderRadius: "2px",
+          }}
+        >
+          {muted ? "Unmute" : "Mute"}
+        </button>
       </motion.div>
 
       {/* Text content below video */}
