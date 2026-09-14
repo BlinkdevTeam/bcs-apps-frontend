@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { JetBrains_Mono } from "next/font/google";
 import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 import WorksSection from "./WorkSection";
@@ -13,7 +13,48 @@ const mono = JetBrains_Mono({
 
 export default function WorksPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
   const [muted, setMuted] = useState(true);
+  const [shaderMounted, setShaderMounted] = useState(false);
+  const [shaderVisible, setShaderVisible] = useState(false);
+
+  // Mount the WebGL canvas only once the hero section has a stable,
+  // measured layout — avoids Three.js rendering its first frame at a
+  // wrong/default aspect ratio (the vertical -> horizontal "flip").
+  // The canvas itself stays mounted permanently after that first time,
+  // so it never has to re-initialize (which would risk the flip again).
+  useEffect(() => {
+    const section = heroRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!shaderMounted) {
+            // First time entering view: wait for layout to settle
+            // before mounting, then fade in.
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                setShaderMounted(true);
+                requestAnimationFrame(() => setShaderVisible(true));
+              });
+            });
+          } else {
+            // Already mounted, just re-entering view: fade back in.
+            setShaderVisible(true);
+          }
+        } else if (shaderMounted) {
+          // Leaving view: fade out (canvas stays mounted underneath).
+          setShaderVisible(false);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shaderMounted]);
 
   const toggleMute = () => {
     const next = !muted;
@@ -28,61 +69,72 @@ export default function WorksPage() {
     >
       {/* ── FRAME 01 — HERO ── */}
       <section
+        ref={heroRef}
         className="relative overflow-hidden"
-        style={{ background: "#161616" }}
+        style={{ background: "#161616", minHeight: "700px" }}
       >
-        {/* Shader gradient background — hero section only */}
-        <ShaderGradientCanvas
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            pointerEvents: "none",
-          }}
-        >
-          <ShaderGradient
-            animate="on"
-            // axesHelper="off"
-            brightness={1}
-            cAzimuthAngle={1091}
-            cDistance={4.79}
-            cPolarAngle={175}
-            cameraZoom={13.94}
-            color1="#191919"
-            color2="#a30a24"
-            color3="#a30a24"
-            // destination="onCanvas"
-            // embedMode="off"
-            envPreset="lobby"
-            // format="gif"
-            // fov={45}
-            // frameRate={10}
-            // gizmoHelper="hide"
-            grain="off"
-            lightType="3d"
-            // pixelDensity={1}
-            positionX={-1.4}
-            positionY={0}
-            positionZ={0}
-            range="disabled"
-            rangeEnd={40}
-            rangeStart={0}
-            reflection={0.1}
-            rotationX={0}
-            rotationY={10}
-            rotationZ={50}
-            shader="defaults"
-            type="waterPlane"
-            uAmplitude={1}
-            uDensity={1.1}
-            uFrequency={5.5}
-            uSpeed={0.2}
-            uStrength={0.8}
-            uTime={0}
-            wireframe={false}
-          />
-        </ShaderGradientCanvas>
+        {/* Shader gradient background — fades in every time it enters view */}
+        {shaderMounted && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              opacity: shaderVisible ? 1 : 0,
+              transition: "opacity 2s ease",
+              pointerEvents: "none",
+            }}
+          >
+            <ShaderGradientCanvas
+              style={{
+                width: "100%",
+                height: "100%",
+                pointerEvents: "none",
+              }}
+            >
+              <ShaderGradient
+                animate="on"
+                // axesHelper="off"
+                brightness={1}
+                cAzimuthAngle={1091}
+                cDistance={4.79}
+                cPolarAngle={175}
+                cameraZoom={13.94}
+                color1="#191919"
+                color2="#a30a24"
+                color3="#a30a24"
+                // destination="onCanvas"
+                // embedMode="off"
+                envPreset="lobby"
+                // format="gif"
+                // fov={45}
+                // frameRate={10}
+                // gizmoHelper="hide"
+                grain="off"
+                lightType="3d"
+                // pixelDensity={1}
+                positionX={-1.4}
+                positionY={0}
+                positionZ={0}
+                range="disabled"
+                rangeEnd={40}
+                rangeStart={0}
+                reflection={0.1}
+                rotationX={0}
+                rotationY={10}
+                rotationZ={50}
+                shader="defaults"
+                type="waterPlane"
+                uAmplitude={1}
+                uDensity={1.1}
+                uFrequency={5.5}
+                uSpeed={0.2}
+                uStrength={0.8}
+                uTime={0}
+                wireframe={false}
+              />
+            </ShaderGradientCanvas>
+          </div>
+        )}
 
         <span className="sprocket-rail left-0" aria-hidden="true" />
         <span className="sprocket-rail right-0" aria-hidden="true" />
