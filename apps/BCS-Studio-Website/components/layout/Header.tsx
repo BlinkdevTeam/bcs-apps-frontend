@@ -134,7 +134,7 @@ export default function Header() {
               BLINK
             </span>
             <span
-              className={`${mono.className} whitespace-nowrap text-[9px] tracking-[0.2em] text-[#161616]`}
+              className={`whitespace-nowrap text-[9px] tracking-[0.2em] text-[#161616]`}
             >
               Creative Studio
             </span>

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { JetBrains_Mono } from "next/font/google";
+import { ShaderGradientCanvas, ShaderGradient } from "@shadergradient/react";
 import WorksSection from "./WorkSection";
 import IrisReveal from "@/components/animations/IrisReveal";
 
@@ -30,6 +31,59 @@ export default function WorksPage() {
         className="relative overflow-hidden"
         style={{ background: "#161616" }}
       >
+        {/* Shader gradient background — hero section only */}
+        <ShaderGradientCanvas
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none",
+          }}
+        >
+          <ShaderGradient
+            animate="on"
+            axesHelper="off"
+            brightness={1}
+            cAzimuthAngle={1091}
+            cDistance={4.79}
+            cPolarAngle={175}
+            cameraZoom={13.94}
+            color1="#191919"
+            color2="#a30a24"
+            color3="#a30a24"
+            destination="onCanvas"
+            embedMode="off"
+            envPreset="lobby"
+            format="gif"
+            fov={45}
+            frameRate={10}
+            gizmoHelper="hide"
+            grain="off"
+            lightType="3d"
+            pixelDensity={1}
+            positionX={-1.4}
+            positionY={0}
+            positionZ={0}
+            range="disabled"
+            rangeEnd={40}
+            rangeStart={0}
+            reflection={0.1}
+            rotationX={0}
+            rotationY={10}
+            rotationZ={50}
+            shader="defaults"
+            type="waterPlane"
+            uAmplitude={1}
+            uDensity={1.1}
+            uFrequency={5.5}
+            uSpeed={0.2}
+            uStrength={0.8}
+            uTime={0}
+            wireframe={false}
+          />
+        </ShaderGradientCanvas>
+
         <span className="sprocket-rail left-0" aria-hidden="true" />
         <span className="sprocket-rail right-0" aria-hidden="true" />
 
@@ -91,7 +145,7 @@ export default function WorksPage() {
         </div>
       </section>
 
-      {/* ── FRAME 02 — ABOUT ── */}
+      {/* ── FRAME 02 — ABOUT ── (unchanged) */}
       <section
         className="px-6 lg:px-16 py-24 md:py-32"
         style={{ background: "#F7F5F2" }}
@@ -134,7 +188,7 @@ export default function WorksPage() {
         </div>
       </section>
 
-      {/* ── FRAME 03 — BEHIND THE LENS ── */}
+      {/* ── FRAME 03 — BEHIND THE LENS ── (unchanged) */}
       <section
         className="relative px-6 lg:px-16 py-24 md:py-32"
         style={{ background: "#161616" }}
@@ -191,7 +245,6 @@ export default function WorksPage() {
             Your browser does not support the video tag.
           </video>
 
-          {/* viewfinder corner brackets */}
           <span
             className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2"
             style={{ borderColor: "#fff" }}
@@ -238,7 +291,7 @@ export default function WorksPage() {
         </div>
       </section>
 
-      {/* ── FRAME 04 divider — flows straight into WorksSection ── */}
+      {/* ── FRAME 04 divider ── */}
       <div
         className={`${mono.className} flex items-center gap-4 px-6 lg:px-16 py-6 border-t`}
         style={{ background: "#0d0d0d", borderColor: "rgba(163,10,36,0.35)" }}

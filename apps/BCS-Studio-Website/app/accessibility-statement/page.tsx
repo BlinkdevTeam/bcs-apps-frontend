@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+import IrisReveal from "@/components/animations/IrisReveal";
 
 export const metadata: Metadata = {
   title: "Accessibility Statement",
@@ -81,7 +82,7 @@ export default function AccessibilityStatementPage() {
         </div>
 
         <div className="relative px-6 lg:px-16 py-32 md:py-44">
-          <div className="max-w-5xl mx-auto text-center">
+          <IrisReveal className="max-w-5xl mx-auto text-center">
             <p
               className="text-xs uppercase tracking-[0.25em] font-bold mb-5"
               style={{ color: "#A30A24" }}
@@ -109,7 +110,7 @@ export default function AccessibilityStatementPage() {
               Our commitment to creating an inclusive digital experience for all
               visitors, regardless of ability or technology.
             </p>
-          </div>
+          </IrisReveal>
         </div>
       </section>
 
@@ -218,7 +219,7 @@ export default function AccessibilityStatementPage() {
               >
                 <div className="flex flex-col lg:flex-row gap-6">
                   <div
-                    className={`${mono.className} text-[11px] uppercase tracking-[0.2em] min-w-[120px]`}
+                    className={`${mono.className} text-[11px] uppercase tracking-[0.2em] min-w-30`}
                     style={{ color: "#A30A24" }}
                   >
                     {String(index + 1).padStart(2, "0")}
