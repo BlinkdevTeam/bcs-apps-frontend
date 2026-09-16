@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: "https://hris.blinkcreativestudio.com/api",
-  baseURL: "http://localhost:3001/api",
+  baseURL: "https://hris.blinkcreativestudio.com/api",
+  // baseURL: "http://localhost:3001/api",
   withCredentials: true, // ⚠ important: send httpOnly cookies
 });
 
