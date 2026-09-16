@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { HiMenu, HiX } from "react-icons/hi";
 import { JetBrains_Mono } from "next/font/google";
 import SkewButton from "../ui/buttons/SkewButton";
@@ -16,7 +17,19 @@ const NAV_ITEMS = [
   { label: "FAQs", href: "/faqs" },
 ];
 
-const HIDE_THRESHOLD = 100; // px scrolled down before the header is allowed to hide
+const HIDE_THRESHOLD = 100;
+
+// SSR-safe "are we mounted on the client" flag — no effect/setState needed.
+function subscribeNoop() {
+  return () => {};
+}
+function useMounted() {
+  return useSyncExternalStore(
+    subscribeNoop,
+    () => true, // client snapshot
+    () => false, // server snapshot
+  );
+}
 
 function BlinkMark({ className = "h-10 w-auto" }: { className?: string }) {
   return (
@@ -54,24 +67,20 @@ export default function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [headerHidden, setHeaderHidden] = useState(false);
+  const mounted = useMounted();
   const lastScrollY = useRef(0);
 
   useEffect(() => {
     const onScroll = () => {
       const currentY = window.scrollY;
-
       setScrolled(currentY > 10);
-
       if (currentY < lastScrollY.current) {
-        // any upward movement, however small, brings it back
         setHeaderHidden(false);
       } else if (currentY > lastScrollY.current && currentY > HIDE_THRESHOLD) {
         setHeaderHidden(true);
       }
-
       lastScrollY.current = currentY;
     };
-
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -92,9 +101,6 @@ export default function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // If the clicked link points to the page we're already on, Next.js
-  // won't perform a navigation (so it won't auto-scroll to top).
-  // Manually scroll to top in that case.
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string,
@@ -106,182 +112,194 @@ export default function Header() {
   };
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 motion-reduce:transition-none ${
-        scrolled
-          ? "bg-white/90 backdrop-blur-md shadow-sm py-3"
-          : "bg-white shadow-md py-5"
-      } ${headerHidden && !sidebarOpen ? "-translate-y-full" : "translate-y-0"}`}
-      style={{ borderColor: "rgba(0,0,0,0.08)" }}
-    >
-      <div className="mx-auto max-w-full px-6 md:px-12 lg:px-24 flex items-center justify-between">
-        {/* Logo */}
-        <Link
-          href="/"
-          aria-label="Blink Creative Studio — home"
-          onClick={(e) => handleNavClick(e, "/")}
-          className={`group flex items-center rounded-sm transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A30A24] ${
-            scrolled ? "gap-0" : "gap-3"
-          }`}
-        >
-          <BlinkMark className="h-9 w-auto shrink-0 transition-transform duration-300 group-hover:scale-105 md:h-10" />
-          <div
-            className={`hidden sm:flex flex-col leading-none overflow-hidden transition-all duration-300 ${
-              scrolled ? "max-w-0 opacity-0" : "max-w-40 opacity-100"
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 motion-reduce:transition-none ${
+          scrolled
+            ? "bg-white/90 backdrop-blur-md shadow-sm py-3"
+            : "bg-white shadow-md py-5"
+        } ${headerHidden && !sidebarOpen ? "-translate-y-full" : "translate-y-0"}`}
+        style={{ borderColor: "rgba(0,0,0,0.08)" }}
+      >
+        <div className="mx-auto max-w-full px-6 md:px-12 lg:px-24 flex items-center justify-between">
+          {/* Logo */}
+          <Link
+            href="/"
+            aria-label="Blink Creative Studio — home"
+            onClick={(e) => handleNavClick(e, "/")}
+            className={`group flex items-center rounded-sm transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A30A24] ${
+              scrolled ? "gap-0" : "gap-3"
             }`}
           >
-            <span className="whitespace-nowrap font-black tracking-tight text-[18px] text-[#A30A24]">
-              BLINK
-            </span>
-            <span
-              className={`whitespace-nowrap text-[9px] tracking-[0.2em] text-[#161616]`}
-            >
-              Creative Studio
-            </span>
-          </div>
-        </Link>
-
-        {/* Desktop Navbar + Book Now */}
-        <div className="hidden lg:flex items-center gap-12">
-          <ul className="flex gap-10">
-            {NAV_ITEMS.map((item, i) => {
-              const isActive = pathname === item.href;
-              return (
-                <li key={item.href} className="relative">
-                  <Link
-                    href={item.href}
-                    onClick={(e) => handleNavClick(e, item.href)}
-                    className="group flex items-center gap-2 rounded-sm py-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A30A24]"
-                  >
-                    <span
-                      className={`${mono.className} text-[10px] tracking-widest`}
-                      style={{
-                        color: isActive ? "#A30A24" : "rgba(0,0,0,0.25)",
-                      }}
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span
-                      className={`text-[15px] font-semibold tracking-wide transition-colors ${
-                        isActive
-                          ? "text-[#161616]"
-                          : "text-[#6E6E6E] group-hover:text-[#A30A24]"
-                      }`}
-                    >
-                      {item.label}
-                    </span>
-                    <span
-                      className={`absolute left-0 -bottom-px h-0.5 w-full origin-left bg-[#A30A24] transition-transform duration-300 ${
-                        isActive
-                          ? "scale-x-100"
-                          : "scale-x-0 group-hover:scale-x-100"
-                      }`}
-                      aria-hidden="true"
-                    />
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-          <SkewButton href="/book-now">BOOK NOW</SkewButton>
-        </div>
-
-        {/* Mobile Hamburger */}
-        <div className="lg:hidden flex items-center">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Open menu"
-            aria-expanded={sidebarOpen}
-            aria-controls="mobile-sidebar"
-            className="rounded-sm text-[32px] text-[#161616] transition-colors hover:text-[#A30A24] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24] md:text-[40px]"
-          >
-            <HiMenu />
-          </button>
-
-          {/* Mobile Sidebar */}
-          <div
-            id="mobile-sidebar"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Site navigation"
-            className={`fixed top-0 right-0 z-50 flex h-full w-72 transform flex-col bg-white shadow-2xl transition-transform duration-300 ${
-              sidebarOpen ? "translate-x-0" : "translate-x-full"
-            }`}
-          >
+            <BlinkMark className="h-9 w-auto shrink-0 transition-transform duration-300 group-hover:scale-105 md:h-10" />
             <div
-              className="flex items-center justify-between border-b p-6"
-              style={{ borderColor: "rgba(0,0,0,0.08)" }}
+              className={`hidden sm:flex flex-col leading-none overflow-hidden transition-all duration-300 ${
+                scrolled ? "max-w-0 opacity-0" : "max-w-40 opacity-100"
+              }`}
             >
-              <BlinkMark className="h-8 w-auto" />
-              <button
-                onClick={() => setSidebarOpen(false)}
-                aria-label="Close menu"
-                className="rounded-sm text-2xl text-[#161616] transition-colors hover:text-[#A30A24] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24]"
-              >
-                <HiX />
-              </button>
+              <span className="whitespace-nowrap font-black tracking-tight text-[18px] text-[#A30A24]">
+                BLINK
+              </span>
+              <span className="whitespace-nowrap text-[9px] tracking-[0.2em] text-[#161616]">
+                Creative Studio
+              </span>
             </div>
+          </Link>
 
-            <ul className="mt-4 flex flex-col px-6">
+          {/* Desktop Navbar + Book Now */}
+          <div className="hidden lg:flex items-center gap-12">
+            <ul className="flex gap-10">
               {NAV_ITEMS.map((item, i) => {
                 const isActive = pathname === item.href;
                 return (
-                  <li
-                    key={item.href}
-                    className="border-b"
-                    style={{ borderColor: "rgba(0,0,0,0.06)" }}
-                  >
+                  <li key={item.href} className="relative">
                     <Link
                       href={item.href}
-                      onClick={(e) => {
-                        setSidebarOpen(false);
-                        handleNavClick(e, item.href);
-                      }}
-                      className="flex items-center gap-3 rounded-sm py-4 transition-transform duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24] hover:translate-x-1"
+                      onClick={(e) => handleNavClick(e, item.href)}
+                      className="group flex items-center gap-2 rounded-sm py-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#A30A24]"
                     >
                       <span
                         className={`${mono.className} text-[10px] tracking-widest`}
                         style={{
-                          color: isActive ? "#A30A24" : "rgba(0,0,0,0.3)",
+                          color: isActive ? "#A30A24" : "rgba(0,0,0,0.25)",
                         }}
                       >
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <span
-                        className={`text-[16px] font-semibold tracking-wide ${
-                          isActive ? "text-[#161616]" : "text-[#6E6E6E]"
+                        className={`text-[15px] font-semibold tracking-wide transition-colors ${
+                          isActive
+                            ? "text-[#161616]"
+                            : "text-[#6E6E6E] group-hover:text-[#A30A24]"
                         }`}
                       >
                         {item.label}
                       </span>
+                      <span
+                        className={`absolute left-0 -bottom-px h-0.5 w-full origin-left bg-[#A30A24] transition-transform duration-300 ${
+                          isActive
+                            ? "scale-x-100"
+                            : "scale-x-0 group-hover:scale-x-100"
+                        }`}
+                        aria-hidden="true"
+                      />
                     </Link>
                   </li>
                 );
               })}
             </ul>
-
-            <div className="mt-8 px-6">
-              <SkewButton
-                href="/book-now"
-                onClick={() => setSidebarOpen(false)}
-              >
-                BOOK NOW
-              </SkewButton>
-            </div>
+            <SkewButton href="/book-now">BOOK NOW</SkewButton>
           </div>
 
-          {/* Overlay */}
-          {sidebarOpen && (
-            <div
-              className="sidebar-overlay fixed inset-0 z-40 bg-black/40"
-              onClick={() => setSidebarOpen(false)}
-              aria-hidden="true"
-            />
-          )}
+          {/* Mobile Hamburger (button only stays in the header) */}
+          <div className="lg:hidden flex items-center">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open menu"
+              aria-expanded={sidebarOpen}
+              aria-controls="mobile-sidebar"
+              className="rounded-sm text-[32px] text-[#161616] transition-colors hover:text-[#A30A24] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24] md:text-[40px]"
+            >
+              <HiMenu />
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
-      <style jsx>{`
+      {/*
+        Portal the drawer + overlay to document.body.
+        The header above always carries a `translate-y-*` class, and any
+        CSS `transform` on an ancestor becomes the containing block for
+        `position: fixed` descendants — that was squashing this drawer's
+        `fixed top-0 right-0 h-full` down to the header's own ~90px height.
+        Rendering outside the header via a portal sidesteps that.
+      */}
+      {mounted &&
+        createPortal(
+          <>
+            <div
+              id="mobile-sidebar"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Site navigation"
+              className={`fixed top-0 right-0 z-50 flex h-full w-72 transform flex-col bg-white shadow-2xl transition-transform duration-300 lg:hidden ${
+                sidebarOpen ? "translate-x-0" : "translate-x-full"
+              }`}
+            >
+              <div
+                className="flex items-center justify-between border-b p-6"
+                style={{ borderColor: "rgba(0,0,0,0.08)" }}
+              >
+                <BlinkMark className="h-8 w-auto" />
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  aria-label="Close menu"
+                  className="rounded-sm text-2xl text-[#161616] transition-colors hover:text-[#A30A24] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24]"
+                >
+                  <HiX />
+                </button>
+              </div>
+
+              <ul className="mt-4 flex flex-col px-6">
+                {NAV_ITEMS.map((item, i) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <li
+                      key={item.href}
+                      className="border-b"
+                      style={{ borderColor: "rgba(0,0,0,0.06)" }}
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={(e) => {
+                          setSidebarOpen(false);
+                          handleNavClick(e, item.href);
+                        }}
+                        className="flex items-center gap-3 rounded-sm py-4 transition-transform duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A30A24] hover:translate-x-1"
+                      >
+                        <span
+                          className={`${mono.className} text-[10px] tracking-widest`}
+                          style={{
+                            color: isActive ? "#A30A24" : "rgba(0,0,0,0.3)",
+                          }}
+                        >
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span
+                          className={`text-[16px] font-semibold tracking-wide ${
+                            isActive ? "text-[#161616]" : "text-[#6E6E6E]"
+                          }`}
+                        >
+                          {item.label}
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <div className="mt-8 px-6">
+                <SkewButton
+                  href="/book-now"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  BOOK NOW
+                </SkewButton>
+              </div>
+            </div>
+
+            {sidebarOpen && (
+              <div
+                className="sidebar-overlay fixed inset-0 z-40 bg-black/40 lg:hidden"
+                onClick={() => setSidebarOpen(false)}
+                aria-hidden="true"
+              />
+            )}
+          </>,
+          document.body,
+        )}
+
+      <style jsx global>{`
         .sidebar-overlay {
           animation: overlay-fade 200ms ease-out;
         }
@@ -299,6 +317,6 @@ export default function Header() {
           }
         }
       `}</style>
-    </header>
+    </>
   );
 }
