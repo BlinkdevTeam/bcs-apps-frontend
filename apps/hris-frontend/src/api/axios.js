@@ -4,7 +4,7 @@ import { store } from "../store";
 import { setAuth, clearAuth } from "../store/authSlice";
 
 const api = axios.create({
-  baseURL: "https://hris.blinkcreativestudio.com", // your backend
+  baseURL: "https://hris.blinkcreativestudio.com",
 });
 
 let isRefreshing = false;

@@ -80,7 +80,7 @@ export default function WorksPage() {
               position: "absolute",
               inset: 0,
               opacity: shaderVisible ? 1 : 0,
-              transition: "opacity 2s ease",
+              transition: "opacity 4s ease",
               pointerEvents: "none",
               zIndex: 2,
             }}
@@ -101,8 +101,8 @@ export default function WorksPage() {
                 cPolarAngle={175}
                 cameraZoom={13.94}
                 color1="#191919"
-                color2="#a30a24"
-                color3="#a30a24"
+                color2="#cb1332"
+                color3="#a30a23f5"
                 // destination="onCanvas"
                 // embedMode="off"
                 envPreset="lobby"
