@@ -4,8 +4,17 @@ import Field from "./Field";
 import EyeToggle from "./EyeToggle";
 import NavButtons from "./NavButtons";
 
-import { TOTAL_STEPS, inputCls, inputStyle, parsePasswordStrength, STRENGTH_COLOR, STRENGTH_LABEL } from "../../../data/compData";
+import { TOTAL_STEPS, parsePasswordStrength, STRENGTH_COLOR, STRENGTH_LABEL } from "../../../data/compData";
 
+const lightInputCls = "w-full px-4 py-3 rounded-lg text-sm text-black placeholder-gray-400 outline-none transition-all";
+
+function lightInputStyle(error) {
+  return {
+    fontFamily: "system-ui,sans-serif",
+    backgroundColor: "#ffffff",
+    border: `1px solid ${error ? "#dc262666" : "#d1d5db"}`,
+  };
+}
 
 export default function StepAdminAccount({ data, onChange, onNext, onBack }) {
   const [showPass,  setShowPass]  = useState(false);
@@ -32,22 +41,22 @@ export default function StepAdminAccount({ data, onChange, onNext, onBack }) {
   return (
     <div>
       <div className="mb-8">
-        <p className="text-xs uppercase tracking-widest text-gray-600 mb-1" style={{ fontFamily:"system-ui,sans-serif" }}>Step 2 of {TOTAL_STEPS}</p>
-        <h2 className="text-2xl font-normal text-white" style={{ letterSpacing:"-0.02em" }}>Admin account</h2>
-        <p className="text-sm text-gray-600 mt-1" style={{ fontFamily:"system-ui,sans-serif" }}>
-          This becomes the <span className="text-white">Super Admin</span> — the highest level of access.
+        <p className="text-xs uppercase tracking-widest text-gray-500 mb-1" style={{ fontFamily:"system-ui,sans-serif" }}>Step 2 of {TOTAL_STEPS}</p>
+        <h2 className="text-2xl font-normal text-black" style={{ letterSpacing:"-0.02em" }}>Admin account</h2>
+        <p className="text-sm text-gray-500 mt-1" style={{ fontFamily:"system-ui,sans-serif" }}>
+          This becomes the <span className="text-black font-medium">Super Admin</span> — the highest level of access.
         </p>
       </div>
 
       <div className="space-y-5">
         <div className="grid grid-cols-2 gap-3">
           <Field label="First Name" error={errors.firstName}>
-            <input className={inputCls} style={inputStyle(errors.firstName)}
+            <input className={lightInputCls} style={lightInputStyle(errors.firstName)}
               placeholder="Sara" autoFocus
               value={data.firstName} onChange={e => onChange("firstName", e.target.value)}/>
           </Field>
           <Field label="Last Name" error={errors.lastName}>
-            <input className={inputCls} style={inputStyle(errors.lastName)}
+            <input className={lightInputCls} style={lightInputStyle(errors.lastName)}
               placeholder="Okafor"
               value={data.lastName} onChange={e => onChange("lastName", e.target.value)}/>
           </Field>
@@ -55,14 +64,14 @@ export default function StepAdminAccount({ data, onChange, onNext, onBack }) {
 
         <Field label="Work Email" error={errors.email}
           hint="This will be your login email">
-          <input className={inputCls} style={inputStyle(errors.email)}
+          <input className={lightInputCls} style={lightInputStyle(errors.email)}
             type="email" placeholder="you@company.com"
             value={data.email} onChange={e => onChange("email", e.target.value)}/>
         </Field>
 
         <Field label="Password" error={errors.password}>
           <div className="relative">
-            <input className={inputCls} style={{ ...inputStyle(errors.password), paddingRight:44 }}
+            <input className={lightInputCls} style={{ ...lightInputStyle(errors.password), paddingRight:44 }}
               type={showPass ? "text" : "password"} placeholder="Create a strong password"
               value={data.password} onChange={e => onChange("password", e.target.value)}/>
             <EyeToggle show={showPass} onToggle={() => setShowPass(p => !p)}/>
@@ -73,14 +82,14 @@ export default function StepAdminAccount({ data, onChange, onNext, onBack }) {
               <div className="flex gap-1">
                 {[1,2,3,4,5].map(i => (
                   <div key={i} className="flex-1 h-1 rounded-full transition-all"
-                    style={{ backgroundColor: i <= score ? STRENGTH_COLOR[score] : "#1e1e1e" }}/>
+                    style={{ backgroundColor: i <= score ? STRENGTH_COLOR[score] : "#e5e7eb" }}/>
                 ))}
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex flex-wrap gap-x-3 gap-y-0.5">
                   {checks.map(c => (
                     <span key={c.label} className="text-xs"
-                      style={{ fontFamily:"system-ui,sans-serif", color: c.pass ? "#5af07a" : "#444" }}>
+                      style={{ fontFamily:"system-ui,sans-serif", color: c.pass ? "#16a34a" : "#9ca3af" }}>
                       {c.pass ? "✓" : "○"} {c.label}
                     </span>
                   ))}
@@ -96,7 +105,7 @@ export default function StepAdminAccount({ data, onChange, onNext, onBack }) {
 
         <Field label="Confirm Password" error={errors.confirm}>
           <div className="relative">
-            <input className={inputCls} style={{ ...inputStyle(errors.confirm), paddingRight:44 }}
+            <input className={lightInputCls} style={{ ...lightInputStyle(errors.confirm), paddingRight:44 }}
               type={showConf ? "text" : "password"} placeholder="Repeat your password"
               value={data.confirm} onChange={e => onChange("confirm", e.target.value)}/>
             <EyeToggle show={showConf} onToggle={() => setShowConf(p => !p)}/>
@@ -105,10 +114,10 @@ export default function StepAdminAccount({ data, onChange, onNext, onBack }) {
 
         {/* Super Admin notice */}
         <div className="rounded-lg px-4 py-3 flex items-start gap-2.5"
-          style={{ backgroundColor:"#1a0a0a", border:"1px solid #3a1515" }}>
-          <span className="text-red-400 flex-shrink-0 mt-0.5 text-sm">⚠</span>
-          <p className="text-xs text-gray-400 leading-relaxed" style={{ fontFamily:"system-ui,sans-serif" }}>
-            This account gets <strong className="text-white">Super Admin</strong> access — full control over all data, users, and settings. Store these credentials securely. They cannot be recovered without database access.
+          style={{ backgroundColor:"#fef2f2", border:"1px solid #fecaca" }}>
+          <span className="text-red-500 shrink-0 mt-0.5 text-sm">⚠</span>
+          <p className="text-xs text-gray-600 leading-relaxed" style={{ fontFamily:"system-ui,sans-serif" }}>
+            This account gets <strong className="text-black">Super Admin</strong> access — full control over all data, users, and settings. Store these credentials securely. They cannot be recovered without database access.
           </p>
         </div>
       </div>

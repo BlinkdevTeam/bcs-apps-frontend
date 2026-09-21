@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const API = "https://hris.blinkcreativestudio.com/api";
-// const API = "http://localhost:3001/api";
+// const API = "https://hris.blinkcreativestudio.com/api";
+const API = "http://localhost:3001/api";
 
 export async function getRoles() {
   const res = await axios.get(`${API}/roles`);

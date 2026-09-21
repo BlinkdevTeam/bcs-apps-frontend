@@ -24,8 +24,8 @@ const [form, setForm] = useState({
   useEffect(() => {
   const fetchEmployees = async () => {
     try {
-      const res = await axios.get("https://hris.blinkcreativestudio.com/api/employees");
-      // const res = await axios.get("http://localhost:3001/api/employees");
+      // const res = await axios.get("https://hris.blinkcreativestudio.com/api/employees");
+      const res = await axios.get("http://localhost:3001/api/employees");
       setEmployees(res.data);
     } catch (err) {
       console.error("Failed to fetch employees:", err);
@@ -39,8 +39,8 @@ const [form, setForm] = useState({
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const res = await axios.get("https://hris.blinkcreativestudio.com/api/roles");
-        // const res = await axios.get("http://localhost:3001/api/roles");
+        // const res = await axios.get("https://hris.blinkcreativestudio.com/api/roles");
+        const res = await axios.get("http://localhost:3001/api/roles");
         setRoles(res.data);
         // Default role
         if (!form.role && res.data.length > 0) setForm(f => ({ ...f, role: res.data[0].id }));
@@ -55,8 +55,8 @@ const [form, setForm] = useState({
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const res = await axios.get("https://hris.blinkcreativestudio.com/api/departments");
-        // const res = await axios.get("http://localhost:3001/api/departments");
+        // const res = await axios.get("https://hris.blinkcreativestudio.com/api/departments");
+        const res = await axios.get("http://localhost:3001/api/departments");
         setDepartments(res.data);
         // Default department
         if (!form.dept && res.data.length > 0) setForm(f => ({ ...f, dept: res.data[0].id }));

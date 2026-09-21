@@ -260,6 +260,8 @@ function CategoryCard({
 }
 
 // ── Fullscreen Modal ───────────────────────────────────────────────────────────
+// Swapped in the simpler modal treatment: dark blurred backdrop, click-outside
+// to close, media centered and stopPropagation'd, single close button.
 function WorkModal({
   work,
   onClose,
@@ -293,112 +295,52 @@ function WorkModal({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex" style={{ background: "#0a0a0a" }}>
-      {/* Left info panel */}
-      <div
-        className="hidden lg:flex flex-col justify-between p-10 shrink-0"
-        style={{
-          width: "320px",
-          borderRight: "1px solid rgba(255,255,255,0.08)",
-        }}
+    <div
+      className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center"
+      onClick={onClose}
+    >
+      {/* Media */}
+      {work.type === "video" ? (
+        <video
+          key={work.id}
+          src={work.url}
+          controls
+          autoPlay
+          controlsList="nodownload"
+          onContextMenu={(e) => e.preventDefault()}
+          className="max-w-[90%] max-h-[90%] rounded-xl shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        />
+      ) : (
+        <Image
+          key={work.id}
+          src={work.url}
+          alt={work.title}
+          width={1600}
+          height={1200}
+          onContextMenu={(e) => e.preventDefault()}
+          className="max-w-[90%] max-h-[90%] w-auto h-auto object-contain rounded-xl shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        />
+      )}
+
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="absolute top-6 right-6 text-white text-3xl font-bold hover:scale-110 transition"
       >
-        <div>
-          <button
-            onClick={onClose}
-            className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold transition-opacity hover:opacity-60 cursor-pointer"
-            style={{ color: "rgba(255,255,255,0.5)" }}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M19 12H5M12 5l-7 7 7 7" />
-            </svg>
-            Back to Works
-          </button>
+        ✕
+      </button>
 
-          <div className="mt-12">
-            <span
-              className="text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-sm"
-              style={{ background: "#A30A24", color: "#fff" }}
-            >
-              {CATEGORY_LABEL[work.category]}
-            </span>
-
-            <h2
-              className="mt-4 font-bold leading-tight"
-              style={{
-                color: "#fff",
-              }}
-            >
-              {work.title}
-            </h2>
-
-            <p
-              className="mt-4 leading-relaxed text-sm"
-              style={{ color: "rgba(255,255,255,0.5)" }}
-            >
-              {work.description}
-            </p>
-          </div>
-        </div>
-
-        {/* Nav */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onPrev}
-            disabled={!hasPrev}
-            className="w-10 h-10 rounded-full border flex items-center justify-center transition-all disabled:opacity-20 cursor-pointer"
-            style={{ borderColor: "rgba(255,255,255,0.2)", color: "#fff" }}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-          <button
-            onClick={onNext}
-            disabled={!hasNext}
-            className="w-10 h-10 rounded-full border flex items-center justify-center transition-all disabled:opacity-20 cursor-pointer"
-            style={{ borderColor: "rgba(255,255,255,0.2)", color: "#fff" }}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </button>
-          <span
-            className="text-xs ml-2"
-            style={{ color: "rgba(255,255,255,0.3)" }}
-          >
-            Use ← → keys
-          </span>
-        </div>
-      </div>
-
-      {/* Media area */}
-      <div className="flex-1 relative flex items-center justify-center p-6">
-        {/* Mobile close */}
+      {/* Prev / Next */}
+      {hasPrev && (
         <button
-          onClick={onClose}
-          className="lg:hidden absolute top-4 right-4 z-10 w-9 h-9 rounded-full flex items-center justify-center"
-          style={{ background: "rgba(255,255,255,0.1)", color: "#fff" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onPrev();
+          }}
+          className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer"
+          style={{ borderColor: "rgba(255,255,255,0.3)", color: "#fff" }}
         >
           <svg
             width="14"
@@ -406,76 +348,48 @@ function WorkModal({
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2.5"
+            strokeWidth="2"
           >
-            <path d="M18 6L6 18M6 6l12 12" />
+            <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
-
-        {work.type === "video" ? (
-          <video
-            key={work.id}
-            src={work.url}
-            controls
-            autoPlay
-            controlsList="nodownload"
-            onContextMenu={(e) => e.preventDefault()}
-            className="rounded-lg shadow-2xl"
-            style={{
-              maxWidth: "100%",
-              maxHeight: "85vh",
-              objectFit: "contain",
-            }}
-          />
-        ) : (
-          <Image
-            key={work.id}
-            src={work.url}
-            alt={work.title}
-            width={1600}
-            height={1200}
-            onContextMenu={(e) => e.preventDefault()}
-            className="rounded-lg shadow-2xl max-w-full max-h-[85vh] w-auto h-auto object-contain"
-          />
-        )}
-
-        {/* Mobile nav */}
-        <div className="lg:hidden absolute bottom-4 left-0 right-0 flex items-center justify-center gap-4">
-          <button
-            onClick={onPrev}
-            disabled={!hasPrev}
-            className="w-10 h-10 rounded-full border flex items-center justify-center disabled:opacity-20"
-            style={{ borderColor: "rgba(255,255,255,0.3)", color: "#fff" }}
+      )}
+      {hasNext && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onNext();
+          }}
+          className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer"
+          style={{ borderColor: "rgba(255,255,255,0.3)", color: "#fff" }}
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
           >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-          <button
-            onClick={onNext}
-            disabled={!hasNext}
-            className="w-10 h-10 rounded-full border flex items-center justify-center disabled:opacity-20"
-            style={{ borderColor: "rgba(255,255,255,0.3)", color: "#fff" }}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </button>
-        </div>
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      )}
+
+      {/* Caption */}
+      <div className="absolute bottom-6 left-0 right-0 flex flex-col items-center text-center px-6 pointer-events-none">
+        <span
+          className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm mb-2"
+          style={{ background: "#A30A24", color: "#fff" }}
+        >
+          {CATEGORY_LABEL[work.category]}
+        </span>
+        <h3
+          className="text-white font-bold"
+          style={{ fontSize: "clamp(14px, 2vw, 20px)" }}
+        >
+          {work.title}
+        </h3>
       </div>
     </div>
   );

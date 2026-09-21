@@ -4,7 +4,8 @@ import { store } from "../store";
 import { setAuth, clearAuth } from "../store/authSlice";
 
 const api = axios.create({
-  baseURL: "https://hris.blinkcreativestudio.com/api",
+  // baseURL: "https://hris.blinkcreativestudio.com/api",
+  baseURL: "http://localhost:3001/api",
 });
 
 let isRefreshing = false;
@@ -52,7 +53,8 @@ api.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          "https://hris.blinkcreativestudio.com/api/auth/refresh",
+          // "https://hris.blinkcreativestudio.com/api/auth/refresh",
+          "http://localhost:3001/api/auth/refresh",
           {
             refreshToken,
           },

@@ -13,19 +13,18 @@ export default function useSetupStatus() {
     if (cachedStatus !== null) return;
 
     if (!cachedPromise) {
-      cachedPromise = fetch(
-        "https://hris.blinkcreativestudio.com/api/setup/check-super-admin",
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          cachedStatus = data.exists;
-          return cachedStatus;
-        })
-        .catch((err) => {
-          console.error("Setup check failed:", err);
-          cachedStatus = false;
-          return false;
-        });
+      cachedPromise = // useSetupStatus.js
+        fetch("http://localhost:3001/api/setup/check-super-admin")
+          .then((res) => res.json())
+          .then((data) => {
+            cachedStatus = data.exists;
+            return cachedStatus;
+          })
+          .catch((err) => {
+            console.error("Setup check failed:", err);
+            cachedStatus = false;
+            return false;
+          });
     }
 
     cachedPromise.then((status) => {

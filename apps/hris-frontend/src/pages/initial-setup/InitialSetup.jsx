@@ -58,13 +58,13 @@ export default function SetupWizard() {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-6"
-      style={{ backgroundColor: "#000" }}
+      style={{ backgroundColor: "#fff" }}
     >
       <div
         className="fixed inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            "linear-gradient(#ffffff04 1px, transparent 1px), linear-gradient(90deg, #ffffff04 1px, transparent 1px)",
+            "linear-gradient(#00000008 1px, transparent 1px), linear-gradient(90deg, #00000008 1px, transparent 1px)",
           backgroundSize: "40px 40px",
         }}
       />
@@ -72,14 +72,14 @@ export default function SetupWizard() {
       <div
         className="relative w-full max-w-md rounded-2xl p-8"
         style={{
-          backgroundColor: "#080808",
-          border: "1px solid #1e1e1e",
-          boxShadow: "0 0 80px rgba(0,0,0,0.8)",
+          backgroundColor: "#fff",
+          border: "1px solid #e5e5e5",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
         }}
       >
         {showProgress && (
           <div
-            className="absolute top-6 right-7 text-xs text-gray-700"
+            className="absolute top-6 right-7 text-xs text-gray-400"
             style={{ fontFamily: "monospace" }}
           >
             {step} / {TOTAL_STEPS}
@@ -89,6 +89,7 @@ export default function SetupWizard() {
         {showProgress && <ProgressBar step={step} />}
 
         {step === 0 && <StepWelcome onNext={() => setStep(1)} />}
+
         {step === 1 && (
           <StepCompany
             data={company}
@@ -97,6 +98,7 @@ export default function SetupWizard() {
             onBack={() => setStep(0)}
           />
         )}
+
         {step === 2 && (
           <StepAdminAccount
             data={admin}
@@ -105,6 +107,7 @@ export default function SetupWizard() {
             onBack={() => setStep(1)}
           />
         )}
+
         {step === 3 && (
           <StepConfirm
             company={company}
@@ -114,6 +117,7 @@ export default function SetupWizard() {
             loading={loading}
           />
         )}
+
         {step === 5 && (
           <StepDone
             admin={admin}
@@ -135,7 +139,7 @@ export default function SetupWizard() {
 
       {step < 5 && (
         <p
-          className="fixed bottom-6 text-xs text-gray-800"
+          className="fixed bottom-6 text-xs text-gray-400"
           style={{ fontFamily: "system-ui,sans-serif" }}
         >
           HRIS System · First-time setup
