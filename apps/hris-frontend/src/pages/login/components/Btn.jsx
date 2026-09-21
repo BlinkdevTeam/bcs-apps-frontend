@@ -1,29 +1,30 @@
-export default function Btn({
+export default function SignInBtn({
   children,
   onClick,
   disabled,
   variant = "primary",
   type = "button",
 }) {
-  const styles = {
-    primary: {
-      bg: disabled ? "#1a1a1a" : "#fff",
-      color: disabled ? "#444" : "#000",
-    },
-    secondary: { bg: "#111", color: "#aaa", border: "1px solid #2a2a2a" },
-    danger: { bg: "#1f0f0f", color: "#f05a5a", border: "1px solid #3a1515" },
-  }[variant];
+  const base = "w-full py-3 rounded-lg text-sm font-medium transition-all";
+  const hover = "hover:opacity-80";
+
+  let variantClasses = "";
+  if (variant === "primary") {
+    variantClasses = disabled
+      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+      : "bg-black text-white";
+  } else if (variant === "secondary") {
+    variantClasses = "bg-gray-50 text-gray-600 border border-gray-200";
+  } else if (variant === "danger") {
+    variantClasses = "bg-red-50 text-red-600 border border-red-200";
+  }
+
   return (
     <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className="w-full py-3 rounded-lg text-sm font-medium transition-all hover:opacity-80"
-      style={{
-        fontFamily: "system-ui,sans-serif",
-        cursor: disabled ? "not-allowed" : "pointer",
-        ...styles,
-      }}
+      className={`${base} ${hover} ${variantClasses}`}
     >
       {children}
     </button>

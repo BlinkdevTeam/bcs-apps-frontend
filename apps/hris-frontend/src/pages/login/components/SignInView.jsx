@@ -62,10 +62,10 @@ export default function SignInView({ onForgotPassword }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-normal text-white mb-1" style={{ letterSpacing: "-0.02em" }}>
+        <h1 className="text-2xl font-normal text-black mb-1" style={{ letterSpacing: "-0.02em" }}>
           Sign in
         </h1>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-500">
           Use your company email to access the HRIS.
         </p>
       </div>
@@ -89,13 +89,13 @@ export default function SignInView({ onForgotPassword }) {
         />
 
         {displayError && (
-          <p className="text-xs" style={{ color: "#f05a5a" }}>
+          <p className="text-xs" style={{ color: "#dc2626" }}>
             {displayError}
           </p>
         )}
 
         {isLocked && (
-          <p className="text-xs text-yellow-400">
+          <p className="text-xs" style={{ color: "#b45309" }}>
             Too many failed attempts. Try again in {lockoutSeconds}s.
           </p>
         )}
@@ -105,7 +105,7 @@ export default function SignInView({ onForgotPassword }) {
         <button
           type="button"
           onClick={onForgotPassword}
-          className="text-xs text-gray-500 hover:text-white transition-colors"
+          className="text-xs text-gray-500 hover:text-black transition-colors"
         >
           Forgot password?
         </button>

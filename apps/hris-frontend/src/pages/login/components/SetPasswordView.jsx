@@ -1,3 +1,4 @@
+// SetPasswordView.jsx
 import { useState, useEffect } from "react";
 import axios from "axios";
 import PasswordStrength from "./PasswordStrength";
@@ -86,12 +87,12 @@ export default function SetPasswordView({ token, onComplete }) {
 
   // ---------------- RENDER ----------------
   if (tokenValid === null) {
-    return <div className="text-white">Verifying reset link...</div>;
+    return <div className="text-black">Verifying reset link...</div>;
   }
 
   if (!tokenValid) {
     return (
-      <div className="text-red-500">
+      <div className="text-red-600">
         Reset link expired or invalid. Please request a new password reset.
       </div>
     );
@@ -99,7 +100,7 @@ export default function SetPasswordView({ token, onComplete }) {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl text-white">Set new password</h1>
+      <h1 className="text-2xl text-black">Set new password</h1>
 
       <InputField
         label="New password"
@@ -126,7 +127,7 @@ export default function SetPasswordView({ token, onComplete }) {
       />
 
       {errors.submit && (
-        <p className="text-red-500 text-sm">{errors.submit}</p>
+        <p className="text-red-600 text-sm">{errors.submit}</p>
       )}
 
       <Btn onClick={handleSubmit} disabled={loading}>

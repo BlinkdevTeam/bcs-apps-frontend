@@ -1,3 +1,4 @@
+// ForgotPasswordView.jsx
 import { useState } from "react";
 import axios from "axios";
 import InputField from "./InputField";
@@ -45,17 +46,17 @@ export default function ForgotPasswordView({ onBack }) {
         <div className="text-center py-4">
           <div
             className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4"
-            style={{ backgroundColor: "#0a1a0a", border: "1px solid #1e3a1e" }}
+            style={{ backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0" }}
           >
             <span className="text-2xl">📧</span>
           </div>
-          <h2 className="text-xl font-normal text-white mb-2">
+          <h2 className="text-xl font-normal text-black mb-2">
             Check your email
           </h2>
           <p className="text-sm text-gray-500 leading-relaxed">
-            If <span className="text-white">{email}</span> is registered, you’ll
+            If <span className="text-black">{email}</span> is registered, you’ll
             receive a password reset link shortly. The link expires in{" "}
-            <strong className="text-white">1 hour</strong>.
+            <strong className="text-black">1 hour</strong>.
           </p>
         </div>
         <Btn onClick={onBack} variant="secondary">
@@ -69,12 +70,12 @@ export default function ForgotPasswordView({ onBack }) {
       <div>
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-xs text-gray-600 hover:text-white transition-colors mb-4"
+          className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-black transition-colors mb-4"
         >
           ← Back
         </button>
-        <h1 className="text-2xl font-normal text-white mb-1">Reset password</h1>
-        <p className="text-sm text-gray-600">
+        <h1 className="text-2xl font-normal text-black mb-1">Reset password</h1>
+        <p className="text-sm text-gray-500">
           Enter your work email and we’ll send you a reset link.
         </p>
       </div>

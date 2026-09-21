@@ -11,12 +11,12 @@ export default function SignInBtn({
   let variantClasses = "";
   if (variant === "primary") {
     variantClasses = disabled
-      ? "bg-gray-800 text-gray-500 cursor-not-allowed"
-      : "bg-white text-black";
+      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+      : "bg-black text-white";
   } else if (variant === "secondary") {
-    variantClasses = "bg-gray-900 text-gray-400 border border-gray-800";
+    variantClasses = "bg-gray-50 text-gray-600 border border-gray-200";
   } else if (variant === "danger") {
-    variantClasses = "bg-red-900 text-red-500 border border-red-800";
+    variantClasses = "bg-red-50 text-red-600 border border-red-200";
   }
 
   return (

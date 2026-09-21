@@ -1,3 +1,4 @@
+// PasswordStrength.jsx
 export default function PasswordStrength({ password }) {
   if (!password) return null;
   const checks = [
@@ -9,20 +10,20 @@ export default function PasswordStrength({ password }) {
   ];
   const score = checks.filter(c => c.pass).length;
   const levels = ["", "Very Weak", "Weak", "Fair", "Strong", "Very Strong"];
-  const colors = ["", "#f05a5a", "#f05a5a", "#f0c85a", "#5a9af0", "#5af07a"];
+  const colors = ["", "#dc2626", "#dc2626", "#d97706", "#2563eb", "#16a34a"];
 
   return (
     <div className="space-y-2">
       <div className="flex gap-1">
         {[1,2,3,4,5].map(i => (
           <div key={i} className="flex-1 h-1 rounded-full transition-all"
-            style={{ backgroundColor: i <= score ? colors[score] : "#1e1e1e" }}/>
+            style={{ backgroundColor: i <= score ? colors[score] : "#e5e7eb" }}/>
         ))}
       </div>
       <div className="flex items-center justify-between">
         <div className="flex flex-wrap gap-x-3 gap-y-1">
           {checks.map(c => (
-            <span key={c.label} className="text-xs" style={{ fontFamily:"system-ui,sans-serif", color: c.pass ? "#5af07a" : "#444" }}>
+            <span key={c.label} className="text-xs" style={{ fontFamily:"system-ui,sans-serif", color: c.pass ? "#16a34a" : "#9ca3af" }}>
               {c.pass ? "✓" : "○"} {c.label}
             </span>
           ))}

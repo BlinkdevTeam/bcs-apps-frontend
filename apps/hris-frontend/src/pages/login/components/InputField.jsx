@@ -1,3 +1,4 @@
+// InputField.jsx
 export default function InputField({ label, type="text", value, onChange, placeholder, error, autoFocus=false, rightSlot }) {
   return (
     <div className="space-y-1.5">
@@ -7,11 +8,11 @@ export default function InputField({ label, type="text", value, onChange, placeh
         <input
           type={type}
           autoFocus={autoFocus}
-          className="w-full px-4 py-3 rounded-lg text-sm text-white placeholder-gray-600 outline-none transition-all"
+          className="w-full px-4 py-3 rounded-lg text-sm text-black placeholder-gray-400 outline-none transition-all"
           style={{
             fontFamily:      "system-ui,sans-serif",
-            backgroundColor: "#111",
-            border:          `1px solid ${error ? "#f05a5a55" : "#2a2a2a"}`,
+            backgroundColor: "#fff",
+            border:          `1px solid ${error ? "#dc262655" : "#d1d5db"}`,
             paddingRight:    rightSlot ? 44 : undefined,
           }}
           placeholder={placeholder}
@@ -23,7 +24,7 @@ export default function InputField({ label, type="text", value, onChange, placeh
         )}
       </div>
       {error && (
-        <p className="text-xs" style={{ fontFamily:"system-ui,sans-serif", color:"#f05a5a" }}>{error}</p>
+        <p className="text-xs" style={{ fontFamily:"system-ui,sans-serif", color:"#dc2626" }}>{error}</p>
       )}
     </div>
   );
