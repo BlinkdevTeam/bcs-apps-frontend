@@ -17,14 +17,14 @@ export default function StepDone({ admin, company }) {
       <div className="relative w-20 h-20 mx-auto mb-8">
         <div
           className="w-20 h-20 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: "#0a1a0a", border: "2px solid #5af07a" }}
+          style={{ backgroundColor: "#f0fdf4", border: "2px solid #16a34a" }}
         >
           <svg
             width="32"
             height="32"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#5af07a"
+            stroke="#16a34a"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -34,10 +34,10 @@ export default function StepDone({ admin, company }) {
         </div>
         <div
           className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: "#fff" }}
+          style={{ backgroundColor: "#000" }}
         >
           <span
-            className="text-xs font-bold text-black"
+            className="text-xs font-bold text-white"
             style={{ fontFamily: "system-ui,sans-serif" }}
           >
             H
@@ -46,7 +46,7 @@ export default function StepDone({ admin, company }) {
       </div>
 
       <h2
-        className="text-2xl font-normal text-white mb-2"
+        className="text-2xl font-normal text-black mb-2"
         style={{ letterSpacing: "-0.02em" }}
       >
         You're all set, {admin.firstName}
@@ -55,19 +55,19 @@ export default function StepDone({ admin, company }) {
         className="text-sm text-gray-500 mb-8 leading-relaxed"
         style={{ fontFamily: "system-ui,sans-serif" }}
       >
-        <strong className="text-white">{company.companyName}</strong> is ready.
+        <strong className="text-black">{company.companyName}</strong> is ready.
         <br />
-        Sign in with <strong className="text-white">{admin.email}</strong> to
+        Sign in with <strong className="text-black">{admin.email}</strong> to
         get started.
       </p>
 
       {/* Next steps */}
       <div
         className="text-left rounded-lg p-4 mb-8 space-y-3"
-        style={{ backgroundColor: "#0d0d0d", border: "1px solid #1e1e1e" }}
+        style={{ backgroundColor: "#f8f9fa", border: "1px solid #e5e7eb" }}
       >
         <p
-          className="text-xs uppercase tracking-widest text-gray-600"
+          className="text-xs uppercase tracking-widest text-gray-500"
           style={{ fontFamily: "system-ui,sans-serif" }}
         >
           Next steps
@@ -81,7 +81,7 @@ export default function StepDone({ admin, company }) {
           <div key={i} className="flex items-center gap-3">
             <span className="text-base">{item.icon}</span>
             <p
-              className="text-sm text-gray-400"
+              className="text-sm text-gray-600"
               style={{ fontFamily: "system-ui,sans-serif" }}
             >
               {item.text}
@@ -92,7 +92,7 @@ export default function StepDone({ admin, company }) {
 
       <button
         onClick={handleGoToLogin}
-        className="w-full py-3 rounded-lg text-sm font-medium bg-white text-black hover:opacity-90 transition-all"
+        className="w-full py-3 rounded-lg text-sm font-medium bg-black text-white hover:opacity-90 transition-all"
         style={{ fontFamily: "system-ui,sans-serif" }}
       >
         Go to Login →

@@ -1,4 +1,10 @@
-import api from "./api";
+import api from "../api/axios";
+
+const BASE = "/api/employees";
+
+// Encode ids before putting them in a URL path so a value like "../users"
+// can't redirect the request to a different endpoint.
+const byId = (id) => `${BASE}/${encodeURIComponent(id)}`;
 
 /**
  * Create a new employee
@@ -6,7 +12,7 @@ import api from "./api";
  * @returns {Promise} Axios Promise
  */
 export const createEmployee = (employeeData) => {
-  return api.post("api/employees", employeeData);
+  return api.post(BASE, employeeData);
 };
 
 /**
@@ -14,7 +20,7 @@ export const createEmployee = (employeeData) => {
  * @returns {Promise} Axios Promise
  */
 export const getEmployees = () => {
-  return api.get("api/employees");
+  return api.get(BASE);
 };
 
 /**
@@ -23,7 +29,7 @@ export const getEmployees = () => {
  * @returns {Promise} Axios Promise
  */
 export const getEmployeeById = (id) => {
-  return api.get(`api/employees/${id}`);
+  return api.get(byId(id));
 };
 
 /**
@@ -33,7 +39,7 @@ export const getEmployeeById = (id) => {
  * @returns {Promise} Axios Promise
  */
 export const updateEmployee = (id, employeeData) => {
-  return api.put(`api/employees/${id}`, employeeData);
+  return api.put(byId(id), employeeData);
 };
 
 /**
@@ -42,5 +48,5 @@ export const updateEmployee = (id, employeeData) => {
  * @returns {Promise} Axios Promise
  */
 export const deleteEmployee = (id) => {
-  return api.delete(`api/employees/${id}`);
+  return api.delete(byId(id));
 };
