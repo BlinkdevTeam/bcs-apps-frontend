@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { IC, IS } from "../../../../data/compData";
-import axios from "axios";
+import api from "../../../../api/axios";
 
 function CreateUserDrawer({ onClose, onSave, CURRENT_USER_ROLE }) {
   const [employees, setEmployees] = useState([]);
@@ -25,7 +25,8 @@ const [form, setForm] = useState({
   const fetchEmployees = async () => {
     try {
       // const res = await axios.get("https://hris.blinkcreativestudio.com/api/employees");
-      const res = await axios.get("http://localhost:3001/api/employees");
+      // const res = await axios.get("http://localhost:3001/api/employees");
+      const res = await api.get("/api/employees");
       setEmployees(res.data);
     } catch (err) {
       console.error("Failed to fetch employees:", err);
@@ -40,7 +41,8 @@ const [form, setForm] = useState({
     const fetchRoles = async () => {
       try {
         // const res = await axios.get("https://hris.blinkcreativestudio.com/api/roles");
-        const res = await axios.get("http://localhost:3001/api/roles");
+        // const res = await axios.get("http://localhost:3001/api/roles");
+        const res = await api.get("/api/roles");
         setRoles(res.data);
         // Default role
         if (!form.role && res.data.length > 0) setForm(f => ({ ...f, role: res.data[0].id }));
@@ -56,7 +58,8 @@ const [form, setForm] = useState({
     const fetchDepartments = async () => {
       try {
         // const res = await axios.get("https://hris.blinkcreativestudio.com/api/departments");
-        const res = await axios.get("http://localhost:3001/api/departments");
+        // const res = await axios.get("http://localhost:3001/api/departments");
+        const res = await api.get("/api/departments");
         setDepartments(res.data);
         // Default department
         if (!form.dept && res.data.length > 0) setForm(f => ({ ...f, dept: res.data[0].id }));
