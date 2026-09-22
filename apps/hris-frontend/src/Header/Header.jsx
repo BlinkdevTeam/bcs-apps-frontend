@@ -4,6 +4,8 @@ import { useSelector, useDispatch } from "react-redux"; // Import Redux hooks
 import { logoutUser } from "../services/authServices";
 import { logout } from "../store/authSlice"; // Import logout action
 
+import BCSLogo from "../assets/logos/BCS_LOGOMARK_BLACK.png";
+
 import AvatarButton from "./components/AvatarButton";
 import DropdownMenu from "./components/DropdownMenu";
 
@@ -28,15 +30,15 @@ export default function Header() {
   const { user: currentUser, isAuthenticated } = useSelector((state) => state.auth);
 
   // 2. Updated Logout to use Redux
-const handleLogout = async () => {
-  try {
-    await logoutUser();       // call backend to revoke refresh token
-    dispatch(logout());       // clear Redux state
-    navigate("/login", { replace: true });
-  } catch (err) {
-    console.error("Logout failed:", err);
-  }
-};
+  const handleLogout = async () => {
+    try {
+      await logoutUser();       // call backend to revoke refresh token
+      dispatch(logout());       // clear Redux state
+      navigate("/login", { replace: true });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -67,30 +69,41 @@ const handleLogout = async () => {
   )?.label;
 
   return (
-    <header 
-      className="border-b px-8 py-4 flex items-center justify-between flex-shrink-0" 
-      style={{ backgroundColor: "#000", borderColor: "#222", zIndex: 100 }}
+    <header
+      className="px-8 py-4 flex items-center justify-between shrink-0"
+      style={{ backgroundColor: "#ffffff", zIndex: 100 }}
     >
       <div className="flex items-center gap-10">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-sm bg-white flex items-center justify-center">
-            <span className="text-black font-bold text-sm" style={{ fontFamily: "monospace" }}>BCS</span>
+          <div className="w-8 h-8 flex items-center justify-center">
+            <img
+              src={BCSLogo}
+              alt="BCS"
+              className="w-full h-full object-contain"
+            />
           </div>
-          <span className="text-lg text-white" style={{ letterSpacing: "0.2em", textTransform: "uppercase" }}>
+
+          <span
+            className="text-lg text-black"
+            style={{
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+            }}
+          >
             BCS
           </span>
         </div>
 
-        <nav className="flex gap-1">
+        <nav className="flex gap-4">
           {NAV_ITEMS.map((item) => (
             <button
               key={item.label}
               onClick={() => navigate(item.path)}
-              className="px-4 py-1.5 rounded text-sm transition-all"
+              className="px-4 py-1.5 rounded text-sm transition-all cursor-pointer"
               style={{
                 fontFamily: "system-ui, sans-serif",
-                backgroundColor: activeLabel === item.label ? "#fff" : "transparent",
-                color: activeLabel === item.label ? "#000" : "#666",
+                backgroundColor: activeLabel === item.label ? "#111" : "transparent",
+                color: activeLabel === item.label ? "#fff" : "#555",
                 fontWeight: activeLabel === item.label ? 600 : 400,
               }}
             >

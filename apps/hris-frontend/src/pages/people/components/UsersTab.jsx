@@ -45,7 +45,7 @@ function Avatar({ user, size = 36 }) {
     "?";
   return (
     <div
-      className="rounded-full flex items-center justify-center font-bold flex-shrink-0"
+      className="rounded-full flex items-center justify-center font-bold shrink-0"
       style={{
         width: size, height: size,
         backgroundColor: bg, color: fg,
@@ -165,9 +165,9 @@ export default function UserManagementPage() {
   const inactive = users.filter((u) => u?.status === "inactive").length;
 
   return (
-    <div className="flex-1 overflow-hidden flex flex-col" style={{ backgroundColor: "#000" }}>
+    <div className="flex-1 overflow-hidden flex flex-col bg-white h-screen">
       {/* Header */}
-      <div className="px-8 pt-8 pb-0 flex-shrink-0">
+      <div className="px-8 pt-8 pb-0 shrink-0">
         {/* Role summary cards — dynamic from DB */}
         <div className="grid gap-3 mb-6" style={{ gridTemplateColumns: `repeat(${roles.length + 1}, 1fr)` }}>
           {[
@@ -181,7 +181,7 @@ export default function UserManagementPage() {
             <div
               key={s.label}
               className="rounded-lg px-4 py-3"
-              style={{ backgroundColor: "#0d0d0d", border: "1px solid #1e1e1e" }}
+              style={{ border: "1px solid #1e1e1e" }}
             >
               <p className="text-xs uppercase tracking-widest mb-1.5"
                 style={{ fontFamily: "system-ui,sans-serif", color: "#444" }}>
@@ -203,7 +203,7 @@ export default function UserManagementPage() {
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">🔍</span>
             <input
               className="w-full pl-9 pr-4 py-2 rounded text-sm text-white placeholder-gray-600 outline-none"
-              style={{ fontFamily: "system-ui,sans-serif", backgroundColor: "#111", border: "1px solid #2a2a2a" }}
+              style={{ fontFamily: "system-ui,sans-serif", border: "1px solid #2a2a2a" }}
               placeholder="Search users…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -211,7 +211,7 @@ export default function UserManagementPage() {
           </div>
 
           {/* Role filter — built from DB roles */}
-          <div className="flex gap-1 rounded-lg p-0.5" style={{ backgroundColor: "#111", border: "1px solid #2a2a2a" }}>
+          <div className="flex gap-1 rounded-lg p-0.5" style={{ border: "1px solid #2a2a2a" }}>
             <button
               onClick={() => setRoleFilter("All")}
               className="px-3 py-1.5 rounded text-xs"
@@ -278,7 +278,7 @@ export default function UserManagementPage() {
           <div className="rounded-lg overflow-hidden" style={{ border: "1px solid #1e1e1e" }}>
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ backgroundColor: "#0a0a0a", borderBottom: "1px solid #1e1e1e" }}>
+                <tr style={{ backgroundColor: "#ffffff", borderBottom: "1px solid #1e1e1e" }}>
                   {["User", "Role", "Status", "Last Login", "Invite", ""].map((h) => (
                     <th key={h} className="px-4 py-3 text-left font-normal text-gray-600 whitespace-nowrap"
                       style={{ fontFamily: "system-ui,sans-serif", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em" }}>

@@ -1,9 +1,35 @@
-import {
-  avatarBg,
-  // initials,
-  ROLE_COLORS,
-  ROLE_LABELS,
-} from "../../data/compData";
+/* ---------------- LOCAL CONFIG (no compData dependency) ---------------- */
+
+// Deterministic avatar background color, cycled by user id
+const AVATAR_COLORS = [
+  "#5a9af0", "#5af07a", "#f0c85a", "#c07af0",
+  "#f05a5a", "#f0905a", "#50c8c8", "#d090f0",
+];
+
+function getAvatarColor(id) {
+  if (id === undefined || id === null) return AVATAR_COLORS[0];
+  const index =
+    typeof id === "number"
+      ? id % AVATAR_COLORS.length
+      : String(id)
+          .split("")
+          .reduce((acc, c) => acc + c.charCodeAt(0), 0) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[index];
+}
+
+const ROLE_LABELS = {
+  super_admin: "Super Admin",
+  hr_admin: "HR Admin",
+  manager: "Manager",
+  employee: "Employee",
+};
+
+const ROLE_COLORS = {
+  super_admin: { bg: "#fdecec", color: "#e02424" },
+  hr_admin: { bg: "#e9f9ee", color: "#1d9a4a" },
+  manager: { bg: "#eaf1fd", color: "#3a6ee0" },
+  employee: { bg: "#fdf3e3", color: "#c98a10" },
+};
 
 /* ---------------- ROLE NORMALIZER ---------------- */
 const normalizeRole = (roleTitle) => {
@@ -23,7 +49,7 @@ export default function AvatarButton({ user, onClick, isOpen }) {
   // console.log("USER DATA:", user);
   if (!user) return null;
 
-  const bg = avatarBg(user.id);
+  const bg = getAvatarColor(user.id);
 
   // 🔥 FIX: convert backend role_title → frontend key
   const roleKey = normalizeRole(user.role_title);
@@ -31,15 +57,15 @@ export default function AvatarButton({ user, onClick, isOpen }) {
   return (
     <button
       onClick={onClick}
-      className="relative flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-all"
+      className="relative flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-all cursor-pointer"
       style={{
-        backgroundColor: isOpen ? "#111" : "transparent",
-        border: `1px solid ${isOpen ? "#2a2a2a" : "transparent"}`,
+        backgroundColor: isOpen ? "#f1f1f1" : "transparent",
+        border: `1px solid ${isOpen ? "#ddd" : "transparent"}`,
         outline: "none",
       }}
     >
       {/* Avatar circle */}
-      <div className="relative flex-shrink-0">
+      <div className="relative shrink-0">
         <div
           className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
           style={{
@@ -55,14 +81,14 @@ export default function AvatarButton({ user, onClick, isOpen }) {
         {/* Online indicator */}
         <div
           className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full"
-          style={{ backgroundColor: "#5af07a", border: "2px solid #000" }}
+          style={{ backgroundColor: "#5af07a", border: "2px solid #fff" }}
         />
       </div>
 
       {/* Name + role */}
       <div className="text-left hidden sm:block">
         <p
-          className="text-xs text-white leading-none mb-0.5 uppercase font-bold"
+          className="text-xs text-black leading-none mb-0.5 uppercase font-bold"
           style={{ fontFamily: "system-ui, sans-serif" }}
         >
           {user.first_name?.split(" ")[0] || "User"}
@@ -72,7 +98,7 @@ export default function AvatarButton({ user, onClick, isOpen }) {
           className="text-xs leading-none"
           style={{
             fontFamily: "system-ui, sans-serif",
-            color: ROLE_COLORS[roleKey]?.color || "#aaa",
+            color: ROLE_COLORS[roleKey]?.color || "#777",
           }}
         >
           {ROLE_LABELS[roleKey] || "Employee"}
@@ -88,7 +114,7 @@ export default function AvatarButton({ user, onClick, isOpen }) {
         className="hidden sm:block transition-transform"
         style={{
           transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-          color: "#444",
+          color: "#999",
         }}
       >
         <path
@@ -103,7 +129,7 @@ export default function AvatarButton({ user, onClick, isOpen }) {
       {/* Unread badge */}
       {user.unreadNotifications > 0 && !isOpen && (
         <div
-          className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-black"
+          className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-white"
           style={{
             backgroundColor: "#f05a5a",
             fontSize: 9,

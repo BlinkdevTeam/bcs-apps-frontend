@@ -1,9 +1,35 @@
-import {
-  avatarBg,
-  // initials,
-  ROLE_COLORS,
-  ROLE_LABELS,
-} from "../../data/compData";
+/* ---------------- LOCAL CONFIG (no compData dependency) ---------------- */
+
+// Deterministic avatar background color, cycled by user id
+const AVATAR_COLORS = [
+  "#5a9af0", "#5af07a", "#f0c85a", "#c07af0",
+  "#f05a5a", "#f0905a", "#50c8c8", "#d090f0",
+];
+
+function getAvatarColor(id) {
+  if (id === undefined || id === null) return AVATAR_COLORS[0];
+  const index =
+    typeof id === "number"
+      ? id % AVATAR_COLORS.length
+      : String(id)
+          .split("")
+          .reduce((acc, c) => acc + c.charCodeAt(0), 0) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[index];
+}
+
+const ROLE_LABELS = {
+  super_admin: "Super Admin",
+  hr_admin: "HR Admin",
+  manager: "Manager",
+  employee: "Employee",
+};
+
+const ROLE_COLORS = {
+  super_admin: { bg: "#fdecec", color: "#e02424" },
+  hr_admin: { bg: "#e9f9ee", color: "#1d9a4a" },
+  manager: { bg: "#eaf1fd", color: "#3a6ee0" },
+  employee: { bg: "#fdf3e3", color: "#c98a10" },
+};
 
 /* ---------------- ROLE NORMALIZER ---------------- */
 const normalizeRole = (roleTitle) => {
@@ -22,14 +48,14 @@ const normalizeRole = (roleTitle) => {
 export default function DropdownMenu({ user, onClose, onLogout }) {
   if (!user) return null;
 
-  const bg = avatarBg(user.id);
+  const bg = getAvatarColor(user.id);
 
   /* 🔥 FIX: unified role key */
   const roleKey = normalizeRole(user.role_title);
 
   const rc = ROLE_COLORS[roleKey] || {
-    bg: "#111",
-    color: "#aaa",
+    bg: "#f1f1f1",
+    color: "#555",
   };
 
   const menuItems = [
@@ -70,13 +96,13 @@ export default function DropdownMenu({ user, onClose, onLogout }) {
   ];
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-72 rounded-xl overflow-hidden bg-gray-900 border border-gray-800 shadow-[0_16px_48px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.04)] z-50">
+    <div className="absolute right-0 top-full mt-2 w-72 rounded-xl overflow-hidden bg-white border border-gray-200 shadow-[0_16px_48px_rgba(0,0,0,0.15),0_0_0_1px_rgba(0,0,0,0.03)] z-50">
 
       {/* User header */}
-      <div className="px-4 py-4 border-b border-gray-800">
+      <div className="px-4 py-4 border-b border-gray-200">
         <div className="flex items-center gap-3 mb-3">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
             style={{
               backgroundColor: bg + "28",
               color: bg,
@@ -87,7 +113,7 @@ export default function DropdownMenu({ user, onClose, onLogout }) {
           </div>
 
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-white font-medium truncate">
+            <p className="text-sm text-black font-medium truncate">
               {user.first_name || "User"}
             </p>
             <p className="text-xs text-gray-500 truncate">
@@ -119,29 +145,29 @@ export default function DropdownMenu({ user, onClose, onLogout }) {
           <button
             key={i}
             onClick={item.onClick}
-            className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-gray-800 focus:outline-none"
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-gray-100 focus:outline-none cursor-pointer"
           >
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-700 text-gray-400 border border-gray-800">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-gray-100 text-gray-500 border border-gray-200">
               {item.icon}
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-gray-300 mb-0.5 truncate">
+              <p className="text-sm text-gray-700 mb-0.5 truncate">
                 {item.label}
               </p>
-              <p className={`text-xs truncate ${item.badge ? "text-yellow-400" : "text-gray-400"}`}>
+              <p className={`text-xs truncate ${item.badge ? "text-amber-600" : "text-gray-400"}`}>
                 {item.sub}
               </p>
             </div>
 
             {item.badge && (
-              <div className="w-5 h-5 rounded-full flex items-center justify-center text-black flex-shrink-0 bg-red-500 text-[9px] font-mono font-bold">
+              <div className="w-5 h-5 rounded-full flex items-center justify-center text-white shrink-0 bg-red-500 text-[9px] font-mono font-bold">
                 {item.badge}
               </div>
             )}
 
             <svg
-              className="flex-shrink-0 text-gray-700"
+              className="shrink-0 text-gray-300"
               width="12"
               height="12"
               viewBox="0 0 12 12"
@@ -159,7 +185,7 @@ export default function DropdownMenu({ user, onClose, onLogout }) {
         ))}
       </div>
 
-      <div className="h-px bg-gray-800 mx-4" />
+      <div className="h-px bg-gray-200 mx-4" />
 
       {/* Sign out */}
       <div className="py-1.5">
@@ -168,9 +194,9 @@ export default function DropdownMenu({ user, onClose, onLogout }) {
             onClose();
             onLogout();
           }}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-red-900 focus:outline-none"
+          className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-red-50 focus:outline-none cursor-pointer"
         >
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 bg-red-800 text-red-500 border border-red-900">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-red-50 text-red-500 border border-red-100">
             <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
               <path d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
             </svg>

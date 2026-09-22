@@ -106,17 +106,11 @@ export default function People({
   return (
     <>
       {/* Header */}
-      <div className="px-8 pt-8 flex-shrink-0">
-        <div className="flex items-center justify-between mb-4">
+      <div className="px-8 pt-8 shrink-0 bg-white">
+        <div className="flex items-center justify-between pb-4">
           <div>
-            <p
-              className="text-gray-600 text-xs uppercase tracking-widest mb-1"
-              style={{ fontFamily: "system-ui,sans-serif" }}
-            >
-              People
-            </p>
             <h1
-              className="text-3xl font-normal"
+              className="text-3xl font-normal text-black"
               style={{ letterSpacing: "-0.02em" }}
             >
               {peopleView === "department"
@@ -130,23 +124,23 @@ export default function People({
           </div>
 
           {/* Dynamic Actions */}
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             {peopleView === "directory" && (
               <>
                 <button
                   className="px-4 py-2 rounded text-sm flex items-center gap-2 hover:opacity-70"
                   style={{
                     fontFamily: "system-ui,sans-serif",
-                    backgroundColor: "#111",
-                    color: "#aaa",
-                    border: "1px solid #2a2a2a",
+                    backgroundColor: "#f5f5f5",
+                    color: "#555",
+                    border: "1px solid #e0e0e0",
                   }}
                 >
                   ⬇ Export CSV
                 </button>
                 <button
                   onClick={() => setShowAdd(true)}
-                  className="px-4 py-2 rounded text-sm font-medium bg-white text-black flex items-center gap-2 hover:opacity-80"
+                  className="px-4 py-2 rounded text-sm font-medium bg-black text-white flex items-center gap-2 hover:opacity-80"
                   style={{ fontFamily: "system-ui,sans-serif" }}
                 >
                   ＋ Add Employee
@@ -157,7 +151,7 @@ export default function People({
             {peopleView === "department" && (
               <button
                 onClick={() => setShowCreateDept(true)}
-                className="px-4 py-2 rounded text-sm font-medium bg-white text-black flex items-center gap-2 hover:opacity-80"
+                className="px-4 py-2 rounded text-sm font-medium bg-black text-white flex items-center gap-2 hover:opacity-80"
                 style={{ fontFamily: "system-ui,sans-serif" }}
               >
                 ＋ New Department
@@ -169,13 +163,13 @@ export default function People({
             {CURRENT_USER_ROLE === "super_admin" && (
               <button onClick={() => setShowCreateRole(true)}
                 className="px-4 py-2 rounded text-sm font-medium hover:opacity-80 flex items-center gap-2"
-                style={{fontFamily:"system-ui,sans-serif", backgroundColor:"#111", color:"#aaa", border:"1px solid #2a2a2a"}}>
+                style={{fontFamily:"system-ui,sans-serif", backgroundColor:"#f5f5f5", color:"#555", border:"1px solid #e0e0e0"}}>
                 🛡 Create Role
               </button>
             )}
                 <button
                   onClick={() => setShowCreateUser(true)}
-                  className="px-4 py-2 rounded text-sm font-medium bg-white text-black flex items-center gap-2 hover:opacity-80"
+                  className="px-4 py-2 rounded text-sm font-medium bg-black text-white flex items-center gap-2 hover:opacity-80"
                   style={{ fontFamily: "system-ui,sans-serif" }}
                 >
                   ＋ Invite User
@@ -188,24 +182,24 @@ export default function People({
 
       {/* Tabs */}
       <div
-        className="flex gap-1 px-8"
-        style={{ borderBottom: "1px solid #1a1a1a" }}
+        className="flex gap-4 px-8 bg-white"
+        style={{ borderBottom: "1px solid #e5e5e5" }}
       >
         {[
           ["directory", "Directory"],
           ["user", "Users"],
           ["department", "Department"],
-          ["config", "Compensation Config"],
+          // ["config", "Compensation Config"],
         ].map(([key, label]) => (
           <button
             key={key}
             onClick={() => setPeopleView(key)}
-            className="px-4 py-2 text-sm transition-all"
+            className="px-4 py-2 text-sm transition-all cursor-pointer"
             style={{
               fontFamily: "system-ui,sans-serif",
-              color: peopleView === key ? "#fff" : "#555",
+              color: peopleView === key ? "#000" : "#888",
               borderBottom:
-                peopleView === key ? "2px solid #fff" : "2px solid transparent",
+                peopleView === key ? "2px solid #000" : "2px solid transparent",
             }}
           >
             {label}
@@ -240,7 +234,7 @@ export default function People({
       )}
 
       {peopleView === "department" && (
-        <div className="p-8">
+        <div className="p-8 bg-white">
           <DepartmentsTab
             employees={employees.map((e) => ({
               ...e,
@@ -253,7 +247,7 @@ export default function People({
         </div>
       )}
 
-      {peopleView === "config" && (
+      {/* {peopleView === "config" && (
         <Directory
           employees={employees}
           peopleView="config"
@@ -265,7 +259,7 @@ export default function People({
           onUpdateContributions={onUpdateContributions}
           onUpdateBenefits={onUpdateBenefits}
         />
-      )}
+      )} */}
 
       {showCreateRole && (
         <CreateRoleDrawer
@@ -316,7 +310,7 @@ export default function People({
             setEmployees((prev) => [...prev, newUser]);
             setShowCreateUser(false);
           }}
-          customRoles={[]}
+          customRoles={customRoles}
         />
       )}
     </>

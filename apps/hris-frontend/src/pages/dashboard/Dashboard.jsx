@@ -3,12 +3,6 @@ import { useSelector } from "react-redux";
 import { EmptyState, Card, Badge } from "../../components/ui";
 import { getDashboardStats } from "../../services/statsService";
 
-const upcomingEvents = [
-  { label: "Q4 Performance Reviews", date: "Feb 25", tag: "Reviews", color: "yellow" },
-  { label: "Payroll cutoff", date: "Mar 1", tag: "Payroll", color: "green" },
-  { label: "Benefits enrollment ends", date: "Mar 5", tag: "Benefits", color: "blue" },
-];
-
 const recentActivity = [];
 
 const departments = [
@@ -94,8 +88,8 @@ export default function Dashboard() {
 
   return (
     <div
-      className="min-h-screen text-white"
-      style={{ fontFamily: "'Georgia', serif", backgroundColor: "#000000" }}
+      className="min-h-screen text-black"
+      style={{ fontFamily: "'Georgia', serif", backgroundColor: "#ffffff" }}
     >
       <div className="px-8 py-8 max-w-7xl mx-auto">
 
@@ -110,9 +104,9 @@ export default function Dashboard() {
               {currentDateTime}
             </p>
 
-            <h1 className="text-4xl font-normal text-white">
+            <h1 className="text-4xl font-normal text-black">
               Good morning,{" "}
-              <span className="text-gray-400">
+              <span className="text-gray-500">
                 {currentUser?.name?.split(" ")[0]}
               </span>
               .
@@ -126,9 +120,9 @@ export default function Dashboard() {
                 className="px-4 py-2 rounded text-sm font-medium transition-all flex items-center gap-2 hover:opacity-80"
                 style={{
                   fontFamily: "system-ui, sans-serif",
-                  backgroundColor: a.primary ? "#ffffff" : "#111111",
-                  color: a.primary ? "#000000" : "#aaaaaa",
-                  border: a.primary ? "none" : "1px solid #2a2a2a",
+                  backgroundColor: a.primary ? "#000000" : "#f5f5f5",
+                  color: a.primary ? "#ffffff" : "#555555",
+                  border: a.primary ? "none" : "1px solid #e0e0e0",
                 }}
               >
                 <span>{a.icon}</span>
@@ -145,7 +139,7 @@ export default function Dashboard() {
             ? Array.from({ length: 3 }).map((_, i) => (
                 <Card
                   key={i}
-                  className="p-5 animate-pulse bg-gray-800 border border-gray-700 h-36"
+                  className="p-5 animate-pulse bg-gray-100 border border-gray-200 h-36"
                 />
               ))
             : stats.map((s) => (
@@ -157,15 +151,15 @@ export default function Dashboard() {
                       className="text-xs px-2 py-0.5 rounded-full font-medium"
                       style={{
                         fontFamily: "monospace",
-                        backgroundColor: s.positive ? "#0f1f0f" : "#1f0f0f",
-                        color: s.positive ? "#5af07a" : "#f05a5a",
+                        backgroundColor: s.positive ? "#e9f9ee" : "#fdecec",
+                        color: s.positive ? "#1d9a4a" : "#e02424",
                       }}
                     >
                       {s.positive ? "▲" : "▼"} {s.change}
                     </span>
                   </div>
 
-                  <p className="text-3xl font-light text-white mb-1">
+                  <p className="text-3xl font-light text-black mb-1">
                     {s.value}
                   </p>
 
@@ -185,15 +179,15 @@ export default function Dashboard() {
 
           <div
             className="col-span-2 rounded-lg p-6"
-            style={{ backgroundColor: "#0d0d0d", border: "1px solid #222222" }}
+            style={{ backgroundColor: "#fafafa", border: "1px solid #e5e5e5" }}
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-normal text-white">
+              <h2 className="text-lg font-normal text-black">
                 Recent Activity
               </h2>
 
               <button
-                className="text-sm text-gray-400 hover:text-white transition-colors"
+                className="text-sm text-gray-500 hover:text-black transition-colors"
                 style={{ fontFamily: "system-ui, sans-serif" }}
               >
                 View all →
@@ -205,7 +199,7 @@ export default function Dashboard() {
                 Array.from({ length: 5 }).map((_, i) => (
                   <Card
                     key={i}
-                    className="h-12 w-full rounded-md animate-pulse bg-gray-800 border border-gray-700"
+                    className="h-12 w-full rounded-md animate-pulse bg-gray-100 border border-gray-200"
                   />
                 ))
               ) : recentActivity.length === 0 ? (
@@ -219,23 +213,23 @@ export default function Dashboard() {
                   <div
                     key={i}
                     className="flex items-center gap-4 py-3 border-b last:border-0"
-                    style={{ borderColor: "#1e1e1e" }}
+                    style={{ borderColor: "#e5e5e5" }}
                   >
                     <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
+                      className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs shrink-0"
                       style={{ backgroundColor: item.bg, color: item.fg }}
                     >
                       {item.avatar}
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-medium truncate">
+                      <p className="text-black text-sm font-medium truncate">
                         {item.name}
                       </p>
                       <p className="text-gray-500 text-sm">{item.action}</p>
                     </div>
 
-                    <span className="text-gray-600 text-xs whitespace-nowrap">
+                    <span className="text-gray-400 text-xs whitespace-nowrap">
                       {item.time}
                     </span>
                   </div>
@@ -253,11 +247,11 @@ export default function Dashboard() {
             <div
               className="rounded-lg p-6"
               style={{
-                backgroundColor: "#0d0d0d",
-                border: "1px solid #222222",
+                backgroundColor: "#fafafa",
+                border: "1px solid #e5e5e5",
               }}
             >
-              <h2 className="text-lg font-normal text-white mb-5">
+              <h2 className="text-lg font-normal text-black mb-5">
                 Headcount by Dept.
               </h2>
 
@@ -265,8 +259,8 @@ export default function Dashboard() {
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <div key={i} className="space-y-1">
-                      <div className="h-3 w-3/4 rounded bg-gray-700 animate-pulse" />
-                      <div className="h-1.5 rounded-full bg-gray-800 animate-pulse" />
+                      <div className="h-3 w-3/4 rounded bg-gray-200 animate-pulse" />
+                      <div className="h-1.5 rounded-full bg-gray-100 animate-pulse" />
                     </div>
                   ))
                 ) : departments.length === 0 ? (
@@ -279,16 +273,16 @@ export default function Dashboard() {
                   departments.map((d) => (
                     <div key={d.name}>
                       <div className="flex justify-between mb-1">
-                        <span className="text-sm text-gray-300">{d.name}</span>
+                        <span className="text-sm text-gray-700">{d.name}</span>
                         <span className="text-sm text-gray-500">{d.count}</span>
                       </div>
 
                       <div
                         className="h-1.5 rounded-full overflow-hidden"
-                        style={{ backgroundColor: "#2a2a2a" }}
+                        style={{ backgroundColor: "#e5e5e5" }}
                       >
                         <div
-                          className="h-full rounded-full bg-white"
+                          className="h-full rounded-full bg-black"
                           style={{
                             width: `${d.pct}%`,
                             transition: "width 1s ease",
@@ -299,55 +293,6 @@ export default function Dashboard() {
                   ))
                 )}
               </div>
-            </div>
-
-            {/* Upcoming */}
-
-            <div
-              className="rounded-lg p-6"
-              style={{
-                backgroundColor: "#0d0d0d",
-                border: "1px solid #222222",
-              }}
-            >
-              <h2 className="text-lg font-normal text-white mb-4">Upcoming</h2>
-
-              <div className="space-y-3">
-                {isLoading ? (
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div className="h-3 w-10 rounded bg-gray-700 animate-pulse mt-1" />
-                      <div className="flex-1 space-y-1">
-                        <div className="h-4 w-3/4 rounded bg-gray-700 animate-pulse" />
-                        <div className="h-3 w-20 rounded bg-gray-800 animate-pulse" />
-                      </div>
-                    </div>
-                  ))
-                ) : upcomingEvents.length > 0 ? (
-                  upcomingEvents.map((ev, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <span
-                        className="text-gray-400 text-xs mt-0.5 whitespace-nowrap max-w-[42px] w-full"
-                        style={{ fontFamily: "monospace" }}
-                      >
-                        {ev.date}
-                      </span>
-
-                      <div>
-                        <p className="text-gray-200 text-sm">{ev.label}</p>
-                        <Badge color={ev.color || "gray"}>{ev.tag}</Badge>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <EmptyState
-                    title="No Upcoming Events"
-                    description="You have no scheduled events at the moment."
-                    icon="📅"
-                  />
-                )}
-              </div>
-
             </div>
           </div>
         </div>

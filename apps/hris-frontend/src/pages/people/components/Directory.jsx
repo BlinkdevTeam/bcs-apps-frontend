@@ -10,7 +10,7 @@ function Avatar({ emp, size = 36 }) {
   const { bg, fg } = gc(emp.id);
   return (
     <div
-      className="rounded-full flex items-center justify-center font-bold flex-shrink-0"
+      className="rounded-full flex items-center justify-center font-bold shrink-0"
       style={{
         width: size,
         height: size,
@@ -128,32 +128,34 @@ export default function Directory({
   }
 
   return (
-    <div className="flex flex-1 overflow-hidden">
+    <div className="flex flex-1 overflow-hidden bg-white h-screen">
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="px-8 pt-8 pb-4 flex-shrink-0">
+        <div className="px-8 pt-8 pb-4 shrink-0">
           <div className="flex items-center gap-3">
             <div className="relative flex-1 max-w-xs">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
                 🔍
               </span>
+
               <input
-                className="w-full pl-9 pr-4 py-2 rounded text-sm text-white placeholder-gray-600 outline-none"
+                className="w-full pl-9 pr-4 py-2 rounded text-sm text-gray-900 placeholder-gray-400 outline-none"
                 style={{
                   fontFamily: "system-ui,sans-serif",
-                  backgroundColor: "#111",
-                  border: "1px solid #2a2a2a",
+                  backgroundColor: "#fff",
+                  border: "1px solid #e5e7eb",
                 }}
                 placeholder="Search…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+
             <select
-              className="px-3 py-2 rounded text-sm text-gray-300 outline-none cursor-pointer"
+              className="px-3 py-2 rounded text-sm text-gray-700 outline-none cursor-pointer"
               style={{
                 fontFamily: "system-ui,sans-serif",
-                backgroundColor: "#111",
-                border: "1px solid #2a2a2a",
+                backgroundColor: "#fff",
+                border: "1px solid #e5e7eb",
               }}
               value={deptFilter}
               onChange={(e) => setDeptFilter(e.target.value)}
@@ -163,42 +165,46 @@ export default function Directory({
                 <option key={d.id}>{d.name}</option>
               ))}
             </select>
+
             <select
-              className="px-3 py-2 rounded text-sm text-gray-300 outline-none cursor-pointer"
+              className="px-3 py-2 rounded text-sm text-gray-700 outline-none cursor-pointer"
               style={{
                 fontFamily: "system-ui,sans-serif",
-                backgroundColor: "#111",
-                border: "1px solid #2a2a2a",
+                backgroundColor: "#fff",
+                border: "1px solid #e5e7eb",
               }}
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               {STATUSES.map((s) => (
-                <option key={s}>{s === "All" ? "All Statuses" : s}</option>
+                <option key={s}>
+                  {s === "All" ? "All Statuses" : s}
+                </option>
               ))}
             </select>
-            <div className="flex-1" />{" "}
-            <span className="text-gray-600 text-sm">
+
+            <div className="flex-1" />
+
+            <span className="text-gray-400 text-sm">
               {filtered.length} of {employees.length}
             </span>
           </div>
         </div>
-        {/* Employee table */}
+
         <div className="flex-1 overflow-auto px-8 pb-8">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr style={{ borderBottom: "1px solid #222" }}>
+              <tr style={{ borderBottom: "1px solid #e5e7eb" }}>
                 {[
                   "Employee",
                   "Department",
                   "Role",
                   "Location",
-                  // "Status",
                   "Joined",
                 ].map((h) => (
                   <th
                     key={h}
-                    className="pb-3 pr-6 text-left font-normal text-gray-600"
+                    className="pb-3 pr-6 text-left font-normal text-gray-500"
                     style={{
                       fontSize: 11,
                       textTransform: "uppercase",
@@ -211,49 +217,57 @@ export default function Directory({
                 <th />
               </tr>
             </thead>
+
             <tbody>
               {filtered.map((emp) => (
                 <tr
                   key={emp.id}
-                  className="cursor-pointer group"
+                  className="cursor-pointer group transition-colors hover:bg-gray-50"
                   onClick={() =>
-                    setSelectedEmp(selectedEmp?.id === emp.id ? null : emp)
+                    setSelectedEmp(
+                      selectedEmp?.id === emp.id ? null : emp
+                    )
                   }
                   style={{
-                    borderBottom: "1px solid #181818",
+                    borderBottom: "1px solid #f0f0f0",
                     backgroundColor:
-                      selectedEmp?.id === emp.id ? "#111" : "transparent",
+                      selectedEmp?.id === emp.id ? "#f8f8f8" : "#fff",
                   }}
                 >
                   <td className="py-3 pr-6">
                     <div className="flex items-center gap-3">
                       <Avatar emp={emp} size={34} />
+
                       <div>
-                        <p className="text-white font-medium">
+                        <p className="text-gray-900 font-medium">
                           {emp.first_name} {emp.last_name}
                         </p>
-                        <p className="text-gray-500 text-xs">{emp.email}</p>
+
+                        <p className="text-gray-500 text-xs">
+                          {emp.email}
+                        </p>
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 pr-6 text-gray-400">
+
+                  <td className="py-3 pr-6 text-gray-600">
                     {deptMap[emp.department_id] || "—"}
                   </td>
-                  <td className="py-3 pr-6 text-gray-300">{emp.role_title}</td>
-                  <td className="py-3 pr-6 text-gray-400">{emp.location}</td>
-                  {/* <td className="py-3 pr-6">
-                    <span
-                      className="text-xs px-2 py-0.5 rounded-full"
-                      style={{ ...SS[emp.status] }}
-                    >
-                      {emp.status}
-                    </span>
-                  </td> */}
+
+                  <td className="py-3 pr-6 text-gray-700">
+                    {emp.role_title}
+                  </td>
+
+                  <td className="py-3 pr-6 text-gray-600">
+                    {emp.location}
+                  </td>
+
                   <td className="py-3 pr-6 text-gray-500 text-xs">
                     {emp.hire_date}
                   </td>
+
                   <td className="py-3">
-                    <span className="opacity-0 group-hover:opacity-100 text-gray-500 text-sm">
+                    <span className="opacity-0 group-hover:opacity-100 text-gray-400 text-sm">
                       →
                     </span>
                   </td>
@@ -263,34 +277,52 @@ export default function Directory({
           </table>
         </div>
       </div>
+
       {selectedEmp && (
         <div
-          className="w-72 flex-shrink-0 border-l overflow-y-auto"
-          style={{ backgroundColor: "#080808", borderColor: "#222" }}
+          className="w-72 shrink-0 border-l overflow-y-auto"
+          style={{
+            backgroundColor: "#fff",
+            borderColor: "#e5e7eb",
+          }}
         >
           <div className="p-6">
             <div className="flex justify-end mb-4">
               <button
                 onClick={() => setSelectedEmp(null)}
-                className="text-gray-600 hover:text-white"
+                className="text-gray-400 hover:text-gray-900 cursor-pointer"
               >
                 ✕
               </button>
             </div>
+
             <div className="flex flex-col items-center text-center mb-5">
               <Avatar emp={selectedEmp} size={56} />
-              <h2 className="text-lg font-normal mt-3 mb-1">
+
+              <h2 className="text-lg font-normal text-gray-900 mt-3 mb-1">
                 {selectedEmp.first_name} {selectedEmp.last_name}
               </h2>
-              <p className="text-gray-400 text-sm">{selectedEmp.role_title}</p>
+
+              <p className="text-gray-500 text-sm">
+                {selectedEmp.role_title}
+              </p>
+
               <span
-                className="text-xs px-3 py-1 rounded-full"
-                style={{ ...SS[selectedEmp.status] }}
+                className="text-xs px-3 py-1 rounded-full mt-2"
+                style={{
+                  backgroundColor: "#f3f4f6",
+                  color: "#4b5563",
+                }}
               >
                 {selectedEmp.status}
               </span>
             </div>
-            <div className="border-b mb-4" style={{ borderColor: "#222" }} />
+
+            <div
+              className="border-b mb-4"
+              style={{ borderColor: "#e5e7eb" }}
+            />
+
             <div className="space-y-3">
               {[
                 ["Department", selectedEmp.department],
@@ -301,38 +333,48 @@ export default function Directory({
                 ["Email", selectedEmp.email],
               ].map(([l, v]) => (
                 <div key={l}>
-                  <p className="text-gray-600 text-xs uppercase tracking-widest">
+                  <p className="text-gray-400 text-xs uppercase tracking-widest">
                     {l}
                   </p>
-                  <p className="text-gray-200 text-sm">{v}</p>
+
+                  <p className="text-gray-800 text-sm">
+                    {v}
+                  </p>
                 </div>
               ))}
             </div>
-            <div className="border-b my-4" style={{ borderColor: "#222" }} />
+
+            <div
+              className="border-b my-4"
+              style={{ borderColor: "#e5e7eb" }}
+            />
+
             <div className="space-y-2">
               <button
                 onClick={() => onViewProfile(selectedEmp)}
-                className="w-full py-2.5 rounded text-sm bg-white text-black hover:opacity-80 font-medium"
+                className="w-full py-2.5 rounded text-sm bg-black text-white hover:opacity-80 font-medium cursor-pointer"
               >
                 View Full Profile
               </button>
+
               <button
                 onClick={() => onEditEmployee(selectedEmp)}
-                className="w-full py-2.5 rounded text-sm hover:opacity-80"
+                className="w-full py-2.5 rounded text-sm hover:bg-gray-50 cursor-pointer"
                 style={{
-                  backgroundColor: "#111",
-                  color: "#aaa",
-                  border: "1px solid #2a2a2a",
+                  backgroundColor: "#fff",
+                  color: "#374151",
+                  border: "1px solid #e5e7eb",
                 }}
               >
                 Edit Employee
               </button>
+
               <button
-                className="w-full py-2.5 rounded text-sm hover:opacity-80"
+                className="w-full py-2.5 rounded text-sm hover:bg-red-50 cursor-pointer"
                 style={{
-                  backgroundColor: "#1f0f0f",
-                  color: "#f05a5a",
-                  border: "1px solid #3a1515",
+                  backgroundColor: "#fff",
+                  color: "#dc2626",
+                  border: "1px solid #fecaca",
                 }}
               >
                 Deactivate
