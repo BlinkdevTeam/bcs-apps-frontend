@@ -1,3 +1,4 @@
+// SignInView.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,46 +10,36 @@ import EyeIcon from "./EyeIcon";
 export default function SignInView({ onForgotPassword }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const { loading, error: authError } = useSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [localError, setLocalError] = useState("");
-
   const [lockoutSeconds, setLockoutSeconds] = useState(0);
 
   useEffect(() => {
     let timer;
     if (lockoutSeconds > 0) {
-      timer = setInterval(() => {
-        setLockoutSeconds((s) => Math.max(s - 1, 0));
-      }, 1000);
+      timer = setInterval(() => setLockoutSeconds((s) => Math.max(s - 1, 0)), 1000);
     }
     return () => clearInterval(timer);
   }, [lockoutSeconds]);
 
   async function handleSubmit() {
     setLocalError("");
-
     if (!email.trim() || !password) {
       setLocalError("Please enter your email and password.");
       return;
     }
-
     try {
-      const resultAction = await dispatch(
-        loginUserAction({ email, password })
-      );
-
+      const resultAction = await dispatch(loginUserAction({ email, password }));
       if (loginUserAction.fulfilled.match(resultAction)) {
         navigate("/dashboard", { replace: true });
       } else if (
         loginUserAction.rejected.match(resultAction) &&
         resultAction.payload?.lockout_seconds
       ) {
-        // Backend tells us user is locked
         setLockoutSeconds(resultAction.payload.lockout_seconds);
       }
     } catch (err) {
@@ -62,11 +53,14 @@ export default function SignInView({ onForgotPassword }) {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-normal text-black mb-1" style={{ letterSpacing: "-0.02em" }}>
-          Sign in
+        <h1
+          className="text-xl font-semibold text-slate-800 mb-1"
+          style={{ letterSpacing: "-0.01em", fontFamily: "system-ui,sans-serif" }}
+        >
+          Welcome back
         </h1>
-        <p className="text-sm text-gray-500">
-          Use your company email to access the HRIS.
+        <p className="text-sm text-slate-700" style={{ fontFamily: "system-ui,sans-serif" }}>
+          Sign in with your company email to continue.
         </p>
       </div>
 
@@ -89,30 +83,30 @@ export default function SignInView({ onForgotPassword }) {
         />
 
         {displayError && (
-          <p className="text-xs" style={{ color: "#dc2626" }}>
+          <p className="text-xs" style={{ color: "#dc2626", fontFamily: "system-ui,sans-serif" }}>
             {displayError}
           </p>
         )}
-
         {isLocked && (
-          <p className="text-xs" style={{ color: "#b45309" }}>
+          <p className="text-xs" style={{ color: "#b45309", fontFamily: "system-ui,sans-serif" }}>
             Too many failed attempts. Try again in {lockoutSeconds}s.
           </p>
         )}
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end -mt-2">
         <button
           type="button"
           onClick={onForgotPassword}
-          className="text-xs text-gray-500 hover:text-black transition-colors"
+          className="text-xs font-medium text-slate-700 transition-colors cursor-pointer"
+          style={{ fontFamily: "system-ui,sans-serif" }}
         >
           Forgot password?
         </button>
       </div>
 
       <SignInBtn onClick={handleSubmit} disabled={loading || isLocked}>
-        {loading ? "Signing in…" : isLocked ? `Locked (${lockoutSeconds}s)` : "Sign In →"}
+        {loading ? "Signing in…" : isLocked ? `Locked (${lockoutSeconds}s)` : "Sign in"}
       </SignInBtn>
     </div>
   );

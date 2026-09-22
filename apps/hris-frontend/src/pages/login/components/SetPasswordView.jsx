@@ -13,31 +13,24 @@ export default function SetPasswordView({ token, onComplete }) {
   const [showConf, setShowConf] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [tokenValid, setTokenValid] = useState(null); // null = loading, false = invalid, true = valid
+  const [tokenValid, setTokenValid] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // ---------------- TOKEN VERIFICATION ----------------
   useEffect(() => {
-    if (!token) {
-      onComplete(); // redirect safely if no token
-      return;
-    }
+    if (!token) return onComplete();
 
     const verifyToken = async () => {
       try {
         const res = await axios.post(`${API_URL}api/auth/verify-reset-token`, { token });
         setTokenValid(res.data.valid);
-        if (!res.data.valid) {
-          setErrors({ submit: "Reset link expired or invalid." });
-        }
+        if (!res.data.valid) setErrors({ submit: "Reset link expired or invalid." });
       } catch (err) {
         console.error("Verify token error:", err);
         setTokenValid(false);
         setErrors({ submit: "Reset link expired or invalid." });
       }
     };
-
     verifyToken();
   }, [token, onComplete, API_URL]);
 
@@ -49,58 +42,50 @@ export default function SetPasswordView({ token, onComplete }) {
     /[^A-Za-z0-9]/.test(password),
   ].filter(Boolean).length;
 
-  // ---------------- HANDLE SUBMIT ----------------
   async function handleSubmit() {
     const errs = {};
-
-    if (passwordScore < 3) {
-      errs.password = "Password is too weak.";
-    }
-
-    if (password !== confirm) {
-      errs.confirm = "Passwords don't match.";
-    }
-
-    if (Object.keys(errs).length) {
-      setErrors(errs);
-      return;
-    }
+    if (passwordScore < 3) errs.password = "Password is too weak.";
+    if (password !== confirm) errs.confirm = "Passwords don't match.";
+    if (Object.keys(errs).length) return setErrors(errs);
 
     try {
       setLoading(true);
-
-      await axios.post(`${API_URL}api/auth/reset-password`, {
-        token,
-        password,
-      });
-
+      await axios.post(`${API_URL}api/auth/reset-password`, { token, password });
       alert("Password updated successfully!");
-      onComplete(); // redirect to login
+      onComplete();
     } catch (err) {
-      setErrors({
-        submit: err.response?.data?.message || "Failed to reset password",
-      });
+      setErrors({ submit: err.response?.data?.message || "Failed to reset password" });
     } finally {
       setLoading(false);
     }
   }
 
-  // ---------------- RENDER ----------------
   if (tokenValid === null) {
-    return <div className="text-black">Verifying reset link...</div>;
+    return (
+      <p className="text-sm text-slate-500" style={{ fontFamily: "system-ui,sans-serif" }}>
+        Verifying reset link…
+      </p>
+    );
   }
 
   if (!tokenValid) {
     return (
-      <div className="text-red-600">
+      <p className="text-sm" style={{ color: "#dc2626", fontFamily: "system-ui,sans-serif" }}>
         Reset link expired or invalid. Please request a new password reset.
-      </div>
+      </p>
     );
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl text-black">Set new password</h1>
+      <div>
+        <h1 className="text-xl font-semibold text-slate-900 mb-1" style={{ fontFamily: "system-ui,sans-serif" }}>
+          Set new password
+        </h1>
+        <p className="text-sm text-slate-500" style={{ fontFamily: "system-ui,sans-serif" }}>
+          Choose a strong password for your account.
+        </p>
+      </div>
 
       <InputField
         label="New password"
@@ -108,9 +93,7 @@ export default function SetPasswordView({ token, onComplete }) {
         value={password}
         onChange={setPassword}
         error={errors.password}
-        rightSlot={
-          <EyeIcon show={showPass} onToggle={() => setShowPass(!showPass)} />
-        }
+        rightSlot={<EyeIcon show={showPass} onToggle={() => setShowPass(!showPass)} />}
       />
 
       <PasswordStrength password={password} />
@@ -121,17 +104,17 @@ export default function SetPasswordView({ token, onComplete }) {
         value={confirm}
         onChange={setConfirm}
         error={errors.confirm}
-        rightSlot={
-          <EyeIcon show={showConf} onToggle={() => setShowConf(!showConf)} />
-        }
+        rightSlot={<EyeIcon show={showConf} onToggle={() => setShowConf(!showConf)} />}
       />
 
       {errors.submit && (
-        <p className="text-red-600 text-sm">{errors.submit}</p>
+        <p className="text-sm" style={{ color: "#dc2626", fontFamily: "system-ui,sans-serif" }}>
+          {errors.submit}
+        </p>
       )}
 
       <Btn onClick={handleSubmit} disabled={loading}>
-        {loading ? "Saving..." : "Update Password"}
+        {loading ? "Saving…" : "Update password"}
       </Btn>
     </div>
   );

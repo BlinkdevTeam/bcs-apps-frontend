@@ -1,22 +1,27 @@
-export default function SignInBtn({
-  children,
-  onClick,
-  disabled,
-  variant = "primary",
-  type = "button",
-}) {
-  const base = "w-full py-3 rounded-lg text-sm font-medium transition-all";
-  const hover = "hover:opacity-80";
+// Btn.jsx
+export default function Btn({ children, onClick, disabled, variant = "primary", type = "button" }) {
+  let style = { fontFamily: "system-ui,sans-serif" };
 
-  let variantClasses = "";
   if (variant === "primary") {
-    variantClasses = disabled
-      ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-      : "bg-black text-white";
+    style.backgroundColor = disabled ? "rgba(15,23,42,0.15)" : "#0f172a";
+    style.color = disabled ? "rgba(15,23,42,0.4)" : "#fff";
+    style.boxShadow = disabled ? "none" : "0 4px 14px rgba(15,23,42,0.25)";
   } else if (variant === "secondary") {
-    variantClasses = "bg-gray-50 text-gray-600 border border-gray-200";
+    style = {
+      ...style,
+      backgroundColor: "rgba(255,255,255,0.5)",
+      backdropFilter: "blur(8px)",
+      WebkitBackdropFilter: "blur(8px)",
+      color: "#334155",
+      border: "1px solid rgba(15,23,42,0.12)",
+    };
   } else if (variant === "danger") {
-    variantClasses = "bg-red-50 text-red-600 border border-red-200";
+    style = {
+      ...style,
+      backgroundColor: "rgba(254,242,242,0.7)",
+      color: "#dc2626",
+      border: "1px solid rgba(252,165,165,0.6)",
+    };
   }
 
   return (
@@ -24,7 +29,8 @@ export default function SignInBtn({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${base} ${hover} ${variantClasses}`}
+      className="w-full py-2.5 rounded-xl text-sm font-medium transition-all hover:opacity-90 active:opacity-80"
+      style={{ ...style, cursor: disabled ? "not-allowed" : "pointer" }}
     >
       {children}
     </button>
