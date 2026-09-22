@@ -154,11 +154,11 @@ async function handleSave() {
   return (
     <>
       <div className="fixed inset-0 z-20" style={{ backgroundColor:"rgba(0,0,0,0.6)" }} onClick={onClose}/>
-      <div className="fixed top-0 right-0 h-full z-30 flex flex-col"
+      <div className="fixed top-0 right-0 h-full z-300 flex flex-col"
         style={{ width:500, backgroundColor:"#080808", borderLeft:"1px solid #222", boxShadow:"-8px 0 40px rgba(0,0,0,0.8)" }}>
 
         {/* Header */}
-        <div className="px-7 py-5 flex-shrink-0" style={{ borderBottom:"1px solid #1a1a1a" }}>
+        <div className="px-7 py-5 shrink-0" style={{ borderBottom:"1px solid #1a1a1a" }}>
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-xs uppercase tracking-widest text-gray-500 mb-0.5" style={{ fontFamily:"system-ui,sans-serif" }}>User Management</p>

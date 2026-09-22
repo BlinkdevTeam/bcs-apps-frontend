@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "../api/axios";
 
 // GET all departments
 export const getDepartments = () => api.get("/api/departments");

@@ -176,39 +176,39 @@ function handleSave() {
 
           {/* Name & Email */}
           <div>
-  <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
-    Select Employee
-  </label>
+            <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
+              Select Employee
+            </label>
 
-  <select
-    className={IC}
-    style={IS}
-    value={form.employeeId}
-    onChange={(e) => setField("employeeId", e.target.value)}
-  >
-    <option value="">Select employee...</option>
+            <select
+              className={IC}
+              style={IS}
+              value={form.employeeId}
+              onChange={(e) => setField("employeeId", e.target.value)}
+            >
+              <option value="">Select employee...</option>
 
-    {employees.map((emp) => (
-      <option key={emp.id} value={emp.id}>
-        {emp.first_name} {emp.last_name} ({emp.email})
-      </option>
-    ))}
-  </select>
-</div>
+              {employees.map((emp) => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.first_name} {emp.last_name} ({emp.email})
+                </option>
+              ))}
+            </select>
+          </div>
 
-          {/* Department & Role */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-  <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
-    Department
-  </label>
+        {/* Department & Role */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
+              Department
+            </label>
 
-<div className={IC} style={IS}>
-  {departments.find(
-    (d) => d.id === selectedEmployee?.department_id
-  )?.name || "—"}
-</div>
-</div>
+            <div className={IC} style={IS}>
+              {departments.find(
+                (d) => d.id === selectedEmployee?.department_id
+              )?.name || "—"}
+            </div>
+          </div>
             <div>
               <label className="block text-xs uppercase tracking-widest text-gray-500 mb-1.5">
                 Role
@@ -218,7 +218,7 @@ function handleSave() {
                 style={IS}
                 value={form.role}
                 onChange={(e) => setField("role", e.target.value)}
-                // disabled={CURRENT_USER_ROLE !== "super_admin"}
+                disabled={CURRENT_USER_ROLE !== "super_admin"}
               >
                 {roles.map((r) => (
                   <option key={r.id} value={r.id}>
