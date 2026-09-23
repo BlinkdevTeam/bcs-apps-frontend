@@ -128,7 +128,7 @@ function ChangeHeadModal({ department, employees, onClose, onSave }) {
         >
           {/* Header */}
           <div
-            className="flex items-start justify-between px-6 py-5 flex-shrink-0"
+            className="flex items-start justify-between px-6 py-5 shrink-0"
             style={{ borderBottom: "1px solid #1e1e1e" }}
           >
             <div>
@@ -144,14 +144,14 @@ function ChangeHeadModal({ department, employees, onClose, onSave }) {
             </div>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-white text-xl mt-0.5"
+              className="text-gray-500 hover:text-white text-xl mt-0.5 cursor-pointer"
             >
               ✕
             </button>
           </div>
 
           {/* Current head */}
-          <div className="px-6 pt-4 pb-3 flex-shrink-0">
+          <div className="px-6 pt-4 pb-3 shrink-0">
             <p
               className="text-xs uppercase tracking-widest text-gray-600 mb-2"
               style={{ fontFamily: "system-ui,sans-serif" }}
@@ -207,13 +207,8 @@ function ChangeHeadModal({ department, employees, onClose, onSave }) {
             )}
           </div>
 
-          {/* Arrow */}
-          <div className="flex justify-center flex-shrink-0 py-1">
-            <span className="text-gray-700 text-sm">↓</span>
-          </div>
-
           {/* Search */}
-          <div className="px-6 pb-3 flex-shrink-0">
+          <div className="px-6 pb-3 shrink-0">
             <p
               className="text-xs uppercase tracking-widest text-gray-600 mb-2"
               style={{ fontFamily: "system-ui,sans-serif" }}
@@ -244,14 +239,14 @@ function ChangeHeadModal({ department, employees, onClose, onSave }) {
             {/* Clear option */}
             <button
               onClick={() => setSelected(null)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all cursor-pointer"
               style={{
                 backgroundColor: selected === null ? "#1a1a0a" : "#111",
                 border: `1px solid ${selected === null ? "#3a3010" : "#2a2a2a"}`,
               }}
             >
               <div
-                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
                 style={{
                   backgroundColor: "#1a1a1a",
                   border: "1px solid #2a2a2a",
@@ -275,7 +270,7 @@ function ChangeHeadModal({ department, employees, onClose, onSave }) {
               </div>
               {selected === null && (
                 <div
-                  className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                  className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
                   style={{
                     backgroundColor: "#f0c85a22",
                     border: "1.5px solid #f0c85a",
@@ -321,7 +316,7 @@ function ChangeHeadModal({ department, employees, onClose, onSave }) {
                   )}
                   <button
                     onClick={() => setSelected(emp.id)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all cursor-pointer"
                     style={{
                       backgroundColor: isSelected
                         ? department.color + "10"
@@ -366,7 +361,7 @@ function ChangeHeadModal({ department, employees, onClose, onSave }) {
                     </div>
                     {isSelected && (
                       <div
-                        className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                        className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
                         style={{
                           backgroundColor: department.color + "22",
                           border: `1.5px solid ${department.color}`,
@@ -402,7 +397,7 @@ function ChangeHeadModal({ department, employees, onClose, onSave }) {
 
           {/* Selected preview + confirm */}
           <div
-            className="px-6 py-4 flex-shrink-0"
+            className="px-6 py-4 shrink-0"
             style={{ borderTop: "1px solid #1e1e1e" }}
           >
             {!isUnchanged && selectedEmp && (
@@ -456,7 +451,7 @@ function ChangeHeadModal({ department, employees, onClose, onSave }) {
             <div className="flex items-center justify-between gap-3">
               <button
                 onClick={onClose}
-                className="px-4 py-2 rounded text-sm hover:opacity-80"
+                className="px-4 py-2 rounded text-sm hover:opacity-80 cursor-pointer"
                 style={{
                   fontFamily: "system-ui,sans-serif",
                   backgroundColor: "#111",

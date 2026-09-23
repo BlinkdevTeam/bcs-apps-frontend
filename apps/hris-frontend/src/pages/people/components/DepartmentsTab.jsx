@@ -113,8 +113,8 @@ export default function DepartmentsTab({ employees }) {
                 onClick={() => setSelected(isSelected ? null : dept.id)}
                 className="rounded-lg p-5 cursor-pointer transition-all"
                 style={{
-                  backgroundColor: isSelected ? dept.color + "0a" : "#0d0d0d",
-                  border: `1px solid ${isSelected ? dept.color + "55" : "#1e1e1e"}`,
+                  backgroundColor: isSelected ? dept.color + "0a" : "#ffffff",
+                  border: `1px solid ${isSelected ? dept.color + "55" : "#e5e7eb"}`,
                 }}
               >
                 <div className="flex items-start justify-between mb-3">
@@ -133,14 +133,14 @@ export default function DepartmentsTab({ employees }) {
                     </div>
                     <div>
                       <p
-                        className="text-white text-sm font-medium"
+                        className="text-black text-sm font-medium"
                         style={{ fontFamily: "system-ui,sans-serif" }}
                       >
                         {dept.name}
                       </p>
                       {dept.description && (
                         <p
-                          className="text-gray-600 text-xs mt-0.5"
+                          className="text-gray-500 text-xs mt-0.5"
                           style={{ fontFamily: "system-ui,sans-serif" }}
                         >
                           {dept.description}
@@ -161,7 +161,7 @@ export default function DepartmentsTab({ employees }) {
                       e.stopPropagation();
                       setChangingHeadFor(dept);
                     }}
-                    className="text-xs px-2.5 py-1 rounded hover:opacity-80 transition-all"
+                    className="text-xs px-2.5 py-1 rounded hover:opacity-80 transition-all cursor-pointer"
                     style={{
                       fontFamily: "system-ui,sans-serif",
                       backgroundColor: dept.color + "12",
@@ -180,13 +180,13 @@ export default function DepartmentsTab({ employees }) {
                       <Avatar emp={dept.head} size={24} />
                       <div>
                         <p
-                          className="text-gray-300 text-xs"
+                          className="text-gray-700 text-xs"
                           style={{ fontFamily: "system-ui,sans-serif" }}
                         >
                           {dept.head.first_name} {dept.head.last_name}
                         </p>
                         <p
-                          className="text-gray-600 text-xs"
+                          className="text-gray-500 text-xs"
                           style={{ fontFamily: "system-ui,sans-serif" }}
                         >
                           Department Head
@@ -195,7 +195,7 @@ export default function DepartmentsTab({ employees }) {
                     </div>
                   ) : (
                     <span
-                      className="text-xs text-gray-600"
+                      className="text-xs text-gray-500"
                       style={{ fontFamily: "system-ui,sans-serif" }}
                     >
                       No head assigned
@@ -204,10 +204,10 @@ export default function DepartmentsTab({ employees }) {
                 </div>
 
                 <p
-                  className="text-xs text-gray-700 mt-2 pt-2"
+                  className="text-xs text-gray-400 mt-2 pt-2"
                   style={{
                     fontFamily: "monospace",
-                    borderTop: "1px solid #1a1a1a",
+                    borderTop: "1px solid #e5e7eb",
                   }}
                 >
                   Created {new Date(dept.created_at).toLocaleDateString()}

@@ -60,7 +60,7 @@ function gc(id) {
 export default function Directory({
   employees,
   onViewProfile,
-  onEditEmployee,
+  // onEditEmployee,
   peopleView,
   onSwitchView,
   basicPaySets,
@@ -97,21 +97,22 @@ export default function Directory({
   }, [departments]);
 
   // Filter employees based on search and filters
-  const filtered = useMemo(
-    () =>
-      employees.filter((e) => {
-        const q = search.toLowerCase();
-        return (
-          (!q ||
-            e.name?.toLowerCase().includes(q) ||
-            e.role_title?.toLowerCase().includes(q) ||
-            e.department?.toLowerCase().includes(q)) &&
-          (deptFilter === "All" || e.department === deptFilter) &&
-          (statusFilter === "All" || e.status === statusFilter)
-        );
-      }),
-    [employees, search, deptFilter, statusFilter],
-  );
+const filtered = useMemo(
+  () =>
+    employees.filter((e) => {
+      const q = search.toLowerCase();
+      const deptName = deptMap[e.department_id];
+      return (
+        (!q ||
+          e.name?.toLowerCase().includes(q) ||
+          e.role_title?.toLowerCase().includes(q) ||
+          deptName?.toLowerCase().includes(q)) &&
+        (deptFilter === "All" || deptName === deptFilter) &&
+        (statusFilter === "All" || e.status === statusFilter)
+      );
+    }),
+  [employees, search, deptFilter, statusFilter, deptMap],
+);
 
   if (peopleView === "config") {
     return (
@@ -157,12 +158,10 @@ export default function Directory({
                 backgroundColor: "#fff",
                 border: "1px solid #e5e7eb",
               }}
-              value={deptFilter}
-              onChange={(e) => setDeptFilter(e.target.value)}
-            >
-              <option>All Departments</option>
+              value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)}>
+              <option value="All">All Departments</option>
               {departments.map((d) => (
-                <option key={d.id}>{d.name}</option>
+                <option key={d.id} value={d.name}>{d.name}</option>
               ))}
             </select>
 
@@ -173,13 +172,9 @@ export default function Directory({
                 backgroundColor: "#fff",
                 border: "1px solid #e5e7eb",
               }}
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
+              value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               {STATUSES.map((s) => (
-                <option key={s}>
-                  {s === "All" ? "All Statuses" : s}
-                </option>
+                <option key={s} value={s}>{s === "All" ? "All Statuses" : s}</option>
               ))}
             </select>
 
@@ -199,8 +194,6 @@ export default function Directory({
                   "Employee",
                   "Department",
                   "Role",
-                  "Location",
-                  "Joined",
                 ].map((h) => (
                   <th
                     key={h}
@@ -256,14 +249,6 @@ export default function Directory({
 
                   <td className="py-3 pr-6 text-gray-700">
                     {emp.role_title}
-                  </td>
-
-                  <td className="py-3 pr-6 text-gray-600">
-                    {emp.location}
-                  </td>
-
-                  <td className="py-3 pr-6 text-gray-500 text-xs">
-                    {emp.hire_date}
                   </td>
 
                   <td className="py-3">
@@ -355,29 +340,6 @@ export default function Directory({
                 className="w-full py-2.5 rounded text-sm bg-black text-white hover:opacity-80 font-medium cursor-pointer"
               >
                 View Full Profile
-              </button>
-
-              <button
-                onClick={() => onEditEmployee(selectedEmp)}
-                className="w-full py-2.5 rounded text-sm hover:bg-gray-50 cursor-pointer"
-                style={{
-                  backgroundColor: "#fff",
-                  color: "#374151",
-                  border: "1px solid #e5e7eb",
-                }}
-              >
-                Edit Employee
-              </button>
-
-              <button
-                className="w-full py-2.5 rounded text-sm hover:bg-red-50 cursor-pointer"
-                style={{
-                  backgroundColor: "#fff",
-                  color: "#dc2626",
-                  border: "1px solid #fecaca",
-                }}
-              >
-                Deactivate
               </button>
             </div>
           </div>

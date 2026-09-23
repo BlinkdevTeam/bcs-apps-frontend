@@ -35,12 +35,12 @@ export default function ProfilePage({
   const [tab, setTab] = useState("Overview");
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{ backgroundColor: "#000" }}>
+    <div className="flex-1 overflow-y-auto" style={{ backgroundColor: "#fff" }}>
       <div className="px-8 pt-6">
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-gray-500 hover:text-white text-sm"
+            className="flex items-center gap-2 text-gray-500 hover:text-black text-sm"
             style={{ fontFamily: "system-ui,sans-serif" }}
           >
             ← Back to Directory
@@ -50,9 +50,9 @@ export default function ProfilePage({
             className="text-xs px-3 py-1.5 rounded transition-all"
             style={{
               fontFamily: "system-ui,sans-serif",
-              backgroundColor: showEmpty ? "#fff" : "#111",
-              color: showEmpty ? "#000" : "#666",
-              border: showEmpty ? "none" : "1px solid #2a2a2a",
+              backgroundColor: showEmpty ? "#000" : "#f5f5f5",
+              color: showEmpty ? "#fff" : "#666",
+              border: showEmpty ? "none" : "1px solid #e5e7eb",
             }}
           >
             {showEmpty ? "Preview: Empty state ON" : "Preview: Empty state OFF"}
@@ -61,7 +61,7 @@ export default function ProfilePage({
 
         <div
           className="flex items-end justify-between pb-6"
-          style={{ borderBottom: "1px solid #222" }}
+          style={{ borderBottom: "1px solid #e5e7eb" }}
         >
           <div className="flex items-center gap-5">
             <div
@@ -79,14 +79,14 @@ export default function ProfilePage({
             </div>
             <div>
               <h1
-                className="text-3xl font-normal text-white mb-1"
+                className="text-3xl font-normal text-black mb-1"
                 style={{ letterSpacing: "-0.02em" }}
               >
                 {emp.name}
               </h1>
               <div className="flex items-center gap-3">
                 <span
-                  className="text-gray-400 text-sm"
+                  className="text-gray-600 text-sm"
                   style={{ fontFamily: "system-ui,sans-serif" }}
                 >
                   {emp.role} · {emp.dept}
@@ -109,15 +109,15 @@ export default function ProfilePage({
               className="px-4 py-2 rounded text-sm hover:opacity-80 flex items-center gap-2"
               style={{
                 fontFamily: "system-ui,sans-serif",
-                backgroundColor: "#111",
-                color: "#aaa",
-                border: "1px solid #2a2a2a",
+                backgroundColor: "#f5f5f5",
+                color: "#555",
+                border: "1px solid #e5e7eb",
               }}
             >
               ✏️ Edit Profile
             </button>
             <button
-              className="px-4 py-2 rounded text-sm bg-white text-black hover:opacity-80"
+              className="px-4 py-2 rounded text-sm bg-black text-white hover:opacity-80"
               style={{ fontFamily: "system-ui,sans-serif" }}
             >
               📧 Send Message
@@ -133,9 +133,9 @@ export default function ProfilePage({
               className="px-4 py-2 text-sm transition-all"
               style={{
                 fontFamily: "system-ui,sans-serif",
-                color: tab === t ? "#fff" : "#555",
+                color: tab === t ? "#000" : "#999",
                 borderBottom:
-                  tab === t ? "2px solid #fff" : "2px solid transparent",
+                  tab === t ? "2px solid #000" : "2px solid transparent",
               }}
             >
               {t}
@@ -145,7 +145,7 @@ export default function ProfilePage({
       </div>
 
       <div className="px-8 py-6">
-       {tab === "Overview" && <OverviewTab emp={emp} />}
+      {tab === "Overview" && <OverviewTab emp={emp} />}
         {tab === "Compensation" && (
           <EmployeeCompensationTab
             emp={emp}
