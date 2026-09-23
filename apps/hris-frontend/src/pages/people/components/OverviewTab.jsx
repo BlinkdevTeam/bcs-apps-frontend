@@ -9,7 +9,7 @@ export default function OverviewTab({ emp }) {
           {[
             { label: "Email", value: emp.email, icon: "📧" },
             { label: "Phone", value: emp.phone, icon: "📞" },
-            { label: "Address", value: emp.location, icon: "📍" },
+            { label: "Address", value: emp.address, icon: "📍" },
             { label: "Schedule", value: emp.schedule, icon: "🗓️" },
           ].map(({ label, value, icon }) => (
             <div
