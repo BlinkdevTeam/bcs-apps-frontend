@@ -7,25 +7,21 @@ import { IC, IS } from "../../../data/compData";
 // ── ADD EMPLOYEE DRAWER ───────────────────────────────────────────────────────
 export default function AddEmployeeDrawer({ onClose, onSave, departments, employees, }) {
   const [form, setForm] = useState({
-    name: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
     email: "",
     phone: "",
+    dob: "",
     role: "",
     dept: "",
     department_id: null,
     address: "",
-    status: "Active",
-    joined: "",
-    salary: "",
-    payFreq: "Bi-weekly",
-    empType: "Full-time",
     manager: "",
     manager_id: null,
-    schedule: "Mon–Fri, 9am–5pm",
-    benefits: "Standard",
-    gender: "",
-    dob: "",
-    personal_email: "",
+    joined: "",
+    schedule: "",
+    empType: "Full-time",
   });
 
   function set(k, v) {
@@ -49,44 +45,30 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
   }
 
   function handleSave() {
-    const names = form.name.trim().split(" ");
-    const first_name = names[0] || "";
-    const last_name = names.slice(1).join(" ") || "";
-
     const hire_date = form.joined
       ? new Date(form.joined).toISOString().split("T")[0]
       : new Date().toISOString().split("T")[0];
 
     const payload = {
       employee_code: `EMP${Date.now()}`,
-      first_name,
-      last_name,
-      middle_name: "",
+      first_name: form.firstName,
+      middle_name: form.middleName || "",
+      last_name: form.lastName,
       email: form.email,
-      personal_email: form.personal_email || null,
       phone: form.phone || null,
       avatar_initials:
-        form.name
-          .split(" ")
-          .map((w) => w[0] || "")
-          .join("")
-          .slice(0, 2)
-          .toUpperCase() || "??",
-      department_id: form.department_id, // ✅ FIXED
+        `${form.firstName?.[0] || ""}${form.lastName?.[0] || ""}`.toUpperCase() ||
+        "??",
+      department_id: form.department_id,
       role_title: form.role,
       employment_type: form.empType,
-      status: form.status.toLowerCase(),
+      status: "active",
       hire_date,
       end_date: null,
-      manager_id: form.manager_id,       // ✅ FIXED
-      // manager_id: form.manager ? managerMap[form.manager] || null : null,
-      gender: form.gender || null,
+      manager_id: form.manager_id,
       dob: form.dob ? new Date(form.dob).toISOString().split("T")[0] : null,
       address: form.address || null,
       schedule: form.schedule || null,
-      salary: form.salary || null,
-      pay_frequency: form.payFreq || null,
-      benefits: form.benefits || null,
     };
 
     createEmployee(payload)
@@ -158,30 +140,26 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
               placeholder="Sara"
               className={IC}
               style={IS}
-              value={form.name.split(" ")[0]}
-              onChange={(e) =>
-                set(
-                  "name",
-                  e.target.value +
-                    " " +
-                    form.name.split(" ").slice(1).join(" "),
-                )
-              }
+              value={form.firstName}
+              onChange={(e) => set("firstName", e.target.value)}
             />
             <TextInput
-              label="Last Name"
-              placeholder="Okafor"
+              label="Middle Name"
+              placeholder="Marie"
               className={IC}
               style={IS}
-              value={form.name.split(" ").slice(1).join(" ")}
-              onChange={(e) =>
-                set(
-                  "name",
-                  (form.name.split(" ")[0] || "") + " " + e.target.value,
-                )
-              }
+              value={form.middleName}
+              onChange={(e) => set("middleName", e.target.value)}
             />
           </div>
+          <TextInput
+            label="Last Name"
+            placeholder="Okafor"
+            className={IC}
+            style={IS}
+            value={form.lastName}
+            onChange={(e) => set("lastName", e.target.value)}
+          />
           <TextInput
             label="Work Email"
             placeholder="name@company.com"
@@ -198,24 +176,14 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
             value={form.phone}
             onChange={(e) => set("phone", e.target.value)}
           />
-          <div className="grid grid-cols-2 gap-4">
-            <DatePicker
-              label="Date of Birth"
-              value={form.dob}
-              onChange={(e) => set("dob", e.target.value)}
-              maxDate={new Date()} // prevents future birthdates
-              className={IC}
-              style={IS}
-            />
-            <Select
-              label="Gender"
-              value={form.gender}
-              onChange={(e) => set("gender", e.target.value)}
-              options={["Male", "Female", "Non-binary", "Prefer not to say"]}
-              className={IC}
-              style={IS}
-            />
-          </div>
+          <DatePicker
+            label="Date of Birth"
+            value={form.dob}
+            onChange={(e) => set("dob", e.target.value)}
+            maxDate={new Date()} // prevents future birthdates
+            className={IC}
+            style={IS}
+          />
 
           <p
             className="text-xs uppercase tracking-widest text-gray-600 pt-2 pb-1"
@@ -234,42 +202,32 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
             value={form.role}
             onChange={(e) => set("role", e.target.value)}
           />
+          {/* ✅ Dynamic Department */}
+          <Select
+            label="Department"
+            value={form.dept}
+            onChange={(e) => handleDeptChange(e.target.value)}
+            options={departments.map((d) => d.name)}
+            className={IC}
+            style={IS}
+          />
           <div className="grid grid-cols-2 gap-4">
-            {/* ✅ Dynamic Department */}
-        <Select
-          label="Department"
-          value={form.dept}
-          onChange={(e) => handleDeptChange(e.target.value)}
-          options={departments.map((d) => d.name)}
-          className={IC}
-          style={IS}
-        />
-            <Select
-              label="Status"
-              value={form.status}
-              onChange={(e) => set("status", e.target.value)}
-              options={["Active", "Inactive"]}
+            <TextInput
+              label="Address"
+              placeholder="e.g. Los Baños, Laguna"
               className={IC}
               style={IS}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Select
-              label="Address"
               value={form.address}
               onChange={(e) => set("address", e.target.value)}
-              options={["New York", "Chicago", "Austin", "Remote"]}
+            />
+            {/* ✅ Auto Manager */}
+            <TextInput
+              label="Manager"
+              value={form.manager}
+              disabled
               className={IC}
               style={IS}
             />
-            {/* ✅ Auto Manager */}
-        <TextInput
-          label="Manager"
-          value={form.manager}
-          disabled
-          className={IC}
-          style={IS}
-        />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <DatePicker
@@ -279,18 +237,13 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
               className={IC}
               style={IS}
             />
-            <Select
+            <TextInput
               label="Work Schedule"
-              value={form.schedule}
-              onChange={(e) => set("schedule", e.target.value)}
-              options={[
-                "Mon–Fri, 9am–5pm",
-                "Mon–Fri, Flexible",
-                "4-day week",
-                "Remote / Async",
-              ]}
+              placeholder="e.g. Mon–Fri, 9am–5pm"
               className={IC}
               style={IS}
+              value={form.schedule}
+              onChange={(e) => set("schedule", e.target.value)}
             />
           </div>
           <Select

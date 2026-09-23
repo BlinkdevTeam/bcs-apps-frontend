@@ -163,7 +163,7 @@ export default function EditDrawer({ emp, onClose, onSave }) {
         <div className="px-7 py-5 flex items-center justify-between" style={{ borderTop: "1px solid #1a1a1a" }}>
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded text-sm hover:opacity-80"
+            className="px-5 py-2.5 rounded text-sm hover:opacity-80 cursor-pointer"
             style={{
               fontFamily: "system-ui,sans-serif",
               backgroundColor: "#111",
@@ -176,7 +176,7 @@ export default function EditDrawer({ emp, onClose, onSave }) {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2.5 rounded text-sm font-medium bg-white text-black hover:opacity-80"
+            className="px-5 py-2.5 rounded text-sm font-medium bg-white text-black hover:opacity-80 cursor-pointer"
             style={{ fontFamily: "system-ui,sans-serif" }}
           >
             {saving ? "Saving..." : "Save Changes ✓"}
