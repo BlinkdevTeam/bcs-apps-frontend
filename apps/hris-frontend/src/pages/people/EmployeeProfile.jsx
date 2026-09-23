@@ -51,7 +51,7 @@ export default function EmployeeProfile({ gc, SS, BADGE }) {
       emp={emp} // pass full emp object
       onBack={() => navigate("/people")}
       onEdit={() => navigate(`/people/${emp.id}/edit`)}
-      onUpdateEmp={() => {}} // optional if you implement update
+      onUpdateEmp={(updated) => setEmp((prev) => ({ ...prev, ...updated }))} // optional if you implement update
       empComp={{}} // optional compensation object
       onUpdateComp={() => {}}
       gc={gc}

@@ -89,12 +89,12 @@ export default function CreateDepartmentDrawer({
     return (
       <>
         <div
-          className="fixed inset-0 z-[1000]"
+          className="fixed inset-0 z-1000"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
           onClick={onClose}
         />
         <div
-          className="fixed top-0 right-0 h-full z-[1001] flex flex-col items-center justify-center px-10"
+          className="fixed top-0 right-0 h-full z-1001 flex flex-col items-center justify-center px-10"
           style={{
             width: 480,
             backgroundColor: "#080808",
@@ -163,7 +163,7 @@ export default function CreateDepartmentDrawer({
             <p className="text-xs text-gray-500">People · Departments</p>
             <h2 className="text-lg text-white">Create Department</h2>
           </div>
-          <button onClick={onClose} className="text-gray-600 hover:text-white">
+          <button onClick={onClose} className="text-gray-600 hover:text-white cursor-pointer">
             ✕
           </button>
         </div>
@@ -188,7 +188,7 @@ export default function CreateDepartmentDrawer({
             </label>
 
             <select
-              className={IC}
+              className={`${IC} cursor-pointer`}
               style={IS}
               value={form.head}
               onChange={e => set("head", e.target.value)}
@@ -204,8 +204,7 @@ export default function CreateDepartmentDrawer({
                   <option key={e.id} value={e.id}>
                     {e.first_name} {e.last_name} · {e.role_title || "No Role"}
                   </option>
-                ))
-              }
+                ))}
             </select>
 
             {selectedHead && (
@@ -231,7 +230,7 @@ export default function CreateDepartmentDrawer({
                 <button
                   key={c}
                   onClick={() => set("color", c)}
-                  className="w-8 h-8 rounded-full"
+                  className="w-8 h-8 rounded-full cursor-pointer"
                   style={{
                     backgroundColor: c,
                     border: form.color === c ? "2px solid #fff" : "none",
@@ -247,14 +246,14 @@ export default function CreateDepartmentDrawer({
 
         {/* Footer */}
         <div className="px-7 py-5 flex justify-between border-t border-[#1a1a1a]">
-          <button onClick={onClose} className="text-gray-400">
+          <button onClick={onClose} className="text-gray-400 cursor-pointer">
             Cancel
           </button>
 
           <button
             onClick={handleSave}
             disabled={!canSave || loading}
-            className="px-5 py-2 bg-white text-black rounded"
+            className="px-5 py-2 bg-white text-black rounded cursor-pointer"
           >
             {loading ? "Creating..." : "Create"}
           </button>

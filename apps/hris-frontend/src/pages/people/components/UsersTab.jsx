@@ -165,7 +165,7 @@ export default function UserManagementPage() {
   const inactive = users.filter((u) => u?.status === "inactive").length;
 
   return (
-    <div className="flex-1 overflow-hidden flex flex-col bg-white h-screen">
+    <div className="flex-1 overflow-hidden flex flex-col">
       {/* Header */}
       <div className="px-8 pt-8 pb-0 shrink-0">
         {/* Role summary cards — dynamic from DB */}

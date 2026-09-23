@@ -70,8 +70,7 @@ export default function Header() {
 
   return (
     <header
-      className="px-8 py-4 flex items-center justify-between shrink-0"
-      style={{ backgroundColor: "#ffffff", zIndex: 100 }}
+      className="px-8 py-4 flex items-center justify-between shrink-0 z-100"
     >
       <div className="flex items-center gap-10">
         <div className="flex items-center gap-2">

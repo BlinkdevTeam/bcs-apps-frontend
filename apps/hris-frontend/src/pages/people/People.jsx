@@ -106,7 +106,7 @@ export default function People({
   return (
     <>
       {/* Header */}
-      <div className="px-8 pt-8 shrink-0 bg-white">
+      <div className="px-8 pt-8 shrink-0 ">
         <div className="flex items-center justify-between pb-4">
           <div>
             <h1
@@ -140,7 +140,7 @@ export default function People({
                 </button>
                 <button
                   onClick={() => setShowAdd(true)}
-                  className="px-4 py-2 rounded text-sm font-medium bg-black text-white flex items-center gap-2 hover:opacity-80"
+                  className="px-4 py-2 rounded text-sm font-medium bg-black text-white flex items-center gap-2 hover:opacity-80 cursor-pointer"
                   style={{ fontFamily: "system-ui,sans-serif" }}
                 >
                   ＋ Add Employee
@@ -151,7 +151,7 @@ export default function People({
             {peopleView === "department" && (
               <button
                 onClick={() => setShowCreateDept(true)}
-                className="px-4 py-2 rounded text-sm font-medium bg-black text-white flex items-center gap-2 hover:opacity-80"
+                className="px-4 py-2 rounded text-sm font-medium bg-black text-white flex cursor-pointer items-center gap-2 hover:opacity-80"
                 style={{ fontFamily: "system-ui,sans-serif" }}
               >
                 ＋ New Department
@@ -182,7 +182,7 @@ export default function People({
 
       {/* Tabs */}
       <div
-        className="flex gap-4 px-8 bg-white"
+        className="flex gap-4 px-8 "
         style={{ borderBottom: "1px solid #e5e5e5" }}
       >
         {[
@@ -234,7 +234,7 @@ export default function People({
       )}
 
       {peopleView === "department" && (
-        <div className="p-8 bg-white">
+        <div className="p-8 ">
           <DepartmentsTab
             employees={employees.map((e) => ({
               ...e,

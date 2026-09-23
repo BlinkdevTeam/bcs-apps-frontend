@@ -4,17 +4,17 @@ import Header from "../Header/Header";
 export default function AppLayout({ children }) {
   return (
     <div
-      className="min-h-screen text-white flex flex-col"
+      className="min-h-screen text-black flex flex-col"
       style={{ 
         fontFamily: "'Georgia', serif", 
-        backgroundColor: "#000",
+        backgroundColor: "#f8f7f3",
         position: "relative" // Ensures absolute/fixed children align correctly
       }}
     >
       {/* Wrapping the Header in a div with a z-index ensures 
          it stays above any content within the {children} 
       */}
-      <div className="z-50 w-full bg-black border-b border-gray-900">
+      <div className="z-50 w-full bg-[#f8f7f3] shadow-[0_2px_6px_rgba(0,0,0,0.08)]">
         <Header />
       </div>
 

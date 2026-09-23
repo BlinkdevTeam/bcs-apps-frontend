@@ -129,7 +129,7 @@ const filtered = useMemo(
   }
 
   return (
-    <div className="flex flex-1 overflow-hidden bg-white h-screen">
+    <div className="flex flex-1 overflow-hidden">
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="px-8 pt-8 pb-4 shrink-0">
           <div className="flex items-center gap-3">
@@ -212,7 +212,13 @@ const filtered = useMemo(
             </thead>
 
             <tbody>
-              {filtered.map((emp) => (
+              {[...filtered]
+                .sort((a, b) =>
+                  `${a.first_name} ${a.last_name}`.localeCompare(
+                    `${b.first_name} ${b.last_name}`
+                  )
+                )
+                .map((emp) => (
                 <tr
                   key={emp.id}
                   className="cursor-pointer group transition-colors hover:bg-gray-50"

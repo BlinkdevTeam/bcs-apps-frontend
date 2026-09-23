@@ -6,12 +6,13 @@ import LeaveTab from "./LeaveTab";
 import OTUTTab from "./OtUtTab";
 import DocumentsTab from "./DocumentsTab";
 import ActivityTab from "./ActivityTab";
+import EditDrawer from "./EditDrawer";
 
 // ── PROFILE PAGE ──────────────────────────────────────────────────────────────
 export default function ProfilePage({
   emp,
   onBack,
-  onEdit,
+  // onEdit,
   onUpdateEmp,
   empComp,
   onUpdateComp,
@@ -23,7 +24,8 @@ export default function ProfilePage({
   BADGE,
 }) {
   const { bg, fg } = emp && emp.role && emp.department_id ? gc(emp.id) : { bg: "#111", fg: "#fff" };
-  const [showEmpty, setShowEmpty] = useState(false);
+  // const [showEmpty, setShowEmpty] = useState(false);
+  const [showEditDrawer, setShowEditDrawer] = useState(false);
   const TABS = [
     "Overview",
     "Compensation",
@@ -35,27 +37,15 @@ export default function ProfilePage({
   const [tab, setTab] = useState("Overview");
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{ backgroundColor: "#fff" }}>
+    <div className="flex-1 overflow-y-auto">
       <div className="px-8 pt-6">
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-gray-500 hover:text-black text-sm"
+            className="flex items-center gap-2 text-gray-500 hover:text-black text-sm cursor-pointer"
             style={{ fontFamily: "system-ui,sans-serif" }}
           >
             ← Back to Directory
-          </button>
-          <button
-            onClick={() => setShowEmpty((e) => !e)}
-            className="text-xs px-3 py-1.5 rounded transition-all"
-            style={{
-              fontFamily: "system-ui,sans-serif",
-              backgroundColor: showEmpty ? "#000" : "#f5f5f5",
-              color: showEmpty ? "#fff" : "#666",
-              border: showEmpty ? "none" : "1px solid #e5e7eb",
-            }}
-          >
-            {showEmpty ? "Preview: Empty state ON" : "Preview: Empty state OFF"}
           </button>
         </div>
 
@@ -86,12 +76,6 @@ export default function ProfilePage({
               </h1>
               <div className="flex items-center gap-3">
                 <span
-                  className="text-gray-600 text-sm"
-                  style={{ fontFamily: "system-ui,sans-serif" }}
-                >
-                  {emp.role} · {emp.dept}
-                </span>
-                <span
                   className="text-xs px-2 py-0.5 rounded-full"
                   style={{
                     fontFamily: "system-ui,sans-serif",
@@ -105,8 +89,8 @@ export default function ProfilePage({
           </div>
           <div className="flex gap-3">
             <button
-              onClick={onEdit}
-              className="px-4 py-2 rounded text-sm hover:opacity-80 flex items-center gap-2"
+              onClick={() => setShowEditDrawer(true)}
+              className="px-4 py-2 rounded text-sm hover:opacity-80 flex items-center gap-2 cursor-pointer"
               style={{
                 fontFamily: "system-ui,sans-serif",
                 backgroundColor: "#f5f5f5",
@@ -115,12 +99,6 @@ export default function ProfilePage({
               }}
             >
               ✏️ Edit Profile
-            </button>
-            <button
-              className="px-4 py-2 rounded text-sm bg-black text-white hover:opacity-80"
-              style={{ fontFamily: "system-ui,sans-serif" }}
-            >
-              📧 Send Message
             </button>
           </div>
         </div>
@@ -157,11 +135,22 @@ export default function ProfilePage({
             benefitsSets={benefitsSets}
           />
         )}
-        {tab === "Leave" && <LeaveTab emptyState={showEmpty} BADGE={BADGE} />}
-        {tab === "OT / UT" && <OTUTTab emptyState={showEmpty} BADGE={BADGE} />}
+        {tab === "Leave" && <LeaveTab BADGE={BADGE} />}
+        {tab === "OT / UT" && <OTUTTab BADGE={BADGE} />}
         {tab === "Documents" && <DocumentsTab />}
         {tab === "Activity" && <ActivityTab />}
       </div>
+
+      {showEditDrawer && (
+        <EditDrawer
+          emp={emp}
+          onClose={() => setShowEditDrawer(false)}
+          onSave={(updated) => {
+            onUpdateEmp(updated);
+            setShowEditDrawer(false);
+          }}
+        />
+      )}
     </div>
   );
 }

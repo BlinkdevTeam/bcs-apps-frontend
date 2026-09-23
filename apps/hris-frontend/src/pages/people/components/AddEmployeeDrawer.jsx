@@ -13,7 +13,7 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
     role: "",
     dept: "",
     department_id: null,
-    location: "New York",
+    address: "",
     status: "Active",
     joined: "",
     salary: "",
@@ -82,7 +82,7 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
       // manager_id: form.manager ? managerMap[form.manager] || null : null,
       gender: form.gender || null,
       dob: form.dob ? new Date(form.dob).toISOString().split("T")[0] : null,
-      location: form.location || null,
+      address: form.address || null,
       schedule: form.schedule || null,
       salary: form.salary || null,
       pay_frequency: form.payFreq || null,
@@ -104,12 +104,12 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
   return (
     <>
       <div
-        className="fixed inset-0 z-[200]"
+        className="fixed inset-0 z-200"
         style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
         onClick={onClose}
       />
       <div
-        className="fixed top-0 right-0 h-full z-[201] flex flex-col"
+        className="fixed top-0 right-0 h-full z-201 flex flex-col"
         style={{
           width: 480,
           backgroundColor: "#080808",
@@ -119,7 +119,7 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
       >
         {/* Header */}
         <div
-          className="flex items-center justify-between px-7 py-5 flex-shrink-0"
+          className="flex items-center justify-between px-7 py-5 shrink-0"
           style={{ borderBottom: "1px solid #1a1a1a" }}
         >
           <div>
@@ -135,7 +135,7 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
           </div>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-white transition-colors text-xl"
+            className="text-gray-600 hover:text-white transition-colors text-xl cursor-pointer"
           >
             ✕
           </button>
@@ -248,16 +248,16 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
               label="Status"
               value={form.status}
               onChange={(e) => set("status", e.target.value)}
-              options={["Active", "On Leave", "Inactive"]}
+              options={["Active", "Inactive"]}
               className={IC}
               style={IS}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Select
-              label="Location"
-              value={form.location}
-              onChange={(e) => set("location", e.target.value)}
+              label="Address"
+              value={form.address}
+              onChange={(e) => set("address", e.target.value)}
               options={["New York", "Chicago", "Austin", "Remote"]}
               className={IC}
               style={IS}
@@ -305,12 +305,12 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
 
         {/* Footer */}
         <div
-          className="px-7 py-5 flex items-center justify-between flex-shrink-0"
+          className="px-7 py-5 flex items-center justify-between shrink-0"
           style={{ borderTop: "1px solid #1a1a1a" }}
         >
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded text-sm hover:opacity-80"
+            className="px-5 py-2.5 rounded text-sm hover:opacity-80 cursor-pointer"
             style={{
               fontFamily: "system-ui, sans-serif",
               backgroundColor: "#111",
@@ -322,7 +322,7 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
           </button>
           <button
             onClick={handleSave}
-            className="px-5 py-2.5 rounded text-sm font-medium bg-white text-black hover:opacity-80"
+            className="px-5 py-2.5 rounded text-sm font-medium bg-white text-black hover:opacity-80 cursor-pointer"
             style={{ fontFamily: "system-ui, sans-serif" }}
           >
             Add Employee ✓

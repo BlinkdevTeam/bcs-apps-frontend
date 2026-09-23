@@ -1,58 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Avatar, Field, IC, IS } from "../../../data/compData";
-import { getDepartments } from "../../../services/departmentService";
 import { updateEmployee } from "../../../services/employeeService";
 
 // ── EDIT DRAWER ───────────────────────────────────────────────────────────────
 export default function EditDrawer({ emp, onClose, onSave }) {
   const [form, setForm] = useState({ ...emp });
-  const [departments, setDepartments] = useState([]);
-  const [loadingDepts, setLoadingDepts] = useState(true);
-  const [errorDepts, setErrorDepts] = useState("");
-
+  const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
 
   function set(k, v) {
     setForm((f) => ({ ...f, [k]: v }));
+    if (errors[k]) setErrors((e) => ({ ...e, [k]: null }));
   }
 
-  // ── FETCH DEPARTMENTS ──────────────────────────────────────────────
-  useEffect(() => {
-    let mounted = true;
-    async function fetchDepts() {
-      try {
-        const res = await getDepartments();
-        const deptArray = Array.isArray(res.data) ? res.data : [];
-        if (mounted) setDepartments(deptArray);
-      } catch (err) {
-        console.error("Failed to fetch departments:", err);
-        if (mounted) setErrorDepts("Failed to load departments");
-      } finally {
-        if (mounted) setLoadingDepts(false);
-      }
-    }
-    fetchDepts();
-    return () => { mounted = false; };
-  }, []);
+  function validate() {
+    const errs = {};
+    if (!form.first_name?.trim()) errs.first_name = "First name is required.";
+    if (!form.last_name?.trim()) errs.last_name = "Last name is required.";
+    if (!form.email?.trim()) errs.email = "Email is required.";
+    if (!form.phone?.trim()) errs.phone = "Phone is required.";
+    if (!form.address?.trim()) errs.address = "Address is required.";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  }
 
   // ── SAVE CHANGES ─────────────────────────────────────────────────
   async function handleSave() {
+    if (!validate()) return;
+
     setSaving(true);
     try {
-      // Prepare payload for backend
       const payload = {
         first_name: form.first_name,
+        middle_name: form.middle_name || "",
         last_name: form.last_name,
         email: form.email,
+        phone: form.phone,
+        address: form.address,
         role_title: form.role_title,
-        department_id: form.department_id || null,
-        status: form.status,
       };
 
       await updateEmployee(emp.id, payload);
 
       // Update parent state (frontend)
-      onSave({ ...form });
+      onSave({ ...form, ...payload });
 
       onClose();
     } catch (err) {
@@ -93,7 +84,7 @@ export default function EditDrawer({ emp, onClose, onSave }) {
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-600 hover:text-white text-xl">✕</button>
+          <button onClick={onClose} className="text-gray-600 hover:text-white text-xl cursor-pointer">✕</button>
         </div>
 
         {/* Content */}
@@ -102,28 +93,60 @@ export default function EditDrawer({ emp, onClose, onSave }) {
             <Field label="First Name">
               <input
                 className={IC}
-                style={IS}
+                style={{ ...IS, borderColor: errors.first_name ? "#dc2626" : IS.border }}
                 value={form.first_name || ""}
                 onChange={(e) => set("first_name", e.target.value)}
               />
+              {errors.first_name && <p className="text-xs text-red-500 mt-1">{errors.first_name}</p>}
             </Field>
-            <Field label="Last Name">
+            <Field label="Middle Name">
               <input
                 className={IC}
                 style={IS}
-                value={form.last_name || ""}
-                onChange={(e) => set("last_name", e.target.value)}
+                value={form.middle_name || ""}
+                onChange={(e) => set("middle_name", e.target.value)}
               />
             </Field>
           </div>
 
+          <Field label="Last Name">
+            <input
+              className={IC}
+              style={{ ...IS, borderColor: errors.last_name ? "#dc2626" : IS.border }}
+              value={form.last_name || ""}
+              onChange={(e) => set("last_name", e.target.value)}
+            />
+            {errors.last_name && <p className="text-xs text-red-500 mt-1">{errors.last_name}</p>}
+          </Field>
+
           <Field label="Work Email">
             <input
               className={IC}
-              style={IS}
+              style={{ ...IS, borderColor: errors.email ? "#dc2626" : IS.border }}
               value={form.email || ""}
               onChange={(e) => set("email", e.target.value)}
             />
+            {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+          </Field>
+
+          <Field label="Phone">
+            <input
+              className={IC}
+              style={{ ...IS, borderColor: errors.phone ? "#dc2626" : IS.border }}
+              value={form.phone || ""}
+              onChange={(e) => set("phone", e.target.value)}
+            />
+            {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
+          </Field>
+
+          <Field label="Address">
+            <input
+              className={IC}
+              style={{ ...IS, borderColor: errors.address ? "#dc2626" : IS.border }}
+              value={form.address || ""}
+              onChange={(e) => set("address", e.target.value)}
+            />
+            {errors.address && <p className="text-xs text-red-500 mt-1">{errors.address}</p>}
           </Field>
 
           <Field label="Job Title">
@@ -134,47 +157,6 @@ export default function EditDrawer({ emp, onClose, onSave }) {
               onChange={(e) => set("role_title", e.target.value)}
             />
           </Field>
-
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Department">
-              {loadingDepts ? (
-                <select className={IC} style={IS} disabled>
-                  <option>Loading...</option>
-                </select>
-              ) : errorDepts ? (
-                <select className={IC} style={IS} disabled>
-                  <option>{errorDepts}</option>
-                </select>
-              ) : (
-                <select
-                  className={IC}
-                  style={IS}
-                  value={form.department_id || ""}
-                  onChange={(e) => set("department_id", e.target.value)}
-                >
-                  <option value="">— Select Department —</option>
-                  {departments.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </Field>
-
-            <Field label="Status">
-              <select
-                className={IC}
-                style={IS}
-                value={form.status || "Active"}
-                onChange={(e) => set("status", e.target.value)}
-              >
-                <option>Active</option>
-                <option>On Leave</option>
-                <option>Inactive</option>
-              </select>
-            </Field>
-          </div>
         </div>
 
         {/* Footer */}
