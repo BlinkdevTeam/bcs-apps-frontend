@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import TimeCorrectionModal from "./TimeCorrectionModal";
 
 import {
-  EMPLOYEES,
   DEPTS,
   ATTENDANCE_STYLE,
   breakFlags,
@@ -12,7 +11,7 @@ import {
   BREAK_WINDOW_START,
 } from "../../../data/compData";
 
-export default function AttendanceTab({ attendance, onCorrect }) {
+export default function AttendanceTab({ attendance, employees, onCorrect }) {
   const [search, setSearch] = useState("");
   const [deptFilter, setDeptFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -20,7 +19,7 @@ export default function AttendanceTab({ attendance, onCorrect }) {
   const [correcting, setCorrecting] = useState(null);
 
   const filtered = useMemo(() => {
-    return EMPLOYEES.filter((emp) => {
+    return employees.filter((emp) => {
       const q = search.toLowerCase();
       const a = attendance.find((a) => a.empId === emp.id);
       const flags = breakFlags(a?.breakOut, a?.breakIn);
@@ -33,7 +32,7 @@ export default function AttendanceTab({ attendance, onCorrect }) {
         (breakFilter === "All" || flags.length > 0)
       );
     });
-  }, [search, deptFilter, statusFilter, breakFilter, attendance]);
+  }, [employees, search, deptFilter, statusFilter, breakFilter, attendance]);
 
   const flaggedCount = attendance.filter(
     (a) => breakFlags(a.breakOut, a.breakIn).length > 0,
@@ -128,7 +127,7 @@ export default function AttendanceTab({ attendance, onCorrect }) {
             className="text-gray-600 text-sm"
             style={{ fontFamily: "monospace" }}
           >
-            {filtered.length} of {EMPLOYEES.length}
+            {filtered.length} of {employees.length}
           </span>
         </div>
 
@@ -387,7 +386,7 @@ export default function AttendanceTab({ attendance, onCorrect }) {
           record={correcting.record}
           onClose={() => setCorrecting(false)}
           onSave={(corrected) => {
-            onCorrect(correcting.emp.id, corrected);
+            onCorrect(correcting.record?.id, corrected);
             setCorrecting(null);
           }}
         />
