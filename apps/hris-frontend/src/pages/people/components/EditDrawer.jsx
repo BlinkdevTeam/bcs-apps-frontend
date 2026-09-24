@@ -37,6 +37,7 @@ export default function EditDrawer({ emp, onClose, onSave }) {
         email: form.email,
         phone: form.phone,
         address: form.address,
+        schedule: form.schedule || "",
         role_title: form.role_title,
       };
 
@@ -147,6 +148,16 @@ export default function EditDrawer({ emp, onClose, onSave }) {
               onChange={(e) => set("address", e.target.value)}
             />
             {errors.address && <p className="text-xs text-red-500 mt-1">{errors.address}</p>}
+          </Field>
+
+          <Field label="Work Schedule">
+            <input
+              className={IC}
+              style={IS}
+              placeholder="e.g. Mon–Fri, 9am–5pm"
+              value={form.schedule || ""}
+              onChange={(e) => set("schedule", e.target.value)}
+            />
           </Field>
 
           <Field label="Job Title">
