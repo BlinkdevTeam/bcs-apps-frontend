@@ -8,22 +8,25 @@ import DocumentsTab from "./DocumentsTab";
 import ActivityTab from "./ActivityTab";
 import EditDrawer from "./EditDrawer";
 
+import { CalendarDays, CalendarPlus, Mail, MapPin, Phone, } from "lucide-react";
+
 // ── SMALL INFO PILL ───────────────────────────────────────────────────────────
 function InfoItem({ icon, label, value }) {
   if (!value) return null;
+
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm shrink-0" aria-hidden="true">{icon}</span>
-      <div className="min-w-0">
-        <p
-          className="text-xs text-gray-400 leading-none mb-0.5"
-          style={{ fontFamily: "system-ui,sans-serif" }}
-        >
+    <div className="flex items-start gap-3 min-w-0">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-500">
+        {icon}
+      </div>
+
+      <div className="min-w-0 pt-0.5">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
           {label}
         </p>
+
         <p
-          className="text-sm text-gray-800 truncate"
-          style={{ fontFamily: "system-ui,sans-serif" }}
+          className="mt-0.5 truncate text-sm font-medium text-gray-800"
           title={value}
         >
           {value}
@@ -39,11 +42,11 @@ export default function ProfilePage({
   onBack,
   // onEdit,
   onUpdateEmp,
-  empComp,
-  onUpdateComp,
-  basicPaySets,
-  contributionSets,
-  benefitsSets,
+  // empComp,
+  // onUpdateComp,
+  // basicPaySets,
+  // contributionSets,
+  // benefitsSets,
   gc,
   SS,
   BADGE,
@@ -52,13 +55,13 @@ export default function ProfilePage({
   const [showEditDrawer, setShowEditDrawer] = useState(false);
   const TABS = [
     // "Overview",
-    "Compensation",
+    // "Compensation",
     "Leave",
     "OT / UT",
     "Documents",
     "Activity",
   ];
-  const [tab, setTab] = useState("Overview");
+  const [tab, setTab] = useState("Leave");
 
   const fullName =
     emp.name || `${emp.first_name || ""} ${emp.last_name || ""}`.trim();
@@ -72,7 +75,7 @@ export default function ProfilePage({
     : null;
 
   return (
-    <div className="flex-1 overflow-y-auto" style={{ backgroundColor: "#fafafa" }}>
+    <div className="flex-1 overflow-y-auto">
       <div className="px-8 pt-6">
         {/* Back link */}
         <div className="flex items-center justify-between mb-6">
@@ -166,11 +169,7 @@ export default function ProfilePage({
             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-4 mt-6 pt-6"
             style={{ borderTop: "1px solid #f0f0f0" }}
           >
-            <InfoItem icon="✉️" label="Email" value={emp.email} />
-            <InfoItem icon="📞" label="Phone" value={emp.phone} />
-            <InfoItem icon="📍" label="Address" value={emp.address} />
-            <InfoItem icon="🗓️" label="Schedule" value={emp.schedule} />
-            <InfoItem icon="📅" label="Hire Date" value={hireDateLabel} />
+            <InfoItem icon={<Mail size={16} strokeWidth={1.8} />} label="Email" value={emp.email} /> <InfoItem icon={<Phone size={16} strokeWidth={1.8} />} label="Phone" value={emp.phone} /> <InfoItem icon={<MapPin size={16} strokeWidth={1.8} />} label="Address" value={emp.address} /> <InfoItem icon={<CalendarDays size={16} strokeWidth={1.8} />} label="Schedule" value={emp.schedule} /> <InfoItem icon={<CalendarPlus size={16} strokeWidth={1.8} />} label="Hire Date" value={hireDateLabel} />
           </div>
         </div>
 
@@ -198,7 +197,7 @@ export default function ProfilePage({
 
       <div className="px-8 py-6">
         {/* {tab === "Overview" && <OverviewTab emp={emp} />} */}
-        {tab === "Compensation" && (
+        {/* {tab === "Compensation" && (
           <EmployeeCompensationTab
             emp={emp}
             onUpdateEmp={onUpdateEmp}
@@ -208,7 +207,7 @@ export default function ProfilePage({
             contributionSets={contributionSets}
             benefitsSets={benefitsSets}
           />
-        )}
+        )} */}
         {tab === "Leave" && <LeaveTab BADGE={BADGE} />}
         {tab === "OT / UT" && <OTUTTab BADGE={BADGE} />}
         {tab === "Documents" && <DocumentsTab />}

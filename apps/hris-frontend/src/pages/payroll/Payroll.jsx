@@ -1,4 +1,5 @@
-import { React, useState, useMemo } from "react";
+import { useState } from "react";
+
 import RunPayrollModal from "./components/PayrollModal";
 import PayrollSettingsDrawer from "./components/PayrollSettings";
 import PayslipModal from "./components/PayslipModal";
@@ -6,14 +7,14 @@ import CutoffEditModal from "./components/CutoffAdjustmentModal";
 import OverviewSection from "./components/OverviewSection";
 import PayrollRunsSection from "./components/PayrollRunsSection";
 import CompensationSection from "./components/CompensationSection";
-import CutoffAdjustmentSummary from "./components/CutoffAdjustmentSummary";
 import TaxDeductionsSection from "./components/TaxDeductionsSection";
+
 import {
   DEFAULT_SETTINGS,
   EMPLOYEES,
   fmt,
   periodsPerYear,
-  PAYROLL_RUNS
+  PAYROLL_RUNS,
 } from "../../data/compData";
 
 // ── SHARED DATA ───────────────────────────────────────────────────────────────
@@ -23,18 +24,15 @@ import {
 
 // ── PAYROLL PAGE ──────────────────────────────────────────────────────────────
 export default function Payroll() {
-  const [activeNav, setActiveNav] = useState("Payroll");
   const [activeTab, setActiveTab] = useState("overview");
   const [showRunModal, setShowRunModal] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [editEmp, setEditEmp] = useState(null);
-  const [payslipData, setPayslipData] = useState(null); // {emp, run}
+  const [payslipData, setPayslipData] = useState(null);
   const [employees, setEmployees] = useState(EMPLOYEES);
-  const [cutoffAdjs, setCutoffAdjs] = useState({}); // per-emp cutoff overrides keyed by emp.id
+  const [cutoffAdjs, setCutoffAdjs] = useState({});
   const [runs, setRuns] = useState(PAYROLL_RUNS);
-  const [search, setSearch] = useState("");
-  const [deptFilter, setDeptFilter] = useState("All");
 
   // Total Annual Payroll
   const totalPayroll = EMPLOYEES.reduce((sum, emp) => {
@@ -48,34 +46,6 @@ export default function Payroll() {
   const nextRun = runs.find((r) => r.status === "Scheduled");
   const lastRun = runs.find((r) => r.status === "Processed");
 
-  const DEPTS = [
-    "All",
-    "Engineering",
-    "Sales",
-    "Product",
-    "Design",
-    "Operations",
-    "Marketing",
-    "HR & Admin",
-  ];
-
-  const filtered = useMemo(
-    () =>
-      employees.filter((e) => {
-        const q = search.toLowerCase();
-        return (
-          (!q ||
-            e.name.toLowerCase().includes(q) ||
-            e.role.toLowerCase().includes(q)) &&
-          (deptFilter === "All" || e.dept === deptFilter)
-        );
-      }),
-    [employees, search, deptFilter],
-  );
-
-  function handleSave(updated) {
-    setEmployees((p) => p.map((e) => (e.id === updated.id ? updated : e)));
-  }
   function getCutoffAdj(id) {
     return cutoffAdjs[id] || { proratedSalary: null, adjustments: [] };
   }
@@ -96,7 +66,7 @@ export default function Payroll() {
 
       <div className="flex-1 overflow-hidden flex flex-col">
         {/* Page header */}
-        <div className="px-8 pt-8 pb-0 flex-shrink-0">
+        <div className="px-8 pt-8 pb-0 shrink-0">
           <div className="flex items-end justify-between mb-6">
             <div>
               <p

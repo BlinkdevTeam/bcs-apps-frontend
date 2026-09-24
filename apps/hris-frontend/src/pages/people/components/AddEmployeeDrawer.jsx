@@ -2,10 +2,9 @@
 import { useState } from "react";
 import { createEmployee } from "../../../services/employeeService";
 import { TextInput, Select, DatePicker } from "../../../components/form";
-import { IC, IS } from "../../../data/compData";
 
 // ── ADD EMPLOYEE DRAWER ───────────────────────────────────────────────────────
-export default function AddEmployeeDrawer({ onClose, onSave, departments, employees, }) {
+export default function AddEmployeeDrawer({ onClose, onSave, departments, employees }) {
   const [form, setForm] = useState({
     firstName: "",
     middleName: "",
@@ -23,12 +22,14 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
     schedule: "",
     empType: "Full-time",
   });
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
 
   function set(k, v) {
     setForm((f) => ({ ...f, [k]: v }));
   }
 
-  // ✅ AUTO SET MANAGER FROM DEPARTMENT
+  // Auto-fills manager from the selected department's head
   function handleDeptChange(deptName) {
     const dept = departments.find((d) => d.name === deptName);
     const head = employees.find((e) => e.id === dept?.head_id);
@@ -44,7 +45,10 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
     }));
   }
 
-  function handleSave() {
+  async function handleSave() {
+    setSaving(true);
+    setSaveError(null);
+
     const hire_date = form.joined
       ? new Date(form.joined).toISOString().split("T")[0]
       : new Date().toISOString().split("T")[0];
@@ -71,53 +75,62 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
       schedule: form.schedule || null,
     };
 
-    createEmployee(payload)
-      .then((res) => {
-        console.log("Employee created:", res.data);
-        onClose();
-        if (onSave) onSave(res.data);
-      })
-      .catch((err) => {
-        console.error("Error creating employee:", err);
-        alert("Failed to create employee. Check console for details.");
-      });
+    try {
+      const res = await createEmployee(payload);
+      onSave?.(res.data);
+      onClose();
+    } catch (err) {
+      console.error("Error creating employee:", err);
+      setSaveError(
+        err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          "Failed to create employee. Please try again."
+      );
+    } finally {
+      setSaving(false);
+    }
   }
+
+  const canSave = form.firstName.trim() && form.lastName.trim() && form.email.trim();
 
   return (
     <>
+      {/* BACKDROP */}
       <div
-        className="fixed inset-0 z-200"
-        style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+        className="fixed inset-0 z-20"
+        style={{ backgroundColor: "rgba(0,0,0,0.4)" }}
         onClick={onClose}
       />
+
+      {/* DRAWER */}
       <div
-        className="fixed top-0 right-0 h-full z-201 flex flex-col"
+        className="fixed top-0 right-0 h-full z-50 flex flex-col"
         style={{
-          width: 480,
-          backgroundColor: "#080808",
-          borderLeft: "1px solid #222",
-          boxShadow: "-8px 0 40px rgba(0,0,0,0.8)",
+          width: 500,
+          backgroundColor: "#ffffff",
+          borderLeft: "1px solid #e5e7eb",
+          boxShadow: "-8px 0 40px rgba(0,0,0,0.15)",
         }}
       >
         {/* Header */}
         <div
           className="flex items-center justify-between px-7 py-5 shrink-0"
-          style={{ borderBottom: "1px solid #1a1a1a" }}
+          style={{ borderBottom: "1px solid #e5e7eb" }}
         >
           <div>
-            <h2 className="text-base font-normal text-white">
+            <h2 className="text-base font-normal text-gray-900">
               Add New Employee
             </h2>
             <p
               className="text-gray-500 text-sm mt-0.5"
-              style={{ fontFamily: "system-ui, sans-serif" }}
+              style={{ fontFamily: "system-ui,sans-serif" }}
             >
               Fill in the details below
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-white transition-colors text-xl cursor-pointer"
+            className="text-gray-400 hover:text-gray-900 transition-colors text-xl leading-none cursor-pointer"
           >
             ✕
           </button>
@@ -125,11 +138,25 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
 
         {/* Form */}
         <div className="flex-1 overflow-y-auto px-7 py-6 space-y-5">
+          {saveError && (
+            <p
+              className="text-xs px-3 py-2 rounded"
+              style={{
+                fontFamily: "system-ui,sans-serif",
+                backgroundColor: "#fef2f2",
+                color: "#dc2626",
+                border: "1px solid #fecaca",
+              }}
+            >
+              {saveError}
+            </p>
+          )}
+
           <p
-            className="text-xs uppercase tracking-widest text-gray-600 pb-1"
+            className="text-xs uppercase tracking-widest text-gray-500 pb-1"
             style={{
-              fontFamily: "system-ui, sans-serif",
-              borderBottom: "1px solid #1a1a1a",
+              fontFamily: "system-ui,sans-serif",
+              borderBottom: "1px solid #e5e7eb",
             }}
           >
             Basic Info
@@ -138,16 +165,12 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
             <TextInput
               label="First Name"
               placeholder="Sara"
-              className={IC}
-              style={IS}
               value={form.firstName}
               onChange={(e) => set("firstName", e.target.value)}
             />
             <TextInput
               label="Middle Name"
               placeholder="Marie"
-              className={IC}
-              style={IS}
               value={form.middleName}
               onChange={(e) => set("middleName", e.target.value)}
             />
@@ -155,24 +178,18 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
           <TextInput
             label="Last Name"
             placeholder="Okafor"
-            className={IC}
-            style={IS}
             value={form.lastName}
             onChange={(e) => set("lastName", e.target.value)}
           />
           <TextInput
             label="Work Email"
             placeholder="name@company.com"
-            className={IC}
-            style={IS}
             value={form.email}
             onChange={(e) => set("email", e.target.value)}
           />
           <TextInput
             label="Phone"
             placeholder="+1 212 555 0000"
-            className={IC}
-            style={IS}
             value={form.phone}
             onChange={(e) => set("phone", e.target.value)}
           />
@@ -180,16 +197,14 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
             label="Date of Birth"
             value={form.dob}
             onChange={(e) => set("dob", e.target.value)}
-            maxDate={new Date()} // prevents future birthdates
-            className={IC}
-            style={IS}
+            maxDate={new Date()}
           />
 
           <p
-            className="text-xs uppercase tracking-widest text-gray-600 pt-2 pb-1"
+            className="text-xs uppercase tracking-widest text-gray-500 pt-2 pb-1"
             style={{
-              fontFamily: "system-ui, sans-serif",
-              borderBottom: "1px solid #1a1a1a",
+              fontFamily: "system-ui,sans-serif",
+              borderBottom: "1px solid #e5e7eb",
             }}
           >
             Job Details
@@ -197,36 +212,26 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
           <TextInput
             label="Job Title"
             placeholder="Senior Engineer"
-            className={IC}
-            style={IS}
             value={form.role}
             onChange={(e) => set("role", e.target.value)}
           />
-          {/* ✅ Dynamic Department */}
           <Select
             label="Department"
             value={form.dept}
             onChange={(e) => handleDeptChange(e.target.value)}
             options={departments.map((d) => d.name)}
-            className={IC}
-            style={IS}
           />
           <div className="grid grid-cols-2 gap-4">
             <TextInput
               label="Address"
               placeholder="e.g. Los Baños, Laguna"
-              className={IC}
-              style={IS}
               value={form.address}
               onChange={(e) => set("address", e.target.value)}
             />
-            {/* ✅ Auto Manager */}
             <TextInput
               label="Manager"
               value={form.manager}
               disabled
-              className={IC}
-              style={IS}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -234,14 +239,10 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
               label="Start Date"
               value={form.joined}
               onChange={(e) => set("joined", e.target.value)}
-              className={IC}
-              style={IS}
             />
             <TextInput
               label="Work Schedule"
               placeholder="e.g. Mon–Fri, 9am–5pm"
-              className={IC}
-              style={IS}
               value={form.schedule}
               onChange={(e) => set("schedule", e.target.value)}
             />
@@ -251,34 +252,37 @@ export default function AddEmployeeDrawer({ onClose, onSave, departments, employ
             value={form.empType}
             onChange={(e) => set("empType", e.target.value)}
             options={["Full-time", "Part-time", "Contractor", "Intern"]}
-            className={IC}
-            style={IS}
           />
         </div>
 
         {/* Footer */}
         <div
           className="px-7 py-5 flex items-center justify-between shrink-0"
-          style={{ borderTop: "1px solid #1a1a1a" }}
+          style={{ borderTop: "1px solid #e5e7eb" }}
         >
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded text-sm hover:opacity-80 cursor-pointer"
+            className="px-5 py-2.5 rounded text-sm hover:opacity-80 cursor-pointer transition-opacity"
             style={{
-              fontFamily: "system-ui, sans-serif",
-              backgroundColor: "#111",
-              color: "#aaa",
-              border: "1px solid #2a2a2a",
+              fontFamily: "system-ui,sans-serif",
+              backgroundColor: "#f3f4f6",
+              color: "#374151",
+              border: "1px solid #e5e7eb",
             }}
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-5 py-2.5 rounded text-sm font-medium bg-white text-black hover:opacity-80 cursor-pointer"
-            style={{ fontFamily: "system-ui, sans-serif" }}
+            disabled={!canSave || saving}
+            className="px-5 py-2.5 rounded text-sm font-medium bg-gray-900 text-white hover:opacity-80 cursor-pointer transition-opacity"
+            style={{
+              fontFamily: "system-ui,sans-serif",
+              opacity: !canSave || saving ? 0.5 : 1,
+              cursor: !canSave || saving ? "not-allowed" : "pointer",
+            }}
           >
-            Add Employee ✓
+            {saving ? "Adding…" : "Add Employee ✓"}
           </button>
         </div>
       </div>

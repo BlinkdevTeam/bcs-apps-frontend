@@ -19,7 +19,7 @@ export default function TextInput({
   return (
     <div className="flex flex-col w-full">
       {label && (
-        <label className="text-sm font-medium text-gray-400 mb-1">
+        <label className="text-xs uppercase tracking-widest text-gray-500 mb-1.5" style={{ fontFamily: "system-ui,sans-serif" }}>
           {label}
         </label>
       )}
@@ -31,12 +31,13 @@ export default function TextInput({
         placeholder={placeholder}
         disabled={disabled}
         className={clsx(
-          "w-full rounded-md px-3 py-2 text-sm bg-[#111] text-white border",
-          "focus:outline-none focus:ring-2 focus:ring-white/20",
-          error ? "border-red-500" : "border-[#2a2a2a]",
-          disabled && "bg-gray-800 cursor-not-allowed",
+          "w-full rounded-md px-3 py-2.5 text-sm bg-white text-gray-900 border placeholder-gray-400",
+          "focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400",
+          error ? "border-red-400" : "border-gray-200",
+          disabled && "bg-gray-100 text-gray-400 cursor-not-allowed",
           className
         )}
+        style={{ fontFamily: "system-ui,sans-serif" }}
         {...props}
       />
 

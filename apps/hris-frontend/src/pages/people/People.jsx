@@ -167,13 +167,6 @@ export default function People({
                 🛡 Create Role
               </button>
             )}
-                <button
-                  onClick={() => setShowCreateUser(true)}
-                  className="px-4 py-2 rounded text-sm font-medium bg-black text-white flex items-center gap-2 hover:opacity-80"
-                  style={{ fontFamily: "system-ui,sans-serif" }}
-                >
-                  ＋ Invite User
-                </button>
               </>
             )}
           </div>

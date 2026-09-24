@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux"; // Import Redux hooks
 import { logoutUser } from "../services/authServices";
 import { logout } from "../store/authSlice"; // Import logout action
 
-import BCSLogo from "../assets/logos/BCS_LOGOMARK_BLACK.png";
+import BCSLogo from "../assets/logos/BCS_LOGO_ALT_BLACK.png";
 
 import AvatarButton from "./components/AvatarButton";
 import DropdownMenu from "./components/DropdownMenu";
@@ -70,27 +70,17 @@ export default function Header() {
 
   return (
     <header
-      className="px-8 py-4 flex items-center justify-between shrink-0 z-100"
+      className="px-8 flex items-center justify-between shrink-0 z-100"
     >
       <div className="flex items-center gap-10">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 flex items-center justify-center">
+          <div className="w-16 h-16 flex items-center justify-center">
             <img
               src={BCSLogo}
               alt="BCS"
               className="w-full h-full object-contain"
             />
           </div>
-
-          <span
-            className="text-lg text-black"
-            style={{
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-            }}
-          >
-            BCS
-          </span>
         </div>
 
         <nav className="flex gap-4">

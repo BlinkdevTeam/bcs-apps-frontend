@@ -73,8 +73,9 @@ function mapEmployee(emp) {
     id: emp.id ?? crypto.randomUUID(),
     name: `${emp.first_name ?? ""} ${emp.last_name ?? ""}`.trim() || "Unnamed",
     email: emp.email ?? "—",
-    role_id: emp.role_id ?? null,
-    role_title: emp.role_title ?? "",
+    role_id: emp.effective_role_id ?? emp.role_id ?? null, // resolved role (hris_users || employees)
+    role_name: emp.role_name ?? "",                         // role name from roles table, via backend join
+    job_title: emp.role_title ?? "",                        // employee's actual job title
     dept: emp.department?.name ?? "—",
     status: emp.status ?? "inactive",
     lastLogin: emp.last_login_at
@@ -275,51 +276,52 @@ export default function UserManagementPage() {
             Loading users…
           </div>
         ) : (
-          <div className="rounded-lg overflow-hidden" style={{ border: "1px solid #1e1e1e" }}>
+          <div className="rounded-lg overflow-hidden" style={{ border: "1px solid #e5e7eb" }}>
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ backgroundColor: "#ffffff", borderBottom: "1px solid #1e1e1e" }}>
+                <tr style={{ backgroundColor: "#fafafa", borderBottom: "1px solid #e5e7eb" }}>
                   {["User", "Role", "Status", "Last Login", "Invite", ""].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left font-normal text-gray-600 whitespace-nowrap"
-                      style={{ fontFamily: "system-ui,sans-serif", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                    <th key={h} className="px-4 py-3 text-left font-normal text-gray-500 whitespace-nowrap"
+                      style={{ fontFamily: "system-ui,sans-serif", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.07em" }}>
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((user, i) => {
+                {[...filtered]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((user, i) => {
                   if (!user) return null;
-                  // Look up role from DB data
                   const role = roleMap[user.role_id];
                   const rc = getRoleColor(user.role_id);
 
                   return (
                     <tr
                       key={user.id || i}
-                      className="group"
+                      className="group transition-colors"
                       style={{
-                        borderBottom: i < filtered.length - 1 ? "1px solid #141414" : "none",
-                        backgroundColor: user.status === "inactive" ? "#080808" : "#0d0d0d",
+                        borderBottom: i < filtered.length - 1 ? "1px solid #f0f0f0" : "none",
+                        backgroundColor: "#ffffff",
+                        opacity: user.status === "inactive" ? 0.6 : 1,
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#111")}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = user.status === "inactive" ? "#080808" : "#0d0d0d")}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#fafafa")}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#ffffff")}
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div className="relative">
                             <Avatar user={user} size={32} />
                             {user.status === "inactive" && (
-                              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-black"
-                                style={{ backgroundColor: "#f05a5a" }} />
+                              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white"
+                                style={{ backgroundColor: "#ef4444" }} />
                             )}
                           </div>
                           <div>
-                            <p className="text-white text-sm"
-                              style={{ fontFamily: "system-ui,sans-serif", opacity: user.status === "inactive" ? 0.5 : 1 }}>
+                            <p className="text-gray-900 text-sm font-medium" style={{ fontFamily: "system-ui,sans-serif" }}>
                               {user.name}
                             </p>
-                            <p className="text-gray-600 text-xs" style={{ fontFamily: "system-ui,sans-serif" }}>
+                            <p className="text-gray-500 text-xs" style={{ fontFamily: "system-ui,sans-serif" }}>
                               {user.email}
                             </p>
                           </div>
@@ -328,19 +330,19 @@ export default function UserManagementPage() {
 
                       <td className="px-4 py-3">
                         <span
-                          className="text-xs px-2 py-0.5 rounded-full"
+                          className="text-xs px-2.5 py-1 rounded-full font-medium"
                           style={{ fontFamily: "system-ui,sans-serif", backgroundColor: rc.bg, color: rc.color }}
                         >
-                          {role?.name ?? user.role_title ?? "—"}  {/* ← from DB, no hardcoding */}
+                          {role?.name ?? user.role_name ?? "—"}
                         </span>
                       </td>
 
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5">
                           <div className="w-1.5 h-1.5 rounded-full"
-                            style={{ backgroundColor: user.status === "active" ? "#5af07a" : "#333" }} />
-                          <span className="text-xs capitalize"
-                            style={{ fontFamily: "system-ui,sans-serif", color: user.status === "active" ? "#5af07a" : "#555" }}>
+                            style={{ backgroundColor: user.status === "active" ? "#22c55e" : "#d1d5db" }} />
+                          <span className="text-xs capitalize font-medium"
+                            style={{ fontFamily: "system-ui,sans-serif", color: user.status === "active" ? "#16a34a" : "#9ca3af" }}>
                             {user.status}
                           </span>
                         </div>
@@ -352,8 +354,8 @@ export default function UserManagementPage() {
 
                       <td className="px-4 py-3">
                         {user.mustChangePassword && (
-                          <span className="text-xs px-2 py-0.5 rounded"
-                            style={{ fontFamily: "system-ui,sans-serif", backgroundColor: "#1f1a0f", color: "#f0c85a", border: "1px solid #3a3010" }}>
+                          <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                            style={{ fontFamily: "system-ui,sans-serif", backgroundColor: "#fef3c7", color: "#b45309" }}>
                             Pending
                           </span>
                         )}
@@ -362,8 +364,8 @@ export default function UserManagementPage() {
                       <td className="px-4 py-3">
                         <button
                           onClick={() => setEditing(user)}
-                          className="text-xs px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:opacity-80"
-                          style={{ fontFamily: "system-ui,sans-serif", backgroundColor: "#111", color: "#aaa", border: "1px solid #2a2a2a" }}
+                          className="text-xs px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:opacity-80 cursor-pointer"
+                          style={{ fontFamily: "system-ui,sans-serif", backgroundColor: "#f3f4f6", color: "#374151", border: "1px solid #e5e7eb" }}
                         >
                           Edit
                         </button>
@@ -374,7 +376,7 @@ export default function UserManagementPage() {
 
                 {filtered.length === 0 && !loading && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-10 text-center text-gray-600 text-sm"
+                    <td colSpan={6} className="px-4 py-12 text-center text-gray-400 text-sm"
                       style={{ fontFamily: "system-ui,sans-serif" }}>
                       No users found
                     </td>

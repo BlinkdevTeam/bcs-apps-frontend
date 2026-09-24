@@ -134,18 +134,27 @@ const filtered = useMemo(
         <div className="px-8 pt-8 pb-4 shrink-0">
           <div className="flex items-center gap-3">
             <div className="relative flex-1 max-w-xs">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
-                🔍
+              <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="h-4 w-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"
+                  />
+                </svg>
               </span>
 
               <input
-                className="w-full pl-9 pr-4 py-2 rounded text-sm text-gray-900 placeholder-gray-400 outline-none"
-                style={{
-                  fontFamily: "system-ui,sans-serif",
-                  backgroundColor: "#fff",
-                  border: "1px solid #e5e7eb",
-                }}
-                placeholder="Search…"
+                type="text"
+                className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 shadow-sm outline-none transition-all duration-200 placeholder:text-gray-400 hover:border-gray-300 focus:border-[#e3e3e3] focus:ring-2 focus:ring-[#dadada]/10"
+                placeholder="Search..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -193,7 +202,7 @@ const filtered = useMemo(
                 {[
                   "Employee",
                   "Department",
-                  "Role",
+                  "Job Title",
                 ].map((h) => (
                   <th
                     key={h}
