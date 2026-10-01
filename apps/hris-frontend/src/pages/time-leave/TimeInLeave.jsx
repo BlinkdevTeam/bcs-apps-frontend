@@ -117,143 +117,80 @@ async function correctAttendance(recordId, corrected) {
   const pendingOffset = offsetRequests.filter(r=>r.status==="Pending").length;
 
   return (
-  <div className="flex-1 overflow-hidden flex flex-col bg-white">
-    <div className="px-8 pt-8 pb-0 flex-shrink-0">
-      <div className="flex items-end justify-between mb-6">
-        <div>
-          <p
-            className="text-gray-500 text-xs uppercase tracking-widest mb-1"
-            style={{ fontFamily: "system-ui,sans-serif" }}
-          >
-            HR Management
-          </p>
-          <h1
-            className="text-3xl font-normal text-gray-900"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            Time & Leave
-          </h1>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div
-            className="rounded-lg px-4 py-2 flex items-center gap-2 bg-green-50 border border-green-100"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-            <span
-              className="text-xs text-gray-600"
-              style={{ fontFamily: "system-ui,sans-serif" }}
-            >
-              Today · Mon, Mar 2, 2026
-            </span>
+    <div className="flex-1 overflow-hidden flex flex-col">
+      <div className="px-8 pt-8 pb-0 flex-shrink-0">
+        <div className="flex items-end justify-between mb-6">
+          <div>
+            <p className="text-gray-500 text-xs uppercase tracking-widest mb-1" style={{fontFamily:"system-ui,sans-serif"}}>HR Management</p>
+            <h1 className="text-3xl font-normal text-black" style={{letterSpacing:"-0.02em"}}>Time & Leave</h1>
           </div>
-
-          <div className="rounded-lg px-4 py-2 bg-gray-50 border border-gray-200">
-            <span
-              className="text-xs text-gray-500"
-              style={{ fontFamily: "system-ui,sans-serif" }}
-            >
-              Cutoff ends{" "}
-              <strong className="text-gray-900">{CURRENT_CUTOFF_END}</strong>
-            </span>
-          </div>
-
-          {pendingLeave > 0 && (
-            <div className="rounded-lg px-4 py-2 bg-amber-50 border border-amber-100">
+          <div className="flex items-center gap-3">
+            <div className="rounded-lg px-4 py-2 flex items-center gap-2" style={{backgroundColor:"#f0faf0",border:"1px solid #cfe8cf"}}>
+              <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor:"#16a34a"}}/>
               <span
-                className="text-xs text-amber-600"
+                className="text-xs text-gray-600"
                 style={{ fontFamily: "system-ui,sans-serif" }}
               >
-                ⏳ {pendingLeave} leave pending
+                Today ·{" "}
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })}
               </span>
             </div>
-          )}
+            <div className="rounded-lg px-4 py-2" style={{backgroundColor:"#f0f4fb",border:"1px solid #d6e0f0"}}>
+              <span className="text-xs text-gray-600" style={{fontFamily:"system-ui,sans-serif"}}>Cutoff ends <strong className="text-black">{CURRENT_CUTOFF_END}</strong></span>
+            </div>
+            {pendingLeave>0&&(
+              <div className="rounded-lg px-4 py-2" style={{backgroundColor:"#fdf6e8",border:"1px solid #f0dfa8"}}>
+                <span className="text-xs" style={{fontFamily:"system-ui,sans-serif",color:"#b8860b"}}>⏳ {pendingLeave} leave pending</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex gap-1" style={{borderBottom:"1px solid #e5e5e5"}}>
+          {TABS.map(t=>(
+            <button key={t.key} onClick={()=>setActiveTab(t.key)}
+              className="px-4 py-2.5 text-sm transition-all"
+              style={{fontFamily:"system-ui,sans-serif",color:activeTab===t.key?"#000":"#888",borderBottom:activeTab===t.key?"2px solid #000":"2px solid transparent"}}>
+              {t.label}
+              {t.key==="leave"&&pendingLeave>0&&<span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full" style={{fontFamily:"monospace",backgroundColor:"#fdf6e8",color:"#b8860b"}}>{pendingLeave}</span>}
+              {t.key==="offset"&&pendingOffset>0&&<span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full" style={{fontFamily:"monospace",backgroundColor:"#fdf6e8",color:"#b8860b"}}>{pendingOffset}</span>}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="flex gap-1 border-b border-gray-200">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setActiveTab(t.key)}
-            className="px-4 py-2.5 text-sm transition-all"
-            style={{
-              fontFamily: "system-ui,sans-serif",
-              color: activeTab === t.key ? "#111827" : "#6b7280",
-              borderBottom:
-                activeTab === t.key
-                  ? "2px solid #111827"
-                  : "2px solid transparent",
-            }}
-          >
-            {t.label}
-
-            {t.key === "leave" && pendingLeave > 0 && (
-              <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">
-                {pendingLeave}
-              </span>
-            )}
-
-            {t.key === "offset" && pendingOffset > 0 && (
-              <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">
-                {pendingOffset}
-              </span>
-            )}
-          </button>
-        ))}
+      <div className="flex-1 overflow-y-auto px-8 py-6">
+        {activeTab === "overview" && (
+          <OverviewTab
+            attendance={attendance}
+            leaveRequests={leaveRequests}
+            otRecords={otRecords}
+            employees={EMPLOYEES}
+            leaveBalances={LEAVE_BALANCES}
+            attendanceStyle={ATTENDANCE_STYLE}
+            fmt={fmt}
+            onApprove={approveLeave}
+            onReject={rejectLeave}
+          />
+        )}
+        {activeTab === "attendance" && (
+          <AttendanceTab
+            attendance={attendance}
+            employees={attendanceEmployees}
+            loading={loadingAttendance}
+            onCorrect={correctAttendance}
+          />
+        )}
+        {activeTab==="leave"      && <LeaveManagementTab leaveRequests={leaveRequests} onApprove={approveLeave} onReject={rejectLeave}/>}
+        {activeTab==="balances"   && <LeaveBalancesTab/>}
+        {activeTab==="otut"       && <OTUTTab otRecords={otRecords} onApproveOT={approveOT}/>}
+        {activeTab==="offset"     && <OffsetTab bank={offsetBank} setBank={setOffsetBank} requests={offsetRequests} setRequests={setOffsetRequests}/>}
       </div>
     </div>
-
-    <div className="flex-1 overflow-y-auto px-8 py-6 bg-white">
-      {activeTab === "overview" && (
-        <OverviewTab
-          attendance={attendance}
-          leaveRequests={leaveRequests}
-          otRecords={otRecords}
-          employees={EMPLOYEES}
-          leaveBalances={LEAVE_BALANCES}
-          attendanceStyle={ATTENDANCE_STYLE}
-          fmt={fmt}
-          onApprove={approveLeave}
-          onReject={rejectLeave}
-        />
-      )}
-
-      {activeTab === "attendance" && (
-        <AttendanceTab
-          attendance={attendance}
-          employees={attendanceEmployees}
-          loading={loadingAttendance}
-          onCorrect={correctAttendance}
-        />
-      )}
-
-      {activeTab === "leave" && (
-        <LeaveManagementTab
-          leaveRequests={leaveRequests}
-          onApprove={approveLeave}
-          onReject={rejectLeave}
-        />
-      )}
-
-      {activeTab === "balances" && <LeaveBalancesTab />}
-
-      {activeTab === "otut" && (
-        <OTUTTab
-          otRecords={otRecords}
-          onApproveOT={approveOT}
-        />
-      )}
-
-      {activeTab === "offset" && (
-        <OffsetTab
-          bank={offsetBank}
-          setBank={setOffsetBank}
-          requests={offsetRequests}
-          setRequests={setOffsetRequests}
-        />
-      )}
-    </div>
-  </div>
-);
+  );
 }

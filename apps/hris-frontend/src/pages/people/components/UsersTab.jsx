@@ -3,6 +3,12 @@ import { getEmployees } from "../../../services/employeeService";
 import { getRoles } from "../../../services/userService";
 import EditUserDrawer from "./usersComponents/EditUserDrawer";
 
+import {
+  UsersStatCardsSkeleton,
+  UsersRoleFilterSkeleton,
+  UsersTableSkeletonRows,
+} from "./usersComponents/UsersSkeleton";
+
 const AV = [
   "#3a3a3a","#2a2a2a","#1f2a3a","#2a1f3a","#3a1f1f",
   "#1f3a2a","#2a3a1f","#3a2a1f","#1f1f3a","#2a3a3a",
@@ -170,30 +176,35 @@ export default function UserManagementPage() {
       {/* Header */}
       <div className="px-8 pt-8 pb-0 shrink-0">
         {/* Role summary cards — dynamic from DB */}
-        <div className="grid gap-3 mb-6" style={{ gridTemplateColumns: `repeat(${roles.length + 1}, 1fr)` }}>
-          {[
-            ...stats.map((s) => ({
-              label: s.name,
-              value: s.count,
-              color: s.color.color,
-            })),
-            { label: "Inactive", value: inactive, color: "#555" },
-          ].map((s) => (
-            <div
-              key={s.label}
-              className="rounded-lg px-4 py-3"
-              style={{ border: "1px solid #1e1e1e" }}
-            >
-              <p className="text-xs uppercase tracking-widest mb-1.5"
-                style={{ fontFamily: "system-ui,sans-serif", color: "#444" }}>
-                {s.label}
-              </p>
-              <p className="text-2xl font-light"
-                style={{ fontFamily: "monospace", color: s.color }}>
-                {s.value}
-              </p>
-            </div>
-          ))}
+        <div
+          className="grid gap-3 mb-6"
+          style={{
+            gridTemplateColumns: `repeat(${loading ? 4 : roles.length + 1}, 1fr)`,
+          }}
+        >
+          {loading ? (
+            <UsersStatCardsSkeleton count={4} />
+          ) : (
+            [
+              ...stats.map((s) => ({ label: s.name, value: s.count, color: s.color.color })),
+              { label: "Inactive", value: inactive, color: "#555" },
+            ].map((s) => (
+              <div
+                key={s.label}
+                className="rounded-lg px-4 py-3"
+                style={{ border: "1px solid #1e1e1e" }}
+              >
+                <p className="text-xs uppercase tracking-widest mb-1.5"
+                  style={{ fontFamily: "system-ui,sans-serif", color: "#444" }}>
+                  {s.label}
+                </p>
+                <p className="text-2xl font-light"
+                  style={{ fontFamily: "monospace", color: s.color }}>
+                  {s.value}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -201,44 +212,63 @@ export default function UserManagementPage() {
         {/* Filters */}
         <div className="flex items-center gap-3 mb-5">
           <div className="relative flex-1 max-w-xs">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">🔍</span>
+            <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="h-4 w-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"
+                />
+              </svg>
+            </span>
             <input
-              className="w-full pl-9 pr-4 py-2 rounded text-sm text-white placeholder-gray-600 outline-none"
-              style={{ fontFamily: "system-ui,sans-serif", border: "1px solid #2a2a2a" }}
-              placeholder="Search users…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+                type="text"
+                className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 shadow-sm outline-none transition-all duration-200 placeholder:text-gray-400 hover:border-gray-300 focus:border-[#e3e3e3] focus:ring-2 focus:ring-[#dadada]/10"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
           </div>
 
           {/* Role filter — built from DB roles */}
-          <div className="flex gap-1 rounded-lg p-0.5" style={{ border: "1px solid #2a2a2a" }}>
-            <button
-              onClick={() => setRoleFilter("All")}
-              className="px-3 py-1.5 rounded text-xs"
-              style={{
-                fontFamily: "system-ui,sans-serif",
-                backgroundColor: roleFilter === "All" ? "#fff" : "transparent",
-                color: roleFilter === "All" ? "#000" : "#555",
-              }}
-            >
-              All Roles
-            </button>
-            {roles.map((r) => (
+          {loading ? (
+            <UsersRoleFilterSkeleton />
+          ) : (
+            <div className="flex gap-1 rounded-lg p-0.5" style={{ border: "1px solid #2a2a2a" }}>
               <button
-                key={r.id}
-                onClick={() => setRoleFilter(r.id)}
+                onClick={() => setRoleFilter("All")}
                 className="px-3 py-1.5 rounded text-xs"
                 style={{
                   fontFamily: "system-ui,sans-serif",
-                  backgroundColor: roleFilter === r.id ? "#fff" : "transparent",
-                  color: roleFilter === r.id ? "#000" : "#555",
+                  backgroundColor: roleFilter === "All" ? "#fff" : "transparent",
+                  color: roleFilter === "All" ? "#000" : "#555",
                 }}
               >
-                {r.name}
+                All Roles
               </button>
-            ))}
-          </div>
+              {roles.map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => setRoleFilter(r.id)}
+                  className="px-3 py-1.5 rounded text-xs"
+                  style={{
+                    fontFamily: "system-ui,sans-serif",
+                    backgroundColor: roleFilter === r.id ? "#fff" : "transparent",
+                    color: roleFilter === r.id ? "#000" : "#555",
+                  }}
+                >
+                  {r.name}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="flex gap-1 rounded-lg p-0.5" style={{ backgroundColor: "#111", border: "1px solid #2a2a2a" }}>
             {["All", "active", "inactive"].map((s) => (
@@ -259,7 +289,11 @@ export default function UserManagementPage() {
 
           <div className="flex-1" />
           <span className="text-gray-600 text-sm" style={{ fontFamily: "monospace" }}>
-            {loading ? "Loading…" : `${filtered.length} users`}
+            {loading ? (
+              <span className="inline-block h-3.5 w-16 rounded bg-gray-200 animate-pulse align-middle" />
+            ) : (
+              `${filtered.length} users`
+            )}
           </span>
         </div>
 
@@ -270,14 +304,9 @@ export default function UserManagementPage() {
           </div>
         )}
 
-        {loading ? (
-          <div className="flex items-center justify-center py-20 text-gray-600 text-sm"
-            style={{ fontFamily: "system-ui,sans-serif" }}>
-            Loading users…
-          </div>
-        ) : (
+
           <div className="rounded-lg overflow-hidden" style={{ border: "1px solid #e5e7eb" }}>
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-busy={loading}>
               <thead>
                 <tr style={{ backgroundColor: "#fafafa", borderBottom: "1px solid #e5e7eb" }}>
                   {["User", "Role", "Status", "Last Login", "Invite", ""].map((h) => (
@@ -289,103 +318,109 @@ export default function UserManagementPage() {
                 </tr>
               </thead>
               <tbody>
-                {[...filtered]
-                .sort((a, b) => a.name.localeCompare(b.name))
-                .map((user, i) => {
-                  if (!user) return null;
-                  const role = roleMap[user.role_id];
-                  const rc = getRoleColor(user.role_id);
+                {loading ? (
+                  <UsersTableSkeletonRows count={6} />
+                ) : (
+                  <>
+                    {[...filtered]
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((user, i) => {
+                      if (!user) return null;
+                      const role = roleMap[user.role_id];
+                      const rc = getRoleColor(user.role_id);
 
-                  return (
-                    <tr
-                      key={user.id || i}
-                      className="group transition-colors"
-                      style={{
-                        borderBottom: i < filtered.length - 1 ? "1px solid #f0f0f0" : "none",
-                        backgroundColor: "#ffffff",
-                        opacity: user.status === "inactive" ? 0.6 : 1,
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#fafafa")}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#ffffff")}
-                    >
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          <div className="relative">
-                            <Avatar user={user} size={32} />
-                            {user.status === "inactive" && (
-                              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white"
-                                style={{ backgroundColor: "#ef4444" }} />
+                      return (
+                        <tr
+                          key={user.id || i}
+                          className="group transition-colors"
+                          style={{
+                            borderBottom: i < filtered.length - 1 ? "1px solid #f0f0f0" : "none",
+                            backgroundColor: "#ffffff",
+                            opacity: user.status === "inactive" ? 0.6 : 1,
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#fafafa")}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#ffffff")}
+                        >
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-3">
+                              <div className="relative">
+                                <Avatar user={user} size={32} />
+                                {user.status === "inactive" && (
+                                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white"
+                                    style={{ backgroundColor: "#ef4444" }} />
+                                )}
+                              </div>
+                              <div>
+                                <p className="text-gray-900 text-sm font-medium" style={{ fontFamily: "system-ui,sans-serif" }}>
+                                  {user.name}
+                                </p>
+                                <p className="text-gray-500 text-xs" style={{ fontFamily: "system-ui,sans-serif" }}>
+                                  {user.email}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="px-4 py-3">
+                            <span
+                              className="text-xs px-2.5 py-1 rounded-full font-medium"
+                              style={{ fontFamily: "system-ui,sans-serif", backgroundColor: rc.bg, color: rc.color }}
+                            >
+                              {role?.name ?? user.role_name ?? "—"}
+                            </span>
+                          </td>
+
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-1.5 h-1.5 rounded-full"
+                                style={{ backgroundColor: user.status === "active" ? "#22c55e" : "#d1d5db" }} />
+                              <span className="text-xs capitalize font-medium"
+                                style={{ fontFamily: "system-ui,sans-serif", color: user.status === "active" ? "#16a34a" : "#9ca3af" }}>
+                                {user.status}
+                              </span>
+                            </div>
+                          </td>
+
+                          <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap" style={{ fontFamily: "monospace" }}>
+                            {user.lastLogin}
+                          </td>
+
+                          <td className="px-4 py-3">
+                            {user.mustChangePassword && (
+                              <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                                style={{ fontFamily: "system-ui,sans-serif", backgroundColor: "#fef3c7", color: "#b45309" }}>
+                                Pending
+                              </span>
                             )}
-                          </div>
-                          <div>
-                            <p className="text-gray-900 text-sm font-medium" style={{ fontFamily: "system-ui,sans-serif" }}>
-                              {user.name}
-                            </p>
-                            <p className="text-gray-500 text-xs" style={{ fontFamily: "system-ui,sans-serif" }}>
-                              {user.email}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
+                          </td>
 
-                      <td className="px-4 py-3">
-                        <span
-                          className="text-xs px-2.5 py-1 rounded-full font-medium"
-                          style={{ fontFamily: "system-ui,sans-serif", backgroundColor: rc.bg, color: rc.color }}
-                        >
-                          {role?.name ?? user.role_name ?? "—"}
-                        </span>
-                      </td>
+                          <td className="px-4 py-3">
+                            <button
+                              onClick={() => setEditing(user)}
+                              className="text-xs px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:opacity-80 cursor-pointer"
+                              style={{ fontFamily: "system-ui,sans-serif", backgroundColor: "#f3f4f6", color: "#374151", border: "1px solid #e5e7eb" }}
+                            >
+                              Edit
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
 
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-1.5 h-1.5 rounded-full"
-                            style={{ backgroundColor: user.status === "active" ? "#22c55e" : "#d1d5db" }} />
-                          <span className="text-xs capitalize font-medium"
-                            style={{ fontFamily: "system-ui,sans-serif", color: user.status === "active" ? "#16a34a" : "#9ca3af" }}>
-                            {user.status}
-                          </span>
-                        </div>
-                      </td>
-
-                      <td className="px-4 py-3 text-gray-500 text-xs whitespace-nowrap" style={{ fontFamily: "monospace" }}>
-                        {user.lastLogin}
-                      </td>
-
-                      <td className="px-4 py-3">
-                        {user.mustChangePassword && (
-                          <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                            style={{ fontFamily: "system-ui,sans-serif", backgroundColor: "#fef3c7", color: "#b45309" }}>
-                            Pending
-                          </span>
-                        )}
-                      </td>
-
-                      <td className="px-4 py-3">
-                        <button
-                          onClick={() => setEditing(user)}
-                          className="text-xs px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:opacity-80 cursor-pointer"
-                          style={{ fontFamily: "system-ui,sans-serif", backgroundColor: "#f3f4f6", color: "#374151", border: "1px solid #e5e7eb" }}
-                        >
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-
-                {filtered.length === 0 && !loading && (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-12 text-center text-gray-400 text-sm"
-                      style={{ fontFamily: "system-ui,sans-serif" }}>
-                      No users found
-                    </td>
-                  </tr>
+                    {filtered.length === 0 && !loading && (
+                      <tr>
+                        <td colSpan={6} className="px-4 py-12 text-center text-gray-400 text-sm"
+                          style={{ fontFamily: "system-ui,sans-serif" }}>
+                          No users found
+                        </td>
+                      </tr>
+                    )}
+                  </>
                 )}
               </tbody>
             </table>
-          </div>
-        )}
+        </div>
+        {loading && <span className="sr-only" role="status">Loading users…</span>}
       </div>
 
       {editing && (

@@ -24,6 +24,8 @@ export default function People({
 }) {
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(true);
+
   const [employees, setEmployees] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [editEmp, setEditEmp] = useState(null);
@@ -68,9 +70,10 @@ export default function People({
         console.error("Failed to fetch data:", err);
         setEmployees([]);
         setDepartments([]);
+      } finally {
+       setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
@@ -204,6 +207,7 @@ export default function People({
       {peopleView === "directory" && (
         <Directory
           employees={employees}
+          loading={loading}
           onViewProfile={handleViewProfile}
           onEditEmployee={(emp) => setEditEmp(emp)}
           onAddEmployee={() => setShowAdd(true)}

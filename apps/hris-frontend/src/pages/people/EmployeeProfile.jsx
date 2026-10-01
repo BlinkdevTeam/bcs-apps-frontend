@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ProfilePage from "./components/ProfilePage";
 import { getEmployeeById } from "../../services/employeeService";
+import EmployeeProfileSkeleton from "./components/EmployeeProfileSkeleton";
 
 export default function EmployeeProfile({ gc, SS, BADGE }) {
   const { id } = useParams();   // :id from URL
@@ -43,7 +44,7 @@ export default function EmployeeProfile({ gc, SS, BADGE }) {
     if (id) fetchEmployee();
   }, [id, navigate]);
 
-  if (loading) return <p className="text-white p-8">Loading employee…</p>;
+  if (loading) return <EmployeeProfileSkeleton />;
   if (!emp) return null;
 
   return (

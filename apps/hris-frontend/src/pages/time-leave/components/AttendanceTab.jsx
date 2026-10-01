@@ -45,13 +45,13 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
         {flaggedCount > 0 && (
           <div
             className="rounded-lg px-5 py-3 flex items-center justify-between"
-            style={{ backgroundColor: "#1a0f0a", border: "1px solid #3a2010" }}
+            style={{ backgroundColor: "#fdf3e8", border: "1px solid #f0d5a8" }}
           >
             <div className="flex items-center gap-3">
-              <span style={{ color: "#f0c85a" }}>⚠</span>
+              <span style={{ color: "#b8860b" }}>⚠</span>
               <p
                 className="text-sm"
-                style={{ fontFamily: "system-ui,sans-serif", color: "#f0c85a" }}
+                style={{ fontFamily: "system-ui,sans-serif", color: "#8a6414" }}
               >
                 {flaggedCount} employee{flaggedCount > 1 ? "s" : ""} with break
                 violations pending review
@@ -64,9 +64,9 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
               className="text-xs px-3 py-1.5 rounded hover:opacity-80 transition-all"
               style={{
                 fontFamily: "system-ui,sans-serif",
-                backgroundColor: breakFilter === "Flagged" ? "#f0c85a" : "#111",
-                color: breakFilter === "Flagged" ? "#000" : "#f0c85a",
-                border: "1px solid #3a2010",
+                backgroundColor: breakFilter === "Flagged" ? "#e8b84a" : "#fff",
+                color: breakFilter === "Flagged" ? "#000" : "#b8860b",
+                border: "1px solid #f0d5a8",
               }}
             >
               {breakFilter === "Flagged" ? "Show All" : "Show Flagged"}
@@ -77,15 +77,15 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
         {/* Filters */}
         <div className="flex items-center gap-3">
           <div className="relative flex-1 max-w-xs">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
               🔍
             </span>
             <input
-              className="w-full pl-9 pr-4 py-2 rounded text-sm text-white placeholder-gray-600 outline-none"
+              className="w-full pl-9 pr-4 py-2 rounded text-sm text-gray-900 placeholder-gray-400 outline-none"
               style={{
                 fontFamily: "system-ui,sans-serif",
-                backgroundColor: "#111",
-                border: "1px solid #2a2a2a",
+                backgroundColor: "#fff",
+                border: "1px solid #e5e7eb",
               }}
               placeholder="Search employee…"
               value={search}
@@ -93,11 +93,11 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
             />
           </div>
           <select
-            className="px-3 py-2 rounded text-sm text-gray-300 outline-none"
+            className="px-3 py-2 rounded text-sm text-gray-700 outline-none"
             style={{
               fontFamily: "system-ui,sans-serif",
-              backgroundColor: "#111",
-              border: "1px solid #2a2a2a",
+              backgroundColor: "#fff",
+              border: "1px solid #e5e7eb",
             }}
             value={deptFilter}
             onChange={(e) => setDeptFilter(e.target.value)}
@@ -107,11 +107,11 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
             ))}
           </select>
           <select
-            className="px-3 py-2 rounded text-sm text-gray-300 outline-none"
+            className="px-3 py-2 rounded text-sm text-gray-700 outline-none"
             style={{
               fontFamily: "system-ui,sans-serif",
-              backgroundColor: "#111",
-              border: "1px solid #2a2a2a",
+              backgroundColor: "#fff",
+              border: "1px solid #e5e7eb",
             }}
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -124,7 +124,7 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
           </select>
           <div className="flex-1" />
           <span
-            className="text-gray-600 text-sm"
+            className="text-gray-500 text-sm"
             style={{ fontFamily: "monospace" }}
           >
             {filtered.length} of {employees.length}
@@ -134,14 +134,14 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
         {/* Table */}
         <div
           className="rounded-lg overflow-x-auto"
-          style={{ border: "1px solid #1e1e1e" }}
+          style={{ border: "1px solid #e5e7eb" }}
         >
           <table className="w-full text-sm">
             <thead>
               <tr
                 style={{
-                  backgroundColor: "#0a0a0a",
-                  borderBottom: "1px solid #1e1e1e",
+                  backgroundColor: "#fafafa",
+                  borderBottom: "1px solid #e5e7eb",
                 }}
               >
                 {[
@@ -158,7 +158,7 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="px-3 py-3 text-left font-normal text-gray-600 whitespace-nowrap"
+                    className="px-3 py-3 text-left font-normal text-gray-500 whitespace-nowrap"
                     style={{
                       fontFamily: "system-ui,sans-serif",
                       fontSize: 10,
@@ -186,18 +186,18 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                     className="group"
                     style={{
                       borderBottom:
-                        i < filtered.length - 1 ? "1px solid #141414" : "none",
-                      backgroundColor: hasFlag ? "#120d08" : "#0d0d0d",
+                        i < filtered.length - 1 ? "1px solid #f0f0f0" : "none",
+                      backgroundColor: hasFlag ? "#fdf8ee" : "#fff",
                     }}
                     onMouseEnter={(e) =>
                       (e.currentTarget.style.backgroundColor = hasFlag
-                        ? "#1a1208"
-                        : "#111")
+                        ? "#fbf1da"
+                        : "#fafafa")
                     }
                     onMouseLeave={(e) =>
                       (e.currentTarget.style.backgroundColor = hasFlag
-                        ? "#120d08"
-                        : "#0d0d0d")
+                        ? "#fdf8ee"
+                        : "#fff")
                     }
                   >
                     {/* Employee */}
@@ -206,13 +206,13 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                         <Avatar emp={emp} size={28} />
                         <div>
                           <p
-                            className="text-white text-sm"
+                            className="text-gray-900 text-sm"
                             style={{ fontFamily: "system-ui,sans-serif" }}
                           >
                             {emp.name}
                           </p>
                           <p
-                            className="text-gray-600 text-xs"
+                            className="text-gray-500 text-xs"
                             style={{ fontFamily: "system-ui,sans-serif" }}
                           >
                             {emp.role}
@@ -233,7 +233,7 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-1">
                         <div
-                          className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                          className="w-1.5 h-1.5 rounded-full shrink-0"
                           style={{ backgroundColor: st.dot }}
                         />
                         <span
@@ -248,7 +248,7 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                         </span>
                         {a?.correctedAt && (
                           <span
-                            className="text-gray-600 text-xs"
+                            className="text-gray-400 text-xs"
                             title="Corrected"
                           >
                             ✎
@@ -259,7 +259,7 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
 
                     {/* Time In */}
                     <td
-                      className="px-3 py-3 text-gray-300 text-xs whitespace-nowrap"
+                      className="px-3 py-3 text-gray-700 text-xs whitespace-nowrap"
                       style={{ fontFamily: "monospace" }}
                     >
                       {a?.timeIn || "—"}
@@ -272,7 +272,7 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                           className="text-xs"
                           style={{
                             fontFamily: "monospace",
-                            color: flags.includes("early") ? "#f0c85a" : "#888",
+                            color: flags.includes("early") ? "#b8860b" : "#999",
                           }}
                         >
                           {a?.breakOut || "—"}
@@ -280,7 +280,7 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                         {flags.includes("early") && (
                           <span
                             title="Before 12PM"
-                            style={{ fontSize: 10, color: "#f0c85a" }}
+                            style={{ fontSize: 10, color: "#b8860b" }}
                           >
                             ⚠
                           </span>
@@ -296,8 +296,8 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                           style={{
                             fontFamily: "monospace",
                             color: flags.includes("exceeded")
-                              ? "#f05a5a"
-                              : "#888",
+                              ? "#dc2626"
+                              : "#999",
                           }}
                         >
                           {a?.breakIn || "—"}
@@ -305,7 +305,7 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                         {flags.includes("exceeded") && (
                           <span
                             title="Exceeded 1hr"
-                            style={{ fontSize: 10, color: "#f05a5a" }}
+                            style={{ fontSize: 10, color: "#dc2626" }}
                           >
                             ⚠
                           </span>
@@ -322,22 +322,22 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                             fontFamily: "monospace",
                             backgroundColor:
                               dur > 60
-                                ? "#1f0f0f"
+                                ? "#fdecec"
                                 : dur === 60
-                                  ? "#0f1f0f"
-                                  : "#111",
+                                  ? "#e9f9ee"
+                                  : "#f5f5f5",
                             color:
                               dur > 60
-                                ? "#f05a5a"
+                                ? "#dc2626"
                                 : dur === 60
-                                  ? "#5af07a"
-                                  : "#aaa",
+                                  ? "#16a34a"
+                                  : "#666",
                           }}
                         >
                           {breakDurLabel(a?.breakOut, a?.breakIn)}
                         </span>
                       ) : (
-                        <span className="text-gray-700 text-xs">—</span>
+                        <span className="text-gray-400 text-xs">—</span>
                       )}
                     </td>
 
@@ -364,9 +364,9 @@ export default function AttendanceTab({ attendance, employees, onCorrect }) {
                         className="text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
                         style={{
                           fontFamily: "system-ui,sans-serif",
-                          backgroundColor: "#111",
-                          color: "#aaa",
-                          border: "1px solid #2a2a2a",
+                          backgroundColor: "#f5f5f5",
+                          color: "#555",
+                          border: "1px solid #e5e7eb",
                         }}
                       >
                         ✎ Correct

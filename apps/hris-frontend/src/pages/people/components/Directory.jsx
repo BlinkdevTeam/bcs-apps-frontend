@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import CompensationConfigTab from "./CompensationConfigTab";
 import { getDepartments } from "../../../services/departmentService";
 
+import DirectorySkeletonRows from "./DirectorySkeletonRows";
+
 // import { EMPLOYEES } from "../../../data/compData";
 
 const STATUSES = ["All", "Active", "On Leave", "Inactive"];
@@ -59,6 +61,7 @@ function gc(id) {
 
 export default function Directory({
   employees,
+  loading = false,
   onViewProfile,
   // onEditEmployee,
   peopleView,
@@ -76,6 +79,8 @@ export default function Directory({
   const [selectedEmp, setSelectedEmp] = useState(null);
   const [departments, setDepartments] = useState([]);
 
+  const [deptsLoading, setDeptsLoading] = useState(true);
+
   // Fetch departments from backend
   useEffect(() => {
     let mounted = true;
@@ -83,9 +88,16 @@ export default function Directory({
       .then((res) => {
         if (mounted) setDepartments(res.data || []);
       })
-      .catch((err) => console.error(err));
-    return () => (mounted = false);
+      .catch((err) => console.error(err))
+      .finally(() => {
+        if (mounted) setDeptsLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
+
+  const isLoading = loading || deptsLoading;
 
   // Map department_id -> name
   const deptMap = useMemo(() => {
@@ -152,6 +164,7 @@ const filtered = useMemo(
               </span>
 
               <input
+                disabled={isLoading}
                 type="text"
                 className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 shadow-sm outline-none transition-all duration-200 placeholder:text-gray-400 hover:border-gray-300 focus:border-[#e3e3e3] focus:ring-2 focus:ring-[#dadada]/10"
                 placeholder="Search..."
@@ -190,13 +203,17 @@ const filtered = useMemo(
             <div className="flex-1" />
 
             <span className="text-gray-400 text-sm">
-              {filtered.length} of {employees.length}
+              {isLoading ? (
+                <span className="inline-block h-3.5 w-14 rounded bg-gray-200 animate-pulse align-middle" />
+              ) : (
+                `${filtered.length} of ${employees.length}`
+              )}
             </span>
           </div>
         </div>
 
         <div className="flex-1 overflow-auto px-8 pb-8">
-          <table className="w-full text-sm border-collapse">
+          <table className="w-full text-sm border-collapse" aria-busy={isLoading}>
             <thead>
               <tr style={{ borderBottom: "1px solid #e5e7eb" }}>
                 {[
@@ -221,58 +238,71 @@ const filtered = useMemo(
             </thead>
 
             <tbody>
-              {[...filtered]
-                .sort((a, b) =>
-                  `${a.first_name} ${a.last_name}`.localeCompare(
-                    `${b.first_name} ${b.last_name}`
-                  )
-                )
-                .map((emp) => (
-                <tr
-                  key={emp.id}
-                  className="cursor-pointer group transition-colors hover:bg-gray-50"
-                  onClick={() =>
-                    setSelectedEmp(
-                      selectedEmp?.id === emp.id ? null : emp
-                    )
-                  }
-                  style={{
-                    borderBottom: "1px solid #f0f0f0",
-                    backgroundColor:
-                      selectedEmp?.id === emp.id ? "#f8f8f8" : "#fff",
-                  }}
-                >
-                  <td className="py-3 pr-6">
-                    <div className="flex items-center gap-3">
-                      <Avatar emp={emp} size={34} />
-
-                      <div>
-                        <p className="text-gray-900 font-medium">
-                          {emp.first_name} {emp.last_name}
-                        </p>
-
-                        <p className="text-gray-500 text-xs">
-                          {emp.email}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td className="py-3 pr-6 text-gray-600">
-                    {deptMap[emp.department_id] || "—"}
-                  </td>
-
-                  <td className="py-3 pr-6 text-gray-700">
-                    {emp.role_title}
-                  </td>
-
-                  <td className="py-3">
-                    <span className="opacity-0 group-hover:opacity-100 text-gray-400 text-sm">
-                      →
-                    </span>
+              {isLoading ? (
+                <DirectorySkeletonRows count={8} />
+              ) : filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="py-16 text-center">
+                    <p className="text-gray-700 text-sm">No employees found</p>
+                    <p className="text-gray-400 text-xs mt-1">
+                      Try adjusting your search or filters.
+                    </p>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                [...filtered]
+                  .sort((a, b) =>
+                    `${a.first_name} ${a.last_name}`.localeCompare(
+                      `${b.first_name} ${b.last_name}`
+                    )
+                  )
+                  .map((emp) => (
+                  <tr
+                    key={emp.id}
+                    className="cursor-pointer group transition-colors hover:bg-gray-50"
+                    onClick={() =>
+                      setSelectedEmp(
+                        selectedEmp?.id === emp.id ? null : emp
+                      )
+                    }
+                    style={{
+                      borderBottom: "1px solid #f0f0f0",
+                      backgroundColor:
+                        selectedEmp?.id === emp.id ? "#f8f8f8" : "#fff",
+                    }}
+                  >
+                    <td className="py-3 pr-6">
+                      <div className="flex items-center gap-3">
+                        <Avatar emp={emp} size={34} />
+
+                        <div>
+                          <p className="text-gray-900 font-medium">
+                            {emp.first_name} {emp.last_name}
+                          </p>
+
+                          <p className="text-gray-500 text-xs">
+                            {emp.email}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="py-3 pr-6 text-gray-600">
+                      {deptMap[emp.department_id] || "—"}
+                    </td>
+
+                    <td className="py-3 pr-6 text-gray-700">
+                      {emp.role_title}
+                    </td>
+
+                    <td className="py-3">
+                      <span className="opacity-0 group-hover:opacity-100 text-gray-400 text-sm">
+                        →
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

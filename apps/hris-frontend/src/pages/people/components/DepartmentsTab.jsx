@@ -3,6 +3,11 @@ import { getDepartments, updateDepartment } from "../../../services/departmentSe
 import CreateDepartmentDrawer from "./CreateDepartmentDrawer";
 import ChangeHeadModal from "./ChangeHeadModal";
 
+import {
+  DepartmentsHeaderSkeleton,
+  DepartmentsGridSkeleton,
+} from "./DepartmentsSkeleton";
+
 // Status styles
 const SS = {
   Active: { bg: "#0f1f0f", color: "#5af07a" },
@@ -43,24 +48,34 @@ export default function DepartmentsTab({ employees }) {
 
   const [changingHeadFor, setChangingHeadFor] = useState(null);
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
+    let cancelled = false;
     const fetchDepartments = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const res = await getDepartments();
-        setDepts(res.data);
+        if (!cancelled) setDepts(res.data);
       } catch (err) {
         console.error("Failed to fetch departments:", err);
+        if (!cancelled) setError("Failed to load departments.");
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     };
     fetchDepartments();
+    return () => { cancelled = true; };
   }, []);
 
   const deptStats = depts.map((dept) => {
     const members = employees.filter((e) => e.department_id === dept.id);
     const head = employees.find((e) => e.id === dept.head_id) || null;
     const active = members.filter(
-  (e) => e.status?.toLowerCase() === "active"
-).length;
+      (e) => e.status?.toLowerCase() === "active"
+    ).length;
     const onLeave = members.filter((e) => e.status === "On Leave").length;
 
     return { ...dept, members, head, active, onLeave };
@@ -81,221 +96,253 @@ export default function DepartmentsTab({ employees }) {
     );
 
     setChangingHeadFor(null);
-  } catch (err) {
-    console.error("Failed to update department head:", err);
-  }
-};
+    } catch (err) {
+      console.error("Failed to update department head:", err);
+    }
+  };
 
   return (
-    <div className="space-y-6 h-screen">
+    <div className="space-y-6 h-full" aria-busy={loading}>
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-normal text-black">
-            {deptStats.length} departments
-          </p>
-          <p
-            className="text-xs text-gray-600 mt-0.5"
-            style={{ fontFamily: "system-ui,sans-serif" }}
-          >
-            Click a department to see its members
-          </p>
-        </div>
+        {loading ? (
+          <DepartmentsHeaderSkeleton />
+        ) : (
+          <div>
+            <p className="text-sm font-normal text-black">
+              {deptStats.length} departments
+            </p>
+            <p
+              className="text-xs text-gray-600 mt-0.5"
+              style={{ fontFamily: "system-ui,sans-serif" }}
+            >
+              Click a department to see its members
+            </p>
+          </div>
+        )}
       </div>
 
+      {loading && <DepartmentsGridSkeleton />}
+
+      {!loading && error && (
+        <div
+          className="rounded-lg px-4 py-3 text-sm"
+          style={{
+            backgroundColor: "#fdecec",
+            border: "1px solid #f8c9c9",
+            color: "#e02424",
+            fontFamily: "system-ui,sans-serif",
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      {!loading && !error && deptStats.length === 0 && (
+        <div
+          className="flex items-center justify-center py-16 rounded-lg"
+          style={{ border: "1px dashed #e5e7eb" }}
+        >
+          <p className="text-gray-500 text-sm" style={{ fontFamily: "system-ui,sans-serif" }}>
+            No departments yet.
+          </p>
+        </div>
+      )}
+
       {/* Departments Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        {deptStats.map((dept) => {
-          const isSelected = selected === dept.id;
-          return (
-            <div key={dept.id}>
-              <div
-                onClick={() => setSelected(isSelected ? null : dept.id)}
-                className="rounded-lg p-5 cursor-pointer transition-all"
-                style={{
-                  backgroundColor: isSelected ? dept.color + "0a" : "#ffffff",
-                  border: `1px solid ${isSelected ? dept.color + "55" : "#e5e7eb"}`,
-                }}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center"
+      {!loading && !error && deptStats.length > 0 && (
+        <div className="grid grid-cols-2 gap-4">
+          {deptStats.map((dept) => {
+            const isSelected = selected === dept.id;
+            return (
+              <div key={dept.id}>
+                <div
+                  onClick={() => setSelected(isSelected ? null : dept.id)}
+                  className="rounded-lg p-5 cursor-pointer transition-all"
+                  style={{
+                    backgroundColor: isSelected ? dept.color + "0a" : "#ffffff",
+                    border: `1px solid ${isSelected ? dept.color + "55" : "#e5e7eb"}`,
+                  }}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={{
+                          backgroundColor: dept.color + "18",
+                          border: `1px solid ${dept.color}33`,
+                        }}
+                      >
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: dept.color }}
+                        />
+                      </div>
+                      <div>
+                        <p
+                          className="text-black text-sm font-medium"
+                          style={{ fontFamily: "system-ui,sans-serif" }}
+                        >
+                          {dept.name}
+                        </p>
+                        {dept.description && (
+                          <p
+                            className="text-gray-500 text-xs mt-0.5"
+                            style={{ fontFamily: "system-ui,sans-serif" }}
+                          >
+                            {dept.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <span
+                      className="text-xs"
+                      style={{ color: dept.color, fontFamily: "monospace" }}
+                    >
+                      {dept.members.length}{" "}
+                      {dept.members.length === 1 ? "member" : "members"}
+                    </span>
+                    {/* Change/Assign Head button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setChangingHeadFor(dept);
+                      }}
+                      className="text-xs px-2.5 py-1 rounded hover:opacity-80 transition-all cursor-pointer"
                       style={{
-                        backgroundColor: dept.color + "18",
+                        fontFamily: "system-ui,sans-serif",
+                        backgroundColor: dept.color + "12",
+                        color: dept.color,
                         border: `1px solid ${dept.color}33`,
                       }}
                     >
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: dept.color }}
-                      />
-                    </div>
-                    <div>
-                      <p
-                        className="text-black text-sm font-medium"
+                      {dept.head ? "Change Head" : "Assign Head"}
+                    </button>
+                  </div>
+
+                  {/* Head */}
+                  <div className="flex items-center justify-between">
+                    {dept.head ? (
+                      <div className="flex items-center gap-2">
+                        <Avatar emp={dept.head} size={24} />
+                        <div>
+                          <p
+                            className="text-gray-700 text-xs"
+                            style={{ fontFamily: "system-ui,sans-serif" }}
+                          >
+                            {dept.head.first_name} {dept.head.last_name}
+                          </p>
+                          <p
+                            className="text-gray-500 text-xs"
+                            style={{ fontFamily: "system-ui,sans-serif" }}
+                          >
+                            Department Head
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <span
+                        className="text-xs text-gray-500"
                         style={{ fontFamily: "system-ui,sans-serif" }}
                       >
-                        {dept.name}
-                      </p>
-                      {dept.description && (
-                        <p
-                          className="text-gray-500 text-xs mt-0.5"
-                          style={{ fontFamily: "system-ui,sans-serif" }}
-                        >
-                          {dept.description}
-                        </p>
-                      )}
-                    </div>
+                        No head assigned
+                      </span>
+                    )}
                   </div>
-                  <span
-                    className="text-xs"
-                    style={{ color: dept.color, fontFamily: "monospace" }}
-                  >
-                    {dept.members.length}{" "}
-                    {dept.members.length === 1 ? "member" : "members"}
-                  </span>
-                  {/* Change/Assign Head button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setChangingHeadFor(dept);
-                    }}
-                    className="text-xs px-2.5 py-1 rounded hover:opacity-80 transition-all cursor-pointer"
-                    style={{
-                      fontFamily: "system-ui,sans-serif",
-                      backgroundColor: dept.color + "12",
-                      color: dept.color,
-                      border: `1px solid ${dept.color}33`,
-                    }}
-                  >
-                    {dept.head ? "Change Head" : "Assign Head"}
-                  </button>
-                </div>
 
-                {/* Head */}
-                <div className="flex items-center justify-between">
-                  {dept.head ? (
-                    <div className="flex items-center gap-2">
-                      <Avatar emp={dept.head} size={24} />
-                      <div>
-                        <p
-                          className="text-gray-700 text-xs"
-                          style={{ fontFamily: "system-ui,sans-serif" }}
-                        >
-                          {dept.head.first_name} {dept.head.last_name}
-                        </p>
-                        <p
-                          className="text-gray-500 text-xs"
-                          style={{ fontFamily: "system-ui,sans-serif" }}
-                        >
-                          Department Head
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <span
-                      className="text-xs text-gray-500"
-                      style={{ fontFamily: "system-ui,sans-serif" }}
-                    >
-                      No head assigned
-                    </span>
-                  )}
-                </div>
-
-                <p
-                  className="text-xs text-gray-400 mt-2 pt-2"
-                  style={{
-                    fontFamily: "monospace",
-                    borderTop: "1px solid #e5e7eb",
-                  }}
-                >
-                  Created {new Date(dept.created_at).toLocaleDateString()}
-                </p>
-              </div>
-
-              {/* Expandable Members */}
-              {isSelected && dept.members.length > 0 && (
-                <div
-                  className="rounded-b-lg overflow-hidden -mt-1"
-                  style={{
-                    border: `1px solid ${dept.color}33`,
-                    borderTop: "none",
-                    backgroundColor: "#080808",
-                  }}
-                >
-                  {dept.members.map((emp, i) => (
-                    <div
-                      key={emp.id}
-                      className="flex items-center gap-3 px-5 py-2.5"
-                      style={{
-                        borderTop: i > 0 ? "1px solid #141414" : "none",
-                      }}
-                    >
-                      <Avatar emp={emp} size={28} />
-                      <div className="flex-1">
-                        <p
-                          className="text-gray-200 text-sm"
-                          style={{ fontFamily: "system-ui,sans-serif" }}
-                        >
-                          {emp.first_name} {emp.last_name}
-                        </p>
-                        <p
-                          className="text-gray-600 text-xs"
-                          style={{ fontFamily: "system-ui,sans-serif" }}
-                        >
-                          {emp.role_title || emp.role}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {emp.id === dept.head?.id && (
-                          <span
-                            className="text-xs px-1.5 py-0.5 rounded"
-                            style={{
-                              fontFamily: "system-ui,sans-serif",
-                              backgroundColor: dept.color + "18",
-                              color: dept.color,
-                            }}
-                          >
-                            Head
-                          </span>
-                        )}
-                        <span
-                          className="text-xs px-2 py-0.5 rounded-full"
-                          style={{
-                            fontFamily: "system-ui,sans-serif",
-                            ...SS[emp.status],
-                          }}
-                        >
-                          {emp.status}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {isSelected && dept.members.length === 0 && (
-                <div
-                  className="rounded-b-lg flex items-center justify-center py-5 -mt-1"
-                  style={{
-                    border: `1px solid ${dept.color}22`,
-                    borderTop: "none",
-                    backgroundColor: "#080808",
-                  }}
-                >
                   <p
-                    className="text-gray-600 text-xs"
-                    style={{ fontFamily: "system-ui,sans-serif" }}
+                    className="text-xs text-gray-400 mt-2 pt-2"
+                    style={{
+                      fontFamily: "monospace",
+                      borderTop: "1px solid #e5e7eb",
+                    }}
                   >
-                    No employees assigned to this department yet.
+                    Created {new Date(dept.created_at).toLocaleDateString()}
                   </p>
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
 
+                {/* Expandable Members */}
+                {isSelected && dept.members.length > 0 && (
+                  <div
+                    className="rounded-b-lg overflow-hidden -mt-1"
+                    style={{
+                      border: `1px solid ${dept.color}33`,
+                      borderTop: "none",
+                      backgroundColor: "#080808",
+                    }}
+                  >
+                    {dept.members.map((emp, i) => (
+                      <div
+                        key={emp.id}
+                        className="flex items-center gap-3 px-5 py-2.5"
+                        style={{
+                          borderTop: i > 0 ? "1px solid #141414" : "none",
+                        }}
+                      >
+                        <Avatar emp={emp} size={28} />
+                        <div className="flex-1">
+                          <p
+                            className="text-gray-200 text-sm"
+                            style={{ fontFamily: "system-ui,sans-serif" }}
+                          >
+                            {emp.first_name} {emp.last_name}
+                          </p>
+                          <p
+                            className="text-gray-600 text-xs"
+                            style={{ fontFamily: "system-ui,sans-serif" }}
+                          >
+                            {emp.role_title || emp.role}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {emp.id === dept.head?.id && (
+                            <span
+                              className="text-xs px-1.5 py-0.5 rounded"
+                              style={{
+                                fontFamily: "system-ui,sans-serif",
+                                backgroundColor: dept.color + "18",
+                                color: dept.color,
+                              }}
+                            >
+                              Head
+                            </span>
+                          )}
+                          <span
+                            className="text-xs px-2 py-0.5 rounded-full"
+                            style={{
+                              fontFamily: "system-ui,sans-serif",
+                              ...SS[emp.status],
+                            }}
+                          >
+                            {emp.status}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {isSelected && dept.members.length === 0 && (
+                  <div
+                    className="rounded-b-lg flex items-center justify-center py-5 -mt-1"
+                    style={{
+                      border: `1px solid ${dept.color}22`,
+                      borderTop: "none",
+                      backgroundColor: "#080808",
+                    }}
+                  >
+                    <p
+                      className="text-gray-600 text-xs"
+                      style={{ fontFamily: "system-ui,sans-serif" }}
+                    >
+                      No employees assigned to this department yet.
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
       {/* Create Department Drawer */}
       {showDrawer && (
         <CreateDepartmentDrawer
