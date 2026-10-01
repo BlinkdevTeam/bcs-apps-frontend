@@ -39,7 +39,6 @@ function InfoItem({ icon, label, value }) {
 // ── PROFILE PAGE ──────────────────────────────────────────────────────────────
 export default function ProfilePage({
   emp,
-  onBack,
   // onEdit,
   onUpdateEmp,
   // empComp,
@@ -77,17 +76,6 @@ export default function ProfilePage({
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="px-8 pt-6">
-        {/* Back link */}
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-2 text-gray-500 hover:text-black text-sm cursor-pointer transition-colors"
-            style={{ fontFamily: "system-ui,sans-serif" }}
-          >
-            ← Back to Directory
-          </button>
-        </div>
-
         {/* Profile card */}
         <div
           className="rounded-xl p-6"
@@ -151,15 +139,29 @@ export default function ProfilePage({
             <div className="flex gap-3">
               <button
                 onClick={() => setShowEditDrawer(true)}
-                className="px-4 py-2 rounded text-sm hover:opacity-80 flex items-center gap-2 cursor-pointer transition-opacity"
-                style={{
-                  fontFamily: "system-ui,sans-serif",
-                  backgroundColor: "#f5f5f5",
-                  color: "#555",
-                  border: "1px solid #e5e7eb",
-                }}
+                className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-900 hover:shadow cursor-pointer"
               >
-                ✏️ Edit Profile
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182L8.25 18.463 4 19.5l1.037-4.25L16.862 3.487Z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m14.75 5.75 3.5 3.5"
+                  />
+                </svg>
+                Edit Profile
               </button>
             </div>
           </div>

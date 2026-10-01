@@ -76,7 +76,6 @@ export default function Directory({
   const [search, setSearch] = useState("");
   const [deptFilter, setDeptFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [selectedEmp, setSelectedEmp] = useState(null);
   const [departments, setDepartments] = useState([]);
 
   const [deptsLoading, setDeptsLoading] = useState(true);
@@ -213,183 +212,126 @@ const filtered = useMemo(
         </div>
 
         <div className="flex-1 overflow-auto px-8 pb-8">
-          <table className="w-full text-sm border-collapse" aria-busy={isLoading}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid #e5e7eb" }}>
-                {[
-                  "Employee",
-                  "Department",
-                  "Job Title",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="pb-3 pr-6 text-left font-normal text-gray-500"
-                    style={{
-                      fontSize: 11,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                    }}
-                  >
-                    {h}
-                  </th>
-                ))}
-                <th />
-              </tr>
-            </thead>
-
-            <tbody>
-              {isLoading ? (
-                <DirectorySkeletonRows count={8} />
-              ) : filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="py-16 text-center">
-                    <p className="text-gray-700 text-sm">No employees found</p>
-                    <p className="text-gray-400 text-xs mt-1">
-                      Try adjusting your search or filters.
-                    </p>
-                  </td>
+          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+            <table
+              className="w-full text-sm border-collapse"
+              aria-busy={isLoading}
+            >
+              <thead className="bg-gray-50/80">
+                <tr className="border-b border-gray-200">
+                  {["Employee", "Department", "Job Title"].map((h) => (
+                    <th
+                      key={h}
+                      className="px-5 py-3 text-left font-medium text-gray-500"
+                      style={{
+                        fontSize: 11,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                      }}
+                    >
+                      {h}
+                    </th>
+                  ))}
+                  <th className="w-12 px-5 py-3" />
                 </tr>
-              ) : (
-                [...filtered]
+              </thead>
+
+              <tbody>
+                {isLoading ? (
+                  <DirectorySkeletonRows count={8} />
+                ) : filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-20 text-center">
+                      <div className="mx-auto flex max-w-sm flex-col items-center">
+                        <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            className="h-5 w-5"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="m21 21-4.35-4.35m2.1-5.4a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"
+                            />
+                          </svg>
+                        </div>
+
+                        <p className="text-sm font-medium text-gray-800">
+                          No employees found
+                        </p>
+
+                        <p className="mt-1 text-xs text-gray-400">
+                          Try adjusting your search or filters.
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  [...filtered]
                   .sort((a, b) =>
                     `${a.first_name} ${a.last_name}`.localeCompare(
                       `${b.first_name} ${b.last_name}`
                     )
                   )
                   .map((emp) => (
-                  <tr
-                    key={emp.id}
-                    className="cursor-pointer group transition-colors hover:bg-gray-50"
-                    onClick={() =>
-                      setSelectedEmp(
-                        selectedEmp?.id === emp.id ? null : emp
-                      )
-                    }
-                    style={{
-                      borderBottom: "1px solid #f0f0f0",
-                      backgroundColor:
-                        selectedEmp?.id === emp.id ? "#f8f8f8" : "#fff",
-                    }}
-                  >
-                    <td className="py-3 pr-6">
-                      <div className="flex items-center gap-3">
-                        <Avatar emp={emp} size={34} />
-
-                        <div>
-                          <p className="text-gray-900 font-medium">
-                            {emp.first_name} {emp.last_name}
-                          </p>
-
-                          <p className="text-gray-500 text-xs">
-                            {emp.email}
-                          </p>
+                    <tr
+                      key={emp.id}
+                      className="group cursor-pointer border-b border-gray-100 bg-white transition-colors duration-150 last:border-b-0 hover:bg-gray-50/80"
+                      onClick={() => onViewProfile(emp)}
+                    >
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3.5">
+                          <div className="shrink-0">
+                            <Avatar emp={emp} size={38} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate font-medium text-gray-900">
+                              {emp.first_name} {emp.last_name}
+                            </p>
+                            <p className="mt-0.5 truncate text-xs text-gray-500">
+                              {emp.email}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-
-                    <td className="py-3 pr-6 text-gray-600">
-                      {deptMap[emp.department_id] || "—"}
-                    </td>
-
-                    <td className="py-3 pr-6 text-gray-700">
-                      {emp.role_title}
-                    </td>
-
-                    <td className="py-3">
-                      <span className="opacity-0 group-hover:opacity-100 text-gray-400 text-sm">
-                        →
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {selectedEmp && (
-        <div
-          className="w-72 shrink-0 border-l overflow-y-auto"
-          style={{
-            backgroundColor: "#fff",
-            borderColor: "#e5e7eb",
-          }}
-        >
-          <div className="p-6">
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => setSelectedEmp(null)}
-                className="text-gray-400 hover:text-gray-900 cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="flex flex-col items-center text-center mb-5">
-              <Avatar emp={selectedEmp} size={56} />
-
-              <h2 className="text-lg font-normal text-gray-900 mt-3 mb-1">
-                {selectedEmp.first_name} {selectedEmp.last_name}
-              </h2>
-
-              <p className="text-gray-500 text-sm">
-                {selectedEmp.role_title}
-              </p>
-
-              <span
-                className="text-xs px-3 py-1 rounded-full mt-2"
-                style={{
-                  backgroundColor: "#f3f4f6",
-                  color: "#4b5563",
-                }}
-              >
-                {selectedEmp.status}
-              </span>
-            </div>
-
-            <div
-              className="border-b mb-4"
-              style={{ borderColor: "#e5e7eb" }}
-            />
-
-            <div className="space-y-3">
-              {[
-                ["Department", selectedEmp.department],
-                ["Location", selectedEmp.location],
-                ["Manager", selectedEmp.manager],
-                ["Joined", selectedEmp.hire_date],
-                ["Salary", selectedEmp.salary],
-                ["Email", selectedEmp.email],
-              ].map(([l, v]) => (
-                <div key={l}>
-                  <p className="text-gray-400 text-xs uppercase tracking-widest">
-                    {l}
-                  </p>
-
-                  <p className="text-gray-800 text-sm">
-                    {v}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div
-              className="border-b my-4"
-              style={{ borderColor: "#e5e7eb" }}
-            />
-
-            <div className="space-y-2">
-              <button
-                onClick={() => onViewProfile(selectedEmp)}
-                className="w-full py-2.5 rounded text-sm bg-black text-white hover:opacity-80 font-medium cursor-pointer"
-              >
-                View Full Profile
-              </button>
-            </div>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
+                          {deptMap[emp.department_id] || "—"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className="text-sm text-gray-700">
+                          {emp.role_title || "—"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-right">
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-300 transition-all duration-150 group-hover:bg-gray-100 group-hover:text-gray-600">
+                          <svg
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.6"
+                            className="h-4 w-4"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="m7.5 4 5 6-5 6"
+                            />
+                          </svg>
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

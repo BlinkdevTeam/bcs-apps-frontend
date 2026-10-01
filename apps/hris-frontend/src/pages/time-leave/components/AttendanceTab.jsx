@@ -8,7 +8,6 @@ import {
   breakMinutes,
   breakDurLabel,
   Avatar,
-  BREAK_WINDOW_START,
 } from "../../../data/compData";
 
 export default function AttendanceTab({ attendance, employees, onCorrect }) {

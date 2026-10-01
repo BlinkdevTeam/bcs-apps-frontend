@@ -1,8 +1,9 @@
-/* ---------------- LOCAL CONFIG ---------------- */
+/* ---------------- LOCAL CONFIG (no compData dependency) ---------------- */
 
+// Deterministic avatar background color, cycled by user id
 const AVATAR_COLORS = [
-  "#6366f1", "#10b981", "#f59e0b", "#a855f7",
-  "#ef4444", "#f97316", "#06b6d4", "#ec4899",
+  "#5a9af0", "#5af07a", "#f0c85a", "#c07af0",
+  "#f05a5a", "#f0905a", "#50c8c8", "#d090f0",
 ];
 
 function getAvatarColor(id) {
@@ -24,65 +25,80 @@ const ROLE_LABELS = {
 };
 
 const ROLE_COLORS = {
-  super_admin: "#e11d48",
-  hr_admin: "#059669",
-  manager: "#4f46e5",
-  employee: "#d97706",
+  super_admin: { bg: "#fdecec", color: "#e02424" },
+  hr_admin: { bg: "#e9f9ee", color: "#1d9a4a" },
+  manager: { bg: "#eaf1fd", color: "#3a6ee0" },
+  employee: { bg: "#fdf3e3", color: "#c98a10" },
 };
 
+/* ---------------- ROLE NORMALIZER ---------------- */
 const normalizeRole = (roleTitle) => {
   if (!roleTitle) return "employee";
+
   const map = {
     "Super Admin": "super_admin",
     "HR Admin": "hr_admin",
-    Manager: "manager",
-    Employee: "employee",
+    "Manager": "manager",
+    "Employee": "employee",
   };
+
   return map[roleTitle] || "employee";
 };
 
 export default function AvatarButton({ user, onClick, isOpen }) {
+  // console.log("USER DATA:", user);
   if (!user) return null;
 
   const bg = getAvatarColor(user.id);
+
+  // 🔥 FIX: convert backend role_title → frontend key
   const roleKey = normalizeRole(user.role_title);
 
   return (
     <button
       onClick={onClick}
-      className={`group relative flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 transition-all duration-200 cursor-pointer outline-none ring-1 ring-inset ${
-        isOpen
-          ? "bg-slate-100 ring-slate-300"
-          : "bg-white ring-slate-200 hover:bg-slate-50 hover:ring-slate-300"
-      } focus-visible:ring-2 focus-visible:ring-indigo-500`}
+      className="relative flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-all cursor-pointer"
+      style={{
+        backgroundColor: isOpen ? "#f1f1f1" : "transparent",
+        border: `1px solid ${isOpen ? "#ddd" : "transparent"}`,
+        outline: "none",
+      }}
     >
-      {/* Avatar */}
+      {/* Avatar circle */}
       <div className="relative shrink-0">
         <div
-          className="flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-semibold text-white shadow-sm"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
           style={{
-            background: `linear-gradient(135deg, ${bg}, ${bg}cc)`,
+            backgroundColor: bg + "28",
+            color: bg,
+            border: `1.5px solid ${bg}50`,
             fontFamily: "system-ui, sans-serif",
           }}
         >
           {user.avatar_initials || "U"}
         </div>
-        <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
+
+        {/* Online indicator */}
+        <div
+          className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full"
+          style={{ backgroundColor: "#5af07a", border: "2px solid #fff" }}
+        />
       </div>
 
       {/* Name + role */}
-      <div className="hidden text-left sm:block">
+      <div className="text-left hidden sm:block">
         <p
-          className="mb-0.5 text-[12px] font-semibold leading-none text-slate-900"
+          className="text-xs text-black leading-none mb-0.5 uppercase font-bold"
           style={{ fontFamily: "system-ui, sans-serif" }}
         >
           {user.first_name?.split(" ")[0] || "User"}
         </p>
+
         <p
-          className="text-[11px] leading-none"
+          className="text-xs leading-none"
           style={{
             fontFamily: "system-ui, sans-serif",
-            color: ROLE_COLORS[roleKey] || "#64748b",
+            color: ROLE_COLORS[roleKey]?.color || "#777",
           }}
         >
           {ROLE_LABELS[roleKey] || "Employee"}
@@ -95,8 +111,11 @@ export default function AvatarButton({ user, onClick, isOpen }) {
         height="12"
         viewBox="0 0 12 12"
         fill="none"
-        className="hidden text-slate-400 transition-transform duration-200 sm:block"
-        style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+        className="hidden sm:block transition-transform"
+        style={{
+          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+          color: "#999",
+        }}
       >
         <path
           d="M2 4l4 4 4-4"
@@ -109,12 +128,19 @@ export default function AvatarButton({ user, onClick, isOpen }) {
 
       {/* Unread badge */}
       {user.unreadNotifications > 0 && !isOpen && (
-        <span
-          className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white ring-2 ring-white"
-          style={{ fontFamily: "system-ui, sans-serif" }}
+        <div
+          className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-white"
+          style={{
+            backgroundColor: "#f05a5a",
+            fontSize: 9,
+            fontFamily: "monospace",
+            fontWeight: 700,
+          }}
         >
-          {user.unreadNotifications > 9 ? "9+" : user.unreadNotifications}
-        </span>
+          {user.unreadNotifications > 9
+            ? "9+"
+            : user.unreadNotifications}
+        </div>
       )}
     </button>
   );
