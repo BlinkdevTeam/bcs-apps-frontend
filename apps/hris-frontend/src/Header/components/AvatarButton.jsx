@@ -45,7 +45,7 @@ const normalizeRole = (roleTitle) => {
   return map[roleTitle] || "employee";
 };
 
-export default function AvatarButton({ user, onClick, isOpen }) {
+export default function AvatarButton({ user, onClick, isOpen, collapsed = false }) {
   // console.log("USER DATA:", user);
   if (!user) return null;
 
@@ -57,7 +57,9 @@ export default function AvatarButton({ user, onClick, isOpen }) {
   return (
     <button
       onClick={onClick}
-      className="relative flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-all cursor-pointer"
+      className={`relative flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 transition-all cursor-pointer ${
+        collapsed ? "justify-center" : ""
+      }`}
       style={{
         backgroundColor: isOpen ? "#f1f1f1" : "transparent",
         border: `1px solid ${isOpen ? "#ddd" : "transparent"}`,
@@ -86,7 +88,13 @@ export default function AvatarButton({ user, onClick, isOpen }) {
       </div>
 
       {/* Name + role */}
-      <div className="text-left hidden sm:block">
+      <div
+        className={`text-left min-w-0 overflow-hidden transition-all duration-200 ${
+          collapsed
+            ? "w-0 opacity-0"
+            : "w-auto opacity-100"
+        }`}
+      >
         <p
           className="text-xs text-black leading-none mb-0.5 uppercase font-bold"
           style={{ fontFamily: "system-ui, sans-serif" }}

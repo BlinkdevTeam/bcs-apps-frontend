@@ -50,6 +50,7 @@ export default function DropdownMenu({
   onClose,
   onLogout,
   onViewProfile,
+  className = "absolute right-0 top-full mt-2",
 }) {
   if (!user) return null;
 
@@ -111,7 +112,7 @@ export default function DropdownMenu({
   ];
 
   return (
-    <div className="absolute right-0 top-full mt-2 w-72 rounded-xl overflow-hidden bg-white border border-gray-200 shadow-[0_16px_48px_rgba(0,0,0,0.15),0_0_0_1px_rgba(0,0,0,0.03)] z-50">
+    <div className={`${className} w-72 rounded-xl overflow-hidden bg-white border border-gray-200 shadow-[0_16px_48px_rgba(0,0,0,0.15),0_0_0_1px_rgba(0,0,0,0.03)] z-50`}>
 
       {/* User header */}
       <div className="px-4 py-4 border-b border-gray-200">
